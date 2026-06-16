@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}
+<title>Account | Gift Empire</title>
+{% endblock %}
+
+{% block content %}
+<main class="main">
+    <div class="page-header">
+        <div class="container d-flex flex-column align-items-center">
+            <nav aria-label="breadcrumb" class="breadcrumb-nav">
+                <div class="container">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'ecommerce:home' %}">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">My Account</li>
+                    </ol>
+                </div>
+            </nav>
+            <h1>My Account</h1>
+        </div>
+    </div>
+
+    <div class="container login-container">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+
+
+                <div class="row">
+
+                    <!-- LOGIN -->
+                    <div class="col-md-6">
+                        <div class="heading mb-1">
+                            <h2 class="title">Login</h2>
+                        </div>
+
+                        <form method="post" action="">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="login">
+
+                            {% if login_form.non_field_errors %}
+                                <div class="alert alert-danger">
+                                    {% for error in login_form.non_field_errors %}
+                                        <p class="mb-0">{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            <label for="login-email">
+                                Email address <span class="required">*</span>
+                            </label>
+                            {{ login_form.email }}
+                            {% if login_form.email.errors %}
+                                <small class="text-danger d-block mb-1">
+                                    {{ login_form.email.errors|join:", " }}
+                                </small>
+                            {% endif %}
+
+                            <label for="login-password">
+                                Password <span class="required">*</span>
+                            </label>
+                            {{ login_form.password }}
+                            {% if login_form.password.errors %}
+                                <small class="text-danger d-block mb-1">
+                                    {{ login_form.password.errors|join:", " }}
+                                </small>
+                            {% endif %}
+
+                            <div class="form-footer">
+                                <div class="custom-control custom-checkbox mb-0">
+                                    {{ login_form.remember_me }}
+                                    <label class="custom-control-label mb-0"
+                                           for="{{ login_form.remember_me.id_for_label }}">
+                                        Remember me
+                                    </label>
+                                </div>
+                                <a href="{% url 'accounts:password_reset' %}" class="forget-password text-dark form-footer-right">
+                                    Forgot Password?
+                                </a>
+                            </div>
+
+                            <button type="submit" class="btn btn-dark btn-md w-100">LOGIN</button>
+                        </form>
+                    </div>
+                    <!-- End Login -->
+
+                    <!-- REGISTER -->
+                    <div class="col-md-6">
+                        <div class="heading mb-1">
+                            <h2 class="title">Register</h2>
+                        </div>
+
+                        <form method="post" action="">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="register">
+
+                            {% if register_form.non_field_errors %}
+                                <div class="alert alert-danger">
+                                    {% for error in register_form.non_field_errors %}
+                                        <p class="mb-0">{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            <label for="register-first-name">
+                                First Name <span class="required">*</span>
+                            </label>
+                            {{ register_form.first_name }}
+                            {% if register_form.first_name.errors %}
+                                <small class="text-danger d-block mb-1">
+                                    {{ register_form.first_name.errors|join:", " }}
+                                </small>
+                            {% endif %}
+
+                            <label for="register-last-name">
+                                Last Name <span class="required">*</span>
+                            </label>
+                            {{ register_form.last_name }}
+                            {% if register_form.last_name.errors %}
+                                <small class="text-danger d-block mb-1">
+                                    {{ register_form.last_name.errors|join:", " }}
+                                </small>
+                            {% endif %}
+
+                            <label for="register-email">
+                                Email address <span class="required">*</span>
+                            </label>
+                            {{ register_form.email }}
+                            {% if register_form.email.errors %}
+                                <small class="text-danger d-block mb-1">
+                                    {{ register_form.email.errors|join:", " }}
+                                </small>
+                            {% endif %}
+
+                            <label for="register-password">
+                                Password <span class="required">*</span>
+                            </label>
+                            {{ register_form.password }}
+                            {% if register_form.password.errors %}
+                                <small class="text-danger d-block mb-1">
+                                    {{ register_form.password.errors|join:", " }}
+                                </small>
+                            {% endif %}
+
+                            <label for="register-password2">
+                                Confirm Password <span class="required">*</span>
+                            </label>
+                            {{ register_form.confirm_password }}
+                            {% if register_form.confirm_password.errors %}
+                                <small class="text-danger d-block mb-1">
+                                    {{ register_form.confirm_password.errors|join:", " }}
+                                </small>
+                            {% endif %}
+
+                            <div class="form-footer mb-2">
+                                <button type="submit" class="btn btn-dark btn-md w-100 mr-0">
+                                    REGISTER
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- End Register -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

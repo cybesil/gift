@@ -1,0 +1,742 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {% block title %}
+    {% endblock %}
+
+    <meta name="keywords" content="Gift Empire Ecommerce" />
+    <meta name="description" content="Gift Empire - Bootstrap eCommerce Template">
+    <meta name="author" content="SW-THEMES">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'assets/images/icons/favicon.png' %}">
+
+    <script>
+        WebFontConfig = {
+            google: {
+                families: ['Open+Sans:300,400,600,700,800', 'Poppins:300,400,500,600,700']
+            }
+        };
+        (function(d) {
+            var wf = d.createElement('script'),
+                s = d.scripts[0];
+            wf.src = '{% static 'assets/js/webfont.js' %}';
+            wf.async = true;
+            s.parentNode.insertBefore(wf, s);
+        })(document);
+    </script>
+
+    <!-- Plugins CSS File -->
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+
+    <!-- Main CSS File -->
+    <link rel="stylesheet" href="{% static 'assets/css/demo9.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/vendor/fontawesome-free/css/all.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/vendor/simple-line-icons/css/simple-line-icons.min.css' %}">
+    <style>
+        /* Toast Container */
+        #django-toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        /* Base Toast Style */
+        .django-toast {
+            pointer-events: auto;
+            min-width: 300px;
+            max-width: 450px;
+            background: var(--surface-color);
+            color: var(--text-primary);
+            padding: 1rem 1.5rem;
+            border-radius: 4px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--brand-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            animation: toastSlideIn 0.3s ease-out forwards;
+        }
+
+        /* Status Colors */
+        .django-toast.error { border-left-color: #dc2626; background: #fef2f2; color: #991b1b; }
+        .django-toast.warning { border-left-color: #d97706; background: #fffbeb; color: #92400e; }
+        .django-toast.success { border-left-color: #059669; background: #ecfdf5; color: #065f46; }
+
+        /* Exit Animation Class */
+        .django-toast.fade-out {
+            animation: toastFadeOut 0.5s ease-in forwards;
+        }
+
+        @keyframes toastSlideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes toastFadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-10px); }
+        }
+
+        /* Remove number input arrows */
+#deposit-amount::-webkit-outer-spin-button,
+#deposit-amount::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+#deposit-amount {
+    -moz-appearance: textfield; /* Firefox */
+}
+    </style>
+</head>
+
+<body class="boxed">
+    <div class="page-wrapper">
+        <header class="header mb-0" data-y="0">
+            <div class="container">
+                <div class="pre-header w-100">
+                    <div class="owl-carousel owl-theme feature-box-carousel" data-toggle="owl" data-owl-options="{
+                        'margin': 1,
+                        'autoplay': false,
+                        'autoplayTimeout': 3000,
+                        'nav': false,
+                        'dots': false,
+                        'loop': true,
+                        'responsive' : {
+                            '0' : {
+                                'items' : 1
+                            },
+                            '576' : {
+                                'items' : 2
+                            },
+                            '768' : {
+                                'items' : 3
+                            },
+                            '992' : {
+                                'items' : 4
+                            }
+                        }
+                    }">
+                        <div class="info-box info-box-icon-left">
+                            <i class="icon-shipping line-height-1"></i>
+
+                            <div class="info-box-content">
+                                <h4 class="ls-n-25 line-height-1">FREE SHIPPING &amp; RETURN</h4>
+                            </div>
+                            <!-- End .info-box-content -->
+                        </div>
+                        <div class="info-box info-box-icon-left">
+                            <i class="icon-money line-height-1"></i>
+
+                            <div class="info-box-content">
+                                <h4 class="ls-n-25 line-height-1">MONEY BACK GUARANTEE</h4>
+                            </div>
+                            <!-- End .info-box-content -->
+                        </div>
+                        <div class="info-box info-box-icon-left">
+                            <i class="icon-support line-height-1"></i>
+
+                            <div class="info-box-content">
+                                <h4 class="ls-n-25 line-height-1">ONLINE SUPPORT 24/7</h4>
+                            </div>
+                            <!-- End .info-box-content -->
+                        </div>
+                        <div class="info-box info-box-icon-left">
+                            <i class="icon-secure-payment line-height-1"></i>
+
+                            <div class="info-box-content">
+                                <h4 class="ls-n-25 line-height-1">SECURE PAYMENT</h4>
+                            </div>
+                            <!-- End .info-box-content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="header-top">
+                <div class="container">
+                    <div class="header-left">
+                        <div class="header-dropdown mr-auto mr-sm-3 mr-md-0">
+<!--                            <a href="#"><i class="flag-us flag"></i>ENG</a>-->
+<!--                            <div class="header-menu">-->
+<!--                                <ul>-->
+<!--                                    <li><a href="#"><i class="flag-us flag mr-2"></i>ENG</a>-->
+<!--                                    </li>-->
+<!--                                    <li><a href="#"><i class="flag-fr flag mr-2"></i>FRA</a></li>-->
+<!--                                </ul>-->
+<!--                            </div>-->
+                            <!-- End .header-menu -->
+                        </div>
+<!--                        <div class="header-dropdown">-->
+<!--                            <a href="#" class="pl-0">USD</a>-->
+<!--                            <div class="header-menu">-->
+<!--                                <ul>-->
+<!--                                    <li><a href="#">EUR</a></li>-->
+<!--                                    <li><a href="#">USD</a></li>-->
+<!--                                </ul>-->
+<!--                            </div>-->
+<!--                            &lt;!&ndash; End .header-menu &ndash;&gt;-->
+<!--                        </div>-->
+                    </div>
+                    <!-- End .header-left -->
+
+                    <div class="header-right">
+                        <ul class="top-links mega-menu show-arrow d-none d-lg-inline-block mt-0 mb-0">
+                            {% if request.user.is_superuser %}
+                            <li class="item-menu">
+                                <a href="{% url 'ecommerce:admin_dashboard' %}">Admin</a>
+                            </li>
+                            {% endif %}
+                            <li class="item-menu narrow"><a href="{% url 'ecommerce:dashboard' %}">My Account</a></li>
+                            <li class="item-menu narrow"><a href="demo9-about.html">About Us</a></li>
+<!--                            <li class="item-menu narrow"><a href="#">My Wishlist</a></li>-->
+                            <li class="item-menu narrow"><a href="{% url 'cart:cart_summary' %}">Cart</a></li>
+                            {% if request.user.is_authenticated %}
+                            <li class="item-menu">
+                                <a class="login" href="{% url 'accounts:logout' %}">Log Out</a>
+                            </li>
+                            {% else %}
+                            <li class="item-menu">
+                                <a class="login" href="{% url 'accounts:account' %}">Log In</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                        <span class="separator d-none d-lg-block"></span>
+                        <div class="social-icons d-flex align-items-center">
+                            <a target="_blank" rel="nofollow" class="social-icon social-facebook icon-facebook" href="#" title="Facebook"></a>
+                            <a target="_blank" rel="nofollow" class="social-icon social-twitter icon-twitter" href="#" title="Twitter"></a>
+                            <a target="_blank" rel="nofollow" class="social-icon social-instagram icon-instagram" href="#" title="Instagram"></a>
+                        </div>
+                    </div>
+                    <!-- End .header-right -->
+                </div>
+                <!-- End .container -->
+            </div>
+            <!-- End .header-top -->
+
+            <div class="container">
+                <div class="header-middle sticky-header d-flex w-100">
+                    <div class="container">
+                        <div class="header-left">
+                            <button class="mobile-menu-toggler text-white mr-2" type="button">
+                                <i class="fas fa-bars"></i>
+                            </button>
+                            <a href="{% url 'ecommerce:home' %}" class="logo">
+                                <img src="assets/images/logo-white.png" alt=" Logo" width="110" height="46" />
+                            </a>
+                        </div>
+                        <!-- End .header-left -->
+
+                        <div class="header-center flex-1 ml-lg-0 justify-content-end justify-content-lg-start w-lg-max">
+                            <div class="header-icon header-search header-search-inline header-search-category w-lg-max d-none d-sm-block">
+                                <a href="#" class="search-toggle text-white" role="button"><i
+                                        class="icon-search-3 pt-md-1 pr-2 mr-3 d-none d-sm-inline-block"></i></a>
+                                <form action="#" method="get">
+                                    <div class="header-search-wrapper">
+                                        <input type="search" class="form-control" name="q" id="q" placeholder="Search..." required="">
+                                        <div class="select-custom">
+                                            <select id="cat" name="cat">
+                                                <option value="">All Categories</option>
+                                                {% for category in categories %}
+                                                    <option value="{{ category.id }}"
+                                                        {% if request.GET.cat == category.id|stringformat:"s" %}selected{% endif %}>
+                                                        {{ category.name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <!-- End .select-custom -->
+                                        <button class="btn icon-magnifier" type="submit"></button>
+                                    </div>
+                                    <!-- End .header-search-wrapper -->
+                                </form>
+                            </div>
+                            <!-- End .header-search -->
+                        </div>
+                        <div class="header-right ml-0 ml-lg-auto">
+                            <div class="header-contact d-none d-lg-flex align-items-center">
+                                <i class="icon-phone-2"></i>
+                                <h6>Call us now<a href="tel:#" class="font1">+123 5678 890</a></h6>
+                            </div>
+
+                            <a href="{% url 'ecommerce:dashboard' %}" class="header-icon header-icon-user text-white"><i
+                                    class="icon-user-2 d-inline-flex-center"></i></a>
+
+<!--                            <a href="wishlist.html" class="header-icon d-inline-flex text-white"><i-->
+<!--                                    class="icon-wishlist-2 d-inline-flex-center line-height-1"></i></a>-->
+
+                            <div class="dropdown cart-dropdown">
+                                <a href="{% url 'cart:cart_summary' %}" title="Cart" class="dropdown-toggle cart-toggle d-flex align-items-center">
+<!--                                    role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static"-->
+                                    <i class="minicart-icon"></i>
+                                    <span class="cart-count badge-circle">{{ cart_qty }}</span>
+                                </a>
+
+<!--                                <div class="cart-overlay"></div>-->
+
+<!--                                <div class="dropdown-menu mobile-cart">-->
+<!--                                    <a href="#" title="Close (Esc)" class="btn-close">×</a>-->
+
+<!--                                    <div class="dropdownmenu-wrapper custom-scrollbar">-->
+<!--                                        <div class="dropdown-cart-header">Shopping Cart</div>-->
+<!--                                        &lt;!&ndash; End .dropdown-cart-header &ndash;&gt;-->
+
+<!--                                        <div class="dropdown-cart-products">-->
+<!--                                            <div class="product">-->
+<!--                                                <div class="product-details">-->
+<!--                                                    <h4 class="product-title">-->
+<!--                                                        <a href="demo9-product.html">Ultimate 3D Bluetooth Speaker</a>-->
+<!--                                                    </h4>-->
+
+<!--                                                    <span class="cart-product-info">-->
+<!--                                                        <span class="cart-product-qty">1</span> × $99.00-->
+<!--                                                    </span>-->
+<!--                                                </div>-->
+<!--                                                &lt;!&ndash; End .product-details &ndash;&gt;-->
+
+<!--                                                <figure class="product-image-container">-->
+<!--                                                    <a href="demo9-product.html" class="product-image">-->
+<!--                                                        <img src="assets/images/products/product-1.jpg" alt="product" width="80" height="80">-->
+<!--                                                    </a>-->
+
+<!--                                                    <a href="#" class="btn-remove" title="Remove Product"><span>×</span></a>-->
+<!--                                                </figure>-->
+<!--                                            </div>-->
+<!--                                            &lt;!&ndash; End .product &ndash;&gt;-->
+
+<!--                                            <div class="product">-->
+<!--                                                <div class="product-details">-->
+<!--                                                    <h4 class="product-title">-->
+<!--                                                        <a href="demo9-product.html">Brown Women Casual HandBag</a>-->
+<!--                                                    </h4>-->
+
+<!--                                                    <span class="cart-product-info">-->
+<!--                                                        <span class="cart-product-qty">1</span> × $35.00-->
+<!--                                                    </span>-->
+<!--                                                </div>-->
+<!--                                                &lt;!&ndash; End .product-details &ndash;&gt;-->
+
+<!--                                                <figure class="product-image-container">-->
+<!--                                                    <a href="demo9-product.html" class="product-image">-->
+<!--                                                        <img src="assets/images/products/product-2.jpg" alt="product" width="80" height="80">-->
+<!--                                                    </a>-->
+
+<!--                                                    <a href="#" class="btn-remove" title="Remove Product"><span>×</span></a>-->
+<!--                                                </figure>-->
+<!--                                            </div>-->
+<!--                                            &lt;!&ndash; End .product &ndash;&gt;-->
+
+<!--                                            <div class="product">-->
+<!--                                                <div class="product-details">-->
+<!--                                                    <h4 class="product-title">-->
+<!--                                                        <a href="demo9-product.html">Circled Ultimate 3D Speaker</a>-->
+<!--                                                    </h4>-->
+
+<!--                                                    <span class="cart-product-info">-->
+<!--                                                        <span class="cart-product-qty">1</span> × $35.00-->
+<!--                                                    </span>-->
+<!--                                                </div>-->
+<!--                                                &lt;!&ndash; End .product-details &ndash;&gt;-->
+
+<!--                                                <figure class="product-image-container">-->
+<!--                                                    <a href="demo9-product.html" class="product-image">-->
+<!--                                                        <img src="assets/images/products/product-3.jpg" alt="product" width="80" height="80">-->
+<!--                                                    </a>-->
+<!--                                                    <a href="#" class="btn-remove" title="Remove Product"><span>×</span></a>-->
+<!--                                                </figure>-->
+<!--                                            </div>-->
+<!--                                            &lt;!&ndash; End .product &ndash;&gt;-->
+<!--                                        </div>-->
+<!--                                        &lt;!&ndash; End .cart-product &ndash;&gt;-->
+
+<!--                                        <div class="dropdown-cart-total">-->
+<!--                                            <span>SUBTOTAL:</span>-->
+
+<!--                                            <span class="cart-total-price float-right">$134.00</span>-->
+<!--                                        </div>-->
+<!--                                        &lt;!&ndash; End .dropdown-cart-total &ndash;&gt;-->
+
+<!--                                        <div class="dropdown-cart-action">-->
+<!--                                            <a href="{% url 'cart:cart_summary' %}" class="btn btn-gray btn-block view-cart">View-->
+<!--                                                Cart</a>-->
+<!--                                            <a href="checkout.html" class="btn btn-dark btn-block">Checkout</a>-->
+<!--                                        </div>-->
+<!--                                        &lt;!&ndash; End .dropdown-cart-total &ndash;&gt;-->
+<!--                                    </div>-->
+<!--                                    &lt;!&ndash; End .dropdownmenu-wrapper &ndash;&gt;-->
+<!--                                </div>-->
+                                <!-- End .dropdown-menu -->
+                            </div>
+                            <!-- End .dropdown -->
+                        </div>
+                        <!-- End .header-right -->
+                    </div>
+                </div>
+            </div>
+            <!-- End .container -->
+            <div class="container d-none  d-lg-block">
+                <div class="row">
+                    <aside class="sidebar-home col-lg-3 mobile-sidebar toggle-menu-wrap">
+                        <div class="side-menu-wrapper text-uppercase d-none d-lg-block">
+                            <h2 class="side-menu-title cursor-pointer">
+                                <a class="collpased d-block btn-dark" data-toggle="collapse" href="#side-nav" role="button" aria-expanded="true" aria-controls="side-nav">
+                                    <i class="fas fa-bars"></i>Shop By Category
+                                </a>
+                            </h2>
+                            <div class="collapse w-100 bg-white" id="side-nav">
+                                <nav class="side-nav bg-white">
+                                    <ul class="menu menu-vertical sf-arrows">
+                                        {% for category in categories %}
+                                        <li class="{% if request.resolver_match.kwargs.slug == category.slug %}active{% endif %}">
+                                            <a href="{{ category.get_absolute_url }}">
+                                                {% if category.image %}
+                                                    <img
+                                                        src="{{ category.image.url }}"
+                                                        alt="{{ category.name }}"
+                                                        width="32"
+                                                        height="32"
+                                                        style="object-fit: cover; border-radius: 50px; margin-right: 20px;">
+                                                {% else %}
+                                                    <i class="sicon-briefcase"></i>
+                                                {% endif %}
+                                                {{ category.name }}
+                                            </a>
+
+                                            {% if category.children.all %}
+                                            <ul>
+                                                {% for child in category.children.all %}
+                                                <li class="{% if request.resolver_match.kwargs.slug == child.slug %}active{% endif %}">
+                                                    <a href="{{ child.get_absolute_url }}">
+                                                        {% if child.image %}
+                                                            <img
+                                                                src="{{ child.image.url }}"
+                                                                alt="{{ child.name }}"
+                                                                width="16"
+                                                                height="16"
+                                                                style="object-fit: cover; border-radius: 2px;">
+                                                        {% else %}
+                                                            <i class="sicon-briefcase"></i>
+                                                        {% endif %}
+                                                        {{ child.name }}
+                                                    </a>
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                            {% endif %}
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </aside>
+                    <!-- End .col-lg-3 -->
+                    <div class="col-lg-9">
+                        <div class="menu-custom-block text-right">
+                            <a href="#">Woman Shoes</a>
+                            <a href="#">50% OFF FASHION</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- End .header -->
+        {% if messages %}
+        <div id="django-toast-container">
+            {% for message in messages %}
+                <div class="django-toast {{ message.tags }}" role="alert">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        {% if message.tags == 'success' %}
+                            <i class="fa-solid fa-circle-check"></i>
+                        {% elif message.tags == 'warning' %}
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        {% elif message.tags == 'error' %}
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                        {% endif %}
+                        <span>{{ message }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% block content %}
+        {% endblock %}
+            <div class="container">
+            <footer class="footer bg-dark">
+                <div class="footer-middle">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-3 col-sm-6">
+                                <div class="widget">
+                                    <h4 class="widget-title">Contact Info</h4>
+                                    <ul class="contact-info">
+                                        <li>
+                                            <span class="contact-info-label">Address:</span>1234 Street Name, City, England
+                                        </li>
+                                        <li>
+                                            <span class="contact-info-label">Phone:</span>Toll Free <a href="tel:">(123)
+                                                456-7890</a>
+                                        </li>
+                                        <li>
+                                            <span class="contact-info-label">Email:</span> <a href=""><span class="__cf_email__" data-cfemail="630e020a0f23061b020e130f064d000c0e">[email&#160;protected]</span></a>
+                                        </li>
+                                        <li>
+                                            <span class="contact-info-label">Working Days/Hours:</span> Mon - Sun / 9:00 AM - 8:00 PM
+                                        </li>
+                                    </ul>
+                                    <div class="social-icons">
+                                        <a href="#" class="social-icon social-facebook icon-facebook" target="_blank" title="Facebook"></a>
+                                        <a href="#" class="social-icon social-twitter icon-twitter" target="_blank" title="Twitter"></a>
+                                        <a href="#" class="social-icon social-instagram icon-instagram" target="_blank" title="Instagram"></a>
+                                    </div>
+                                    <!-- End .social-icons -->
+                                </div>
+                                <!-- End .widget -->
+                            </div>
+                            <!-- End .col-lg-3 -->
+
+                            <div class="col-lg-3 col-sm-6">
+                                <div class="widget">
+                                    <h4 class="widget-title">Customer Service</h4>
+
+                                    <ul class="links">
+                                        <li><a href="#">Help & FAQs</a></li>
+                                        <li><a href="#">Order Tracking</a></li>
+                                        <li><a href="#">Shipping & Delivery</a></li>
+                                        <li><a href="#">Orders History</a></li>
+                                        <li><a href="#">Advanced search</a></li>
+                                        <li><a href="{% url 'ecommerce:dashboard' %}">My Account</a></li>
+                                        <li><a href="#">Careers</a></li>
+                                        <li><a href="demo9-about.html">About Us</a></li>
+                                        <li><a href="demo9-contact.html">Contact Us</a></li>
+                                        <li><a href="#">Corporate Sales</a></li>
+                                    </ul>
+                                </div>
+                                <!-- End .widget -->
+                            </div>
+                            <!-- End .col-lg-3 -->
+
+                            <div class="col-lg-3 col-sm-6">
+                                <div class="widget">
+                                    <h4 class="widget-title">MAIN FEATURES</h4>
+
+<!--                                    <ul class="links">-->
+<!--                                        <li><a href="#">Super Fast HTML Template</a></li>-->
+<!--                                        <li><a href="#">Top Rated HTML Template</a></li>-->
+<!--                                        <li><a href="#">33 Unique Shop Layouts</a></li>-->
+<!--                                        <li><a href="#">Powerful Wordpress Features</a></li>-->
+<!--                                        <li><a href="#">Mobile & Retina Optimized</a></li>-->
+<!--                                        <li><a href="#">Super Fast HTML Template</a></li>-->
+<!--                                        <li><a href="#">Top Rated HTML Template</a></li>-->
+<!--                                        <li><a href="#">33 Unique Shop Layouts</a></li>-->
+<!--                                        <li><a href="#">Powerful Wordpress Features</a></li>-->
+<!--                                        <li><a href="#">Mobile & Retina Optimized</a></li>-->
+<!--                                    </ul>-->
+                                </div>
+                                <!-- End .widget -->
+                            </div>
+                            <!-- End .col-lg-3 -->
+
+                            <div class="col-lg-3 col-sm-6">
+                                <div class="widget">
+                                    <h4 class="widget-title">Popular Tags</h4>
+
+                                    <div class="tagcloud">
+                                        <a href="#">Clothes</a>
+                                        <a href="#">Fashion</a>
+                                        <a href="#">Hub</a>
+                                        <a href="#">Shirt</a>
+                                        <a href="#">Skirt</a>
+                                        <a href="#">Sports</a>
+                                        <a href="#">Sweater</a>
+                                    </div>
+                                </div>
+                                <!-- End .widget -->
+                            </div>
+                            <!-- End .col-lg-3 -->
+                        </div>
+                        <!-- End .row -->
+                    </div>
+                    <!-- End .container -->
+                </div>
+                <!-- End .footer-middle -->
+
+                <div class="container px-6">
+                    <div class="footer-bottom d-sm-flex align-items-center">
+                        <div class="footer-left">
+                            <span class="footer-copyright">© Gift Empire. 2026. All Rights Reserved</span>
+                        </div>
+
+                        <div class="footer-right ml-auto mt-1 mt-sm-0">
+                            <div class="payment-icons mr-0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End .container -->
+            </footer>
+            <!-- End .footer -->
+        </div>
+        <!-- End .container -->
+    </div>
+
+    <div class="loading-overlay">
+        <div class="bounce-loader">
+            <div class="bounce1"></div>
+            <div class="bounce2"></div>
+            <div class="bounce3"></div>
+        </div>
+    </div>
+
+    <div class="mobile-menu-overlay"></div>
+    <!-- End .mobil-menu-overlay -->
+
+    <div class="mobile-menu-container">
+        <div class="mobile-menu-wrapper">
+            <span class="mobile-menu-close"><i class="fa fa-times"></i></span>
+            <nav class="mobile-nav">
+                <ul class="mobile-menu menu-with-icon">
+                    {% for category in categories %}
+                    <li class="{% if request.resolver_match.kwargs.slug == category.slug %}active{% endif %}">
+                        <a href="{{ category.get_absolute_url }}">
+                            {% if category.image %}
+                                <img
+                                    src="{{ category.image.url }}"
+                                    alt="{{ category.name }}"
+                                    width="32"
+                                    height="32"
+                                    style="object-fit: cover; border-radius: 50px; margin-right: 20px;">
+                            {% else %}
+                                <i class="sicon-briefcase"></i>
+                            {% endif %}
+                            {{ category.name }}
+                        </a>
+
+                    </li>
+                    {% endfor %}
+                </ul>
+
+                <ul class="mobile-menu menu-with-icon mt-2 mb-2">
+                </ul>
+
+                <ul class="mobile-menu">
+                    {% if request.user.is_superuser %}
+                    <li><a href="{% url 'ecommerce:admin_dashboard' %}">Admin</a></li>
+                    {% endif %}
+                    <li><a href="{% url 'ecommerce:dashboard' %}">My Account</a></li>
+                    <li><a href="demo9-about.html">About Us</a></li>
+                    <li><a href="blog.html">BLOG</a></li>
+<!--                    <li><a href="wishlist.html">My Wishlist</a></li>-->
+                    <li><a href="{% url 'cart:cart_summary' %}">Cart</a></li>
+                    {% if request.user.is_authenticated %}
+                    <li><a href="{% url 'accounts:logout' %}">Log Out</a></li>
+                    {% else %}
+                    <li><a href="{% url 'accounts:account' %}">Log In</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            <!-- End .mobile-nav -->
+
+            <form class="search-wrapper mb-2" action="#">
+                <input type="text" class="form-control mb-0" placeholder="Search..." required />
+                <button class="btn icon-search text-white bg-transparent p-0" type="submit"></button>
+            </form>
+
+            <div class="social-icons">
+                <a href="#" class="social-icon social-facebook icon-facebook" target="_blank">
+                </a>
+                <a href="#" class="social-icon social-twitter icon-twitter" target="_blank">
+                </a>
+                <a href="#" class="social-icon social-instagram icon-instagram" target="_blank">
+                </a>
+            </div>
+        </div>
+        <!-- End .mobile-menu-wrapper -->
+    </div>
+    <!-- End .mobile-menu-container -->
+
+    <div class="sticky-navbar">
+        <div class="sticky-info">
+            <a href="{% url 'ecommerce:home' %}">
+                <i class="icon-home"></i>Home
+            </a>
+        </div>
+        <div class="sticky-info">
+            <a href="demo9-shop.html" class="">
+                <i class="icon-bars"></i>Categories
+            </a>
+        </div>
+        <div class="sticky-info">
+<!--            <a href="wishlist.html" class="">-->
+<!--                <i class="icon-wishlist-2"></i>Wishlist-->
+<!--            </a>-->
+        </div>
+        <div class="sticky-info">
+            <a href="{% url 'ecommerce:dashboard' %}" class="">
+                <i class="icon-user-2"></i>Account
+            </a>
+        </div>
+        <div class="sticky-info">
+            <a href="{% url 'cart:cart_summary' %}" class="">
+                <i class="icon-shopping-cart position-relative">
+                    <span class="cart-count badge-circle">{{ cart_qty }}</span>
+                </i>Cart
+            </a>
+        </div>
+    </div>
+
+
+    <a id="scroll-top" href="#top" title="Top" role="button"><i class="icon-angle-up"></i></a>
+
+    <!-- Plugins JS File -->
+    <script data-cfasync="false" src="{% static 'cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js' %}"></script>
+    <script src="{% static 'assets/js/jquery.min.js' %}"></script>
+    <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'assets/js/plugins.min.js' %}"></script>
+    <script src="{% static 'assets/js/jquery.appear.min.js' %}"></script>
+    <!-- Main JS File -->
+    <script src="{% static 'assets/js/main.min.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toasts = document.querySelectorAll('.django-toast');
+
+    toasts.forEach(function (toast) {
+        // fade out after 5 seconds
+        setTimeout(function () {
+            toast.style.transition = 'opacity 0.5s ease';
+            toast.style.opacity = '0';
+
+            // remove from DOM after fade completes
+            setTimeout(function () {
+                toast.remove();
+
+                // remove container if no toasts left
+                const container = document.getElementById('django-toast-container');
+                if (container && container.children.length === 0) {
+                    container.remove();
+                }
+            }, 500);
+        }, 5000);
+    });
+});
+</script>
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"ecd4920e43e14654b78e65dbf8311922","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+
+
+</html>

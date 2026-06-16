@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}
+<title>{{ category.name }} | Gift Empire</title>
+{% endblock %}
+
+{% block content %}
+<main class="main">
+    <div class="container">
+        <div class="category-banner pt-0 pb-0 bg-img banner banner-md-vw-small"
+             style="background-image:url({% static 'assets/images/demoes/demo9/banners/category-banner.jpg' %})">
+            <div class="banner-content w-md-100 slide-1 text-xl-right banner-layer-middle">
+                <div class="row d-block d-sm-inline-flex flex-sm-nowrap align-items-center">
+                    <div class="col-auto mt-1 col-md-6 pl-sm-4 pl-0">
+                        <h4 class="text-md-right slide-title">GIFT EMPIRE</h4>
+                        <h2 class="mb-0 text-md-right text-uppercase sub-title appear-animate"
+                            data-animation-delay="100"
+                            data-animation-duration="1500"
+                            data-animation-name="fadeIn">{{ category.name }} COLLECTION</h2>
+                    </div>
+                    <div class="col-auto col-md-6 content-right">
+                        <h4 class="d-inline-block text-left text-uppercase line-height-1"></h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <nav aria-label="breadcrumb" class="breadcrumb-nav">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'ecommerce:home' %}">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ category.name }}</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            <div class="col-lg-9 main-content">
+                <nav class="toolbox sticky-header" data-sticky-options="{'mobile': true}">
+                    <div class="toolbox-left">
+                        <div class="toolbox-item toolbox-sort">
+                            <label>Sort By:</label>
+                            <div class="select-custom">
+                                <select class="form-control"
+                                        onchange="window.location='?sort='+this.value+'&page=1'">
+                                    {% for value, label in sort_options %}
+                                        <option value="{{ value }}"
+                                            {% if sort == value %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="toolbox-right">
+                        <div class="toolbox-item toolbox-show">
+                            <label>Show:</label>
+                            <div class="select-custom">
+                                <select name="count" class="form-control">
+                                    <option value="12">12</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="toolbox-item layout-modes">
+                            <a class="layout-btn btn-grid active" title="Grid">
+                                <i class="icon-mode-grid"></i>
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+
+                <div class="row products-group mb-1">
+                    {% for product in page_obj %}
+                    <div class="col-6 col-sm-4">
+                        <div class="product-default left-details">
+                            <figure>
+                                <a href="{{ product.get_absolute_url }}">
+                                    {% if product.primary_image %}
+                                        <img src="{{ product.primary_image }}"
+                                             alt="{{ product.name }}"
+                                             width="300"
+                                             height="300">
+                                    {% else %}
+                                        <img src="{% static 'assets/images/placeholder.jpg' %}"
+                                             alt="{{ product.name }}"
+                                             width="300"
+                                             height="300">
+                                    {% endif %}
+                                </a>
+                                <div class="label-group">
+                                    {% if product.is_on_sale %}
+                                        <span class="product-label label-sale">
+                                            -{{ product.discount_percent }}%
+                                        </span>
+                                    {% endif %}
+                                    {% if product.is_featured %}
+                                        <span class="product-label label-hot">HOT</span>
+                                    {% endif %}
+                                </div>
+                            </figure>
+
+                            <div class="product-details">
+                                <div class="category-list">
+                                    <a href="{{ category.get_absolute_url }}"
+                                       class="product-category">{{ category.name }}</a>
+                                </div>
+                                <h3 class="product-title">
+                                    <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+                                </h3>
+                                <div class="ratings-container"></div>
+                            </div>
+
+                            <div class="price-box">
+                                {% if product.is_on_sale %}
+                                    <span class="old-price">₦{{ product.price|intcomma }}</span>
+                                    <span class="product-price">₦{{ product.discount_price|intcomma }}</span>
+                                {% else %}
+                                    <span class="product-price">₦{{ product.price|intcomma }}</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="product-action">
+                                <a href="{{ product.get_absolute_url }}"
+                                   class="btn-icon btn-add-cart">
+                                    <i class="fa fa-arrow-right"></i>
+                                    <span>MORE DETAILS</span>
+                                </a>
+<!--                                <a href="#" class="btn-icon-wish" title="Wishlist">-->
+<!--                                    <i class="icon-heart"></i>-->
+<!--                                </a>-->
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <p class="text-center py-5">No products found in this category.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if page_obj.paginator.num_pages > 1 %}
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="?page={{ page_obj.previous_page_number }}&sort={{ sort }}">
+                                <i class="icon-angle-left"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="?page={{ num }}&sort={{ sort }}">{{ num }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="?page={{ page_obj.next_page_number }}&sort={{ sort }}">
+                                <i class="icon-angle-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+
+            </div>
+            <!-- End .col-lg-9 -->
+        </div>
+        <!-- End .row -->
+
+        <div class="mb-4"></div>
+    </div>
+</main>
+{% endblock %}

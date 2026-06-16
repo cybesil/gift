@@ -1,0 +1,673 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit {{ product.name }} — Admin Console</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-main: #FAFAFA; --sidebar-black: #0A0A0C; --card-white: #FFFFFF;
+            --text-title: #121214; --text-body: #52525B; --text-muted: #A1A1AA;
+            --pink-accent: #E11D48; --pink-glow: rgba(225, 29, 72, 0.08);
+            --border-soft: #ECECED; --radius-premium: 10px; --radius-inner: 6px;
+            --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.015em; }
+        body { background-color: var(--bg-main); color: var(--text-body); display: flex; min-height: 100vh; }
+
+        .sidebar { width: 260px; background: var(--sidebar-black); display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; left: 0; z-index: 100; padding: 40px 20px; overflow-y: auto; }
+        .brand-container { display: flex; align-items: center; gap: 12px; padding-left: 12px; margin-bottom: 48px; }
+        .brand-logo { width: 28px; height: 28px; background: var(--pink-accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.85rem; flex-shrink: 0; }
+        .brand-name { font-weight: 800; font-size: 1.05rem; color: #FFFFFF; text-transform: uppercase; letter-spacing: 0.03em; }
+        .nav-group { display: flex; flex-direction: column; gap: 4px; list-style: none; padding: 0; }
+        .nav-label { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; color: #44444F; letter-spacing: 0.08em; padding: 12px 14px 4px; }
+        .nav-item { display: flex; align-items: center; gap: 14px; padding: 12px 14px; color: #71717A; text-decoration: none; font-weight: 600; font-size: 0.88rem; border-radius: var(--radius-inner); transition: var(--transition-smooth); }
+        .nav-item:hover { color: #E4E4E7; background: rgba(255,255,255,0.03); }
+        .nav-item.active { color: #FFFFFF; background: var(--pink-accent); }
+        .nav-item i { font-size: 1rem; width: 20px; }
+
+        .main-wrapper { margin-left: 260px; flex: 1; display: flex; flex-direction: column; min-width: 0; }
+        .global-header { height: 80px; background: var(--card-white); border-bottom: 1px solid var(--border-soft); display: flex; align-items: center; justify-content: space-between; padding: 0 56px; position: sticky; top: 0; z-index: 50; }
+        .mobile-toggle { display: none; background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text-title); }
+        .page-content { padding: 56px; }
+        .view-title-block { margin-bottom: 40px; }
+        .view-title-block h1 { font-size: 1.85rem; font-weight: 800; color: var(--text-title); }
+        .view-title-block p { color: var(--text-muted); font-size: 0.95rem; margin-top: 4px; }
+
+        .messages-container { margin-bottom: 24px; display: flex; flex-direction: column; gap: 10px; }
+        .msg-alert { padding: 14px 18px; border-radius: var(--radius-inner); font-size: 0.88rem; font-weight: 600; display: flex; align-items: center; gap: 10px; border: 1px solid transparent; }
+        .msg-alert.success { background: #F0FDF4; border-color: #86EFAC; color: #166534; }
+        .msg-alert.error   { background: #FEF2F2; border-color: #FCA5A5; color: #991B1B; }
+        .msg-close { margin-left: auto; background: none; border: none; cursor: pointer; color: inherit; font-size: 1rem; }
+
+        .sectioned-form-block { display: grid; grid-template-columns: 3fr 7fr; gap: 64px; padding: 40px 0; border-bottom: 1px solid var(--border-soft); }
+        .sectioned-form-block:last-of-type { border-bottom: none; }
+        .form-explanation-side h3 { font-size: 1.05rem; font-weight: 700; color: var(--text-title); margin-bottom: 6px; }
+        .form-explanation-side p  { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; }
+        .form-card-side { background: var(--card-white); border: 1px solid var(--border-soft); border-radius: var(--radius-premium); padding: 32px; box-shadow: 0 1px 2px rgba(0,0,0,0.01); display: flex; flex-direction: column; gap: 20px; }
+
+        .input-wrapper { display: flex; flex-direction: column; gap: 6px; }
+        .input-wrapper label { font-size: 0.78rem; font-weight: 700; color: var(--text-title); text-transform: uppercase; letter-spacing: 0.02em; }
+        .input-hint { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; text-transform: none; letter-spacing: 0; }
+        .form-input-element { width: 100%; padding: 11px 14px; border: 1px solid var(--border-soft); border-radius: var(--radius-inner); font-size: 0.9rem; outline: none; color: var(--text-title); background: var(--bg-main); transition: var(--transition-smooth); font-family: 'Plus Jakarta Sans', sans-serif; }
+        .form-input-element:focus { background: var(--card-white); border-color: var(--pink-accent); box-shadow: 0 0 0 3px var(--pink-glow); }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: var(--bg-main); border-radius: var(--radius-inner); border: 1px solid var(--border-soft); }
+        .toggle-row label { font-size: 0.88rem; font-weight: 600; color: var(--text-title); cursor: pointer; }
+        .toggle-row small { font-size: 0.78rem; color: var(--text-muted); display: block; margin-top: 2px; }
+        .toggle-switch { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; inset: 0; background: #D4D4D8; border-radius: 50px; cursor: pointer; transition: var(--transition-smooth); }
+        .toggle-slider:before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: var(--transition-smooth); }
+        .toggle-switch input:checked + .toggle-slider { background: var(--pink-accent); }
+        .toggle-switch input:checked + .toggle-slider:before { transform: translateX(18px); }
+
+        /* ── IMAGE GRID (existing + new) ── */
+        .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; }
+        .image-thumb { position: relative; border-radius: var(--radius-inner); overflow: hidden; border: 2px solid var(--border-soft); background: #F4F4F5; aspect-ratio: 1; }
+        .image-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .image-thumb .thumb-actions { position: absolute; inset: 0; background: rgba(0,0,0,0.45); opacity: 0; transition: var(--transition-smooth); display: flex; align-items: center; justify-content: center; gap: 6px; flex-direction: column; }
+        .image-thumb:hover .thumb-actions { opacity: 1; }
+        .image-thumb.is-key { border-color: var(--pink-accent); box-shadow: 0 0 0 2px var(--pink-glow); }
+        .image-thumb.marked-delete { opacity: 0.35; filter: grayscale(1); }
+        .key-badge { position: absolute; top: 6px; left: 6px; background: var(--pink-accent); color: white; font-size: 0.6rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; pointer-events: none; }
+        .delete-badge { position: absolute; top: 6px; right: 6px; background: #EF4444; color: white; font-size: 0.6rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; pointer-events: none; }
+        .thumb-btn { padding: 4px 8px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.72rem; font-weight: 700; transition: var(--transition-smooth); display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+        .thumb-btn-key    { background: var(--pink-accent); color: white; }
+        .thumb-btn-key:hover { background: #BE123C; }
+        .thumb-btn-remove { background: #EF4444; color: white; }
+        .thumb-btn-remove:hover { background: #B91C1C; }
+        .thumb-btn-undo   { background: #4B5563; color: white; }
+
+        /* Upload zone */
+        .image-upload-zone { border: 2px dashed var(--border-soft); border-radius: var(--radius-premium); padding: 24px; text-align: center; cursor: pointer; transition: var(--transition-smooth); }
+        .image-upload-zone:hover, .image-upload-zone.drag-over { border-color: var(--pink-accent); background: var(--pink-glow); }
+        .image-upload-zone i { font-size: 1.5rem; color: var(--text-muted); display: block; margin-bottom: 8px; }
+        .image-upload-zone p { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+        .section-label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin-bottom: 10px; }
+
+        /* ── VARIANT ROWS ── */
+        .variant-editor-row { display: flex; gap: 10px; align-items: center; background: var(--bg-main); padding: 12px; border-radius: var(--radius-inner); border: 1px solid var(--border-soft); flex-wrap: wrap; }
+        .variant-editor-row.marked-delete { opacity: 0.4; pointer-events: none; }
+        .variant-select { padding: 8px 12px; border: 1px solid var(--border-soft); background: var(--card-white); color: var(--text-body); border-radius: var(--radius-inner); font-size: 0.85rem; font-weight: 600; outline: none; cursor: pointer; min-width: 160px; }
+        .variant-select:focus { border-color: var(--pink-accent); }
+        .variant-size-label { font-size: 0.88rem; font-weight: 700; color: var(--text-title); min-width: 120px; }
+
+        /* ── READONLY META ── */
+        .meta-row { display: flex; gap: 24px; flex-wrap: wrap; padding: 16px; background: var(--bg-main); border-radius: var(--radius-inner); border: 1px solid var(--border-soft); }
+        .meta-item label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); display: block; margin-bottom: 4px; }
+        .meta-item span { font-size: 0.88rem; color: var(--text-title); font-family: monospace; }
+
+        /* ── BUTTONS ── */
+        .action-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; font-size: 0.88rem; font-weight: 600; border-radius: var(--radius-inner); cursor: pointer; transition: var(--transition-smooth); border: 1px solid transparent; text-decoration: none; }
+        .btn-primary   { background: var(--sidebar-black); color: white; }
+        .btn-primary:hover { background: var(--pink-accent); }
+        .btn-secondary { background: var(--card-white); border-color: var(--border-soft); color: var(--text-body); }
+        .btn-secondary:hover { background: var(--bg-main); color: var(--text-title); }
+        .btn-danger    { background: #FEF2F2; border-color: #FCA5A5; color: #B91C1C; }
+        .btn-danger:hover { background: #B91C1C; color: white; border-color: #B91C1C; }
+        .btn-icon { width: 34px; height: 34px; padding: 0; border-radius: var(--radius-inner); background: transparent; border: 1px solid var(--border-soft); color: var(--text-body); }
+        .btn-icon:hover { border-color: #EF4444; color: #EF4444; background: #FEF2F2; }
+
+        @media (max-width: 1100px) { .sectioned-form-block { grid-template-columns: 1fr; gap: 16px; } }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .main-wrapper { margin-left: 0; }
+            .mobile-toggle { display: block; }
+            .global-header { padding: 0 24px; }
+            .page-content { padding: 32px 24px; }
+            .two-col { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+    <div class="brand-container">
+        <div class="brand-logo"><i class="fa-solid fa-feather-pointed"></i></div>
+        <div class="brand-name">Admin Console</div>
+    </div>
+    <ul class="nav-group">
+        <div class="nav-label">Orders</div>
+        <a class="nav-item" href="{% url 'ecommerce:admin_dashboard' %}?tab=orders"><i class="fa-solid fa-receipt"></i> Orders</a>
+        <div class="nav-label">Catalog</div>
+        <a class="nav-item active" href="#"><i class="fa-solid fa-sliders"></i> Edit Product</a>
+        <a class="nav-item" href="{% url 'ecommerce:add_product' %}"><i class="fa-solid fa-square-plus"></i> Add Product</a>
+        <a class="nav-item" href="{% url 'ecommerce:admin_dashboard' %}?tab=products"><i class="fa-solid fa-folder-open"></i> Products</a>
+        <div class="nav-label">Categories</div>
+        <a class="nav-item" href="{% url 'ecommerce:admin_dashboard' %}?tab=categories"><i class="fa-solid fa-tags"></i> Categories</a>
+    </ul>
+</aside>
+
+<div class="main-wrapper">
+    <header class="global-header">
+        <button class="mobile-toggle" onclick="document.getElementById('sidebar').classList.toggle('mobile-open')">
+            <i class="fa-solid fa-bars-staggered"></i>
+        </button>
+        <div style="font-size:0.82rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+            Admin &nbsp;·&nbsp; <span style="color:var(--pink-accent);">{{ product.name }}</span>
+        </div>
+        <a href="{% url 'ecommerce:admin_dashboard' %}?tab=products" class="action-btn btn-secondary" style="font-size:0.8rem; padding:8px 14px; flex-shrink:0;">
+            <i class="fa-solid fa-arrow-left"></i> Back
+        </a>
+    </header>
+
+    <main class="page-content">
+
+        {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+            <div class="msg-alert {{ message.tags }}">
+                <i class="fa-solid {% if message.tags == 'success' %}fa-circle-check{% else %}fa-circle-xmark{% endif %}"></i>
+                {{ message }}
+                <button class="msg-close" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="view-title-block">
+            <h1>Edit Product</h1>
+            <p>Update details, swap images, or adjust size variants for <strong>{{ product.name }}</strong>.</p>
+        </div>
+
+        <form method="POST" action="{% url 'ecommerce:edit_product' product.slug %}" enctype="multipart/form-data" id="edit-product-form">
+            {% csrf_token %}
+
+            <!-- ── SECTION 0: READ-ONLY META ── -->
+            <div class="sectioned-form-block">
+                <div class="form-explanation-side">
+                    <h3>Auto-generated Fields</h3>
+                    <p>These are read-only. The slug is used in product URLs and the SKU is the inventory reference — both were set when this product was created.</p>
+                </div>
+                <div class="form-card-side">
+                    <div class="meta-row">
+                        <div class="meta-item">
+                            <label>SKU</label>
+                            <span>{{ product.sku }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <label>Slug</label>
+                            <span>{{ product.slug }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <label>Created</label>
+                            <span>{{ product.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <label>Last updated</label>
+                            <span>{{ product.updated_at|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── SECTION 1: CORE DETAILS ── -->
+            <div class="sectioned-form-block">
+                <div class="form-explanation-side">
+                    <h3>Core Details</h3>
+                    <p>Update the product name, category, and description. Changing the name does not change the slug.</p>
+                </div>
+                <div class="form-card-side">
+                    <div class="input-wrapper">
+                        <label>Product Name <span style="color:var(--pink-accent);">*</span></label>
+                        <input type="text" name="name" class="form-input-element"
+                               value="{{ product.name }}" required>
+                    </div>
+                    <div class="input-wrapper">
+                        <label>Category <span style="color:var(--pink-accent);">*</span></label>
+                        <select name="category" class="form-input-element" required>
+                            <option value="">— Select a category —</option>
+                            {% for cat in categories %}
+                            <option value="{{ cat.id }}" {% if product.category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="input-wrapper">
+                        <label>Description</label>
+                        <textarea name="description" class="form-input-element" rows="4">{{ product.description }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── SECTION 2: PRICING & STOCK ── -->
+            <div class="sectioned-form-block">
+                <div class="form-explanation-side">
+                    <h3>Pricing & Stock</h3>
+                    <p>Update the base price, discount, and global stock count.</p>
+                </div>
+                <div class="form-card-side">
+                    <div class="two-col">
+                        <div class="input-wrapper">
+                            <label>Base Price (₦) <span style="color:var(--pink-accent);">*</span></label>
+                            <input type="number" name="price" class="form-input-element" step="0.01" min="0"
+                                   value="{{ product.price }}" required>
+                        </div>
+                        <div class="input-wrapper">
+                            <label>Discount Price (₦)</label>
+                            <input type="number" name="discount_price" class="form-input-element" step="0.01" min="0"
+                                   value="{{ product.discount_price|default:'' }}" placeholder="Leave blank to remove discount">
+                        </div>
+                    </div>
+                    <div class="two-col">
+                        <div class="input-wrapper">
+                            <label>Discount % <span class="input-hint">(optional)</span></label>
+                            <input type="number" name="discount_percent" class="form-input-element" min="0" max="100"
+                                   value="{{ product.discount_percent|default:'' }}" placeholder="0–100">
+                        </div>
+                        <div class="input-wrapper">
+                            <label>Stock Quantity</label>
+                            <input type="number" name="stock_quantity" class="form-input-element" min="0"
+                                   value="{{ product.stock_quantity }}">
+                        </div>
+                    </div>
+                    <div class="input-wrapper">
+                        <label>Weight (kg) <span class="input-hint">(optional)</span></label>
+                        <input type="number" name="weight" class="form-input-element" step="0.01" min="0"
+                               value="{{ product.weight|default:'' }}" placeholder="0.00">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── SECTION 3: VISIBILITY ── -->
+            <div class="sectioned-form-block">
+                <div class="form-explanation-side">
+                    <h3>Visibility</h3>
+                    <p>Toggle storefront visibility and featured status.</p>
+                </div>
+                <div class="form-card-side">
+                    <div class="toggle-row">
+                        <div>
+                            <label for="is_active">Active</label>
+                            <small>Visible to customers on the storefront</small>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" name="is_active" id="is_active" {% if product.is_active %}checked{% endif %}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-row">
+                        <div>
+                            <label for="is_featured">Featured</label>
+                            <small>Shown in featured product sections</small>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" name="is_featured" id="is_featured" {% if product.is_featured %}checked{% endif %}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── SECTION 4: IMAGES ── -->
+            <div class="sectioned-form-block">
+                <div class="form-explanation-side">
+                    <h3>Product Images</h3>
+                    <p>
+                        Existing images are shown below. Click <strong>Set Primary</strong> to change the key image,
+                        or <strong>Delete</strong> to mark an image for removal on save.
+                        Add new images with the upload zone.
+                    </p>
+                </div>
+                <div class="form-card-side">
+
+                    <!-- Hidden arrays for deletions and key image change -->
+                    <div id="delete-image-inputs"></div>
+                    <input type="hidden" name="set_key_image" id="set-key-image-input" value="">
+                    <input type="hidden" name="new_key_image_index" id="new-key-image-index" value="">
+
+                    {% if existing_images %}
+                    <div>
+                        <p class="section-label">Current Images</p>
+                        <div class="image-grid" id="existing-image-grid">
+                            {% for img in existing_images %}
+                            <div class="image-thumb {% if img.is_key %}is-key{% endif %}"
+                                 id="existing-thumb-{{ img.id }}"
+                                 data-image-id="{{ img.id }}"
+                                 data-is-key="{{ img.is_key|lower }}">
+                                <img src="{{ img.thumbnail_url }}" alt="{{ img.alt_text|default:product.name }}">
+                                {% if img.is_key %}<span class="key-badge">Primary</span>{% endif %}
+                                <div class="thumb-actions">
+                                    {% if not img.is_key %}
+                                    <button type="button" class="thumb-btn thumb-btn-key"
+                                            onclick="setExistingKeyImage({{ img.id }})">
+                                        <i class="fa-solid fa-star"></i> Set Primary
+                                    </button>
+                                    {% endif %}
+                                    <button type="button" class="thumb-btn thumb-btn-remove"
+                                            onclick="toggleDeleteImage({{ img.id }})">
+                                        <i class="fa-solid fa-trash"></i> Delete
+                                    </button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Upload new images -->
+                    <div>
+                        <p class="section-label">Add New Images</p>
+                        <input type="file" name="images" id="new-image-input" multiple accept="image/*"
+                               style="display:none;" onchange="handleNewImages(event)">
+                        <div class="image-upload-zone"
+                             onclick="document.getElementById('new-image-input').click()"
+                             ondragover="event.preventDefault(); this.classList.add('drag-over')"
+                             ondragleave="this.classList.remove('drag-over')"
+                             ondrop="handleNewImageDrop(event)">
+                            <i class="fa-solid fa-cloud-arrow-up" style="color:var(--pink-accent);"></i>
+                            <p>Click to upload or drag images here</p>
+                        </div>
+                        <div class="image-grid" id="new-image-preview-grid" style="margin-top:12px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── SECTION 5: SIZE VARIANTS ── -->
+            <div class="sectioned-form-block">
+                <div class="form-explanation-side">
+                    <h3>Size Variants</h3>
+                    <p>
+                        Update stock and price adjustments on existing variants, or remove them.
+                        Add new variants below. Changes take effect on save.
+                    </p>
+                </div>
+                <div class="form-card-side">
+
+                    <!-- Hidden delete inputs for variants -->
+                    <div id="delete-variant-inputs"></div>
+
+                    {% if existing_variants %}
+                    <div>
+                        <p class="section-label">Existing Variants</p>
+                        <div style="display:flex; flex-direction:column; gap:12px;" id="existing-variants-container">
+                            {% for variant in existing_variants %}
+                            <div class="variant-editor-row" id="variant-row-{{ variant.id }}">
+                                <!-- Hidden ID so the view knows which PS to update -->
+                                <input type="hidden" name="variant_ids[]" value="{{ variant.id }}">
+                                <span class="variant-size-label">{{ variant.size.value }} <small style="color:var(--text-muted); font-weight:500;">({{ variant.size.get_size_type_display }})</small></span>
+                                <input type="number" name="variant_stocks[]" class="form-input-element"
+                                       style="min-width:80px; flex:1;" placeholder="Stock"
+                                       value="{{ variant.stock }}" min="0">
+                                <input type="number" name="variant_adjustments[]" class="form-input-element"
+                                       style="min-width:110px; flex:1;" placeholder="Price adj. (₦)"
+                                       value="{{ variant.price_adjustment }}" step="0.01">
+                                <input type="text" name="variant_skus[]" class="form-input-element"
+                                       style="min-width:110px; flex:1;" placeholder="Variant SKU"
+                                       value="{{ variant.sku }}">
+                                <button type="button" class="action-btn btn-icon"
+                                        onclick="markDeleteVariant({{ variant.id }})" title="Remove variant">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <p style="font-size:0.88rem; color:var(--text-muted);">No size variants yet.</p>
+                    {% endif %}
+
+                    <hr style="border:0; border-top:1px solid var(--border-soft);">
+
+                    <div>
+                        <p class="section-label">Add New Variants</p>
+                        <div id="new-variants-container" style="display:flex; flex-direction:column; gap:12px;"></div>
+                        <button type="button" class="action-btn btn-secondary"
+                                style="width:max-content; font-size:0.82rem; padding:8px 16px; margin-top:12px;"
+                                onclick="addNewVariantRow()">
+                            <i class="fa-solid fa-plus"></i> Add Size Variant
+                        </button>
+                    </div>
+
+                    <!-- Sizes data for JS -->
+                    <script id="sizes-data" type="application/json">
+                        [
+                            {% for size in sizes %}
+                            {"id": {{ size.id }}, "value": "{{ size.value|escapejs }}", "type": "{{ size.get_size_type_display|escapejs }}"}{% if not forloop.last %},{% endif %}
+                            {% endfor %}
+                        ]
+                    </script>
+                </div>
+            </div>
+
+            <!-- ── FORM ACTIONS ── -->
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:8px; padding-top:32px; border-top:1px solid var(--border-soft); flex-wrap:wrap;">
+                <a href="{{ product.get_absolute_url }}" target="_blank" class="action-btn btn-secondary" style="font-size:0.82rem;">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> View on Storefront
+                </a>
+                <div style="display:flex; gap:12px;">
+                    <a href="{% url 'ecommerce:admin_dashboard' %}?tab=products" class="action-btn btn-secondary">Cancel</a>
+                    <button type="submit" class="action-btn btn-primary" style="padding:14px 36px;">
+                        <i class="fa-solid fa-check"></i> Save Changes
+                    </button>
+                </div>
+            </div>
+        </form>
+    </main>
+</div>
+
+<script>
+    // ── EXISTING IMAGE MANAGEMENT ─────────────────────────────
+    const markedForDeletion = new Set();
+
+    function setExistingKeyImage(imageId) {
+        // Visually update all existing thumbs
+        document.querySelectorAll('#existing-image-grid .image-thumb').forEach(thumb => {
+            const id = parseInt(thumb.dataset.imageId);
+            thumb.classList.remove('is-key');
+            // Remove any existing key badge
+            const badge = thumb.querySelector('.key-badge');
+            if (badge) badge.remove();
+            // Re-show "Set Primary" button if not already there
+            const actions = thumb.querySelector('.thumb-actions');
+            if (actions && !actions.querySelector('.thumb-btn-key') && !markedForDeletion.has(id)) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'thumb-btn thumb-btn-key';
+                btn.onclick = () => setExistingKeyImage(id);
+                btn.innerHTML = '<i class="fa-solid fa-star"></i> Set Primary';
+                actions.insertBefore(btn, actions.firstChild);
+            }
+        });
+
+        // Mark the selected one
+        const selected = document.getElementById('existing-thumb-' + imageId);
+        if (selected) {
+            selected.classList.add('is-key');
+            const badge = document.createElement('span');
+            badge.className = 'key-badge';
+            badge.textContent = 'Primary';
+            selected.appendChild(badge);
+            // Remove its "Set Primary" button
+            const keyBtn = selected.querySelector('.thumb-btn-key');
+            if (keyBtn) keyBtn.remove();
+        }
+
+        document.getElementById('set-key-image-input').value = imageId;
+    }
+
+    function toggleDeleteImage(imageId) {
+        const thumb = document.getElementById('existing-thumb-' + imageId);
+        if (!thumb) return;
+
+        if (markedForDeletion.has(imageId)) {
+            // Undo
+            markedForDeletion.delete(imageId);
+            thumb.classList.remove('marked-delete');
+            const deleteBadge = thumb.querySelector('.delete-badge');
+            if (deleteBadge) deleteBadge.remove();
+            // Restore delete button text
+            const deleteBtn = thumb.querySelector('.thumb-btn-remove');
+            if (deleteBtn) deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i> Delete';
+        } else {
+            // Mark for deletion
+            markedForDeletion.add(imageId);
+            thumb.classList.add('marked-delete');
+            thumb.classList.remove('is-key');
+            const badge = document.createElement('span');
+            badge.className = 'delete-badge';
+            badge.textContent = 'Will delete';
+            thumb.appendChild(badge);
+            const deleteBtn = thumb.querySelector('.thumb-btn-remove');
+            if (deleteBtn) deleteBtn.innerHTML = '<i class="fa-solid fa-rotate-left"></i> Undo';
+            // Clear key badge if this was the key image
+            const keyBadge = thumb.querySelector('.key-badge');
+            if (keyBadge) keyBadge.remove();
+            // If this was the key image, clear the hidden input
+            if (parseInt(document.getElementById('set-key-image-input').value) === imageId) {
+                document.getElementById('set-key-image-input').value = '';
+            }
+        }
+
+        // Sync hidden inputs
+        const container = document.getElementById('delete-image-inputs');
+        container.innerHTML = '';
+        markedForDeletion.forEach(id => {
+            const inp = document.createElement('input');
+            inp.type  = 'hidden';
+            inp.name  = 'delete_images[]';
+            inp.value = id;
+            container.appendChild(inp);
+        });
+    }
+
+    // ── NEW IMAGE UPLOADS ─────────────────────────────────────
+    let newSelectedFiles = [];
+    let newKeyIndex      = null;  // null = no new image is key
+
+    function handleNewImages(event) {
+        const files = Array.from(event.target.files);
+        newSelectedFiles = [...newSelectedFiles, ...files];
+        event.target.value = '';
+        renderNewPreviews();
+        syncNewFileInput();
+    }
+
+    function handleNewImageDrop(event) {
+        event.preventDefault();
+        event.currentTarget.classList.remove('drag-over');
+        const files = Array.from(event.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+        newSelectedFiles = [...newSelectedFiles, ...files];
+        renderNewPreviews();
+        syncNewFileInput();
+    }
+
+    function renderNewPreviews() {
+        const grid = document.getElementById('new-image-preview-grid');
+        grid.innerHTML = '';
+        newSelectedFiles.forEach((file, idx) => {
+            const url   = URL.createObjectURL(file);
+            const thumb = document.createElement('div');
+            thumb.className = 'image-thumb' + (idx === newKeyIndex ? ' is-key' : '');
+            thumb.innerHTML = `
+                ${idx === newKeyIndex ? '<span class="key-badge">Primary</span>' : ''}
+                <img src="${url}" alt="">
+                <div class="thumb-actions">
+                    ${idx !== newKeyIndex ? `<button type="button" class="thumb-btn thumb-btn-key" onclick="setNewKeyImage(${idx})"><i class="fa-solid fa-star"></i> Set Primary</button>` : ''}
+                    <button type="button" class="thumb-btn thumb-btn-remove" onclick="removeNewImage(${idx})"><i class="fa-solid fa-trash"></i> Remove</button>
+                </div>
+            `;
+            grid.appendChild(thumb);
+        });
+        document.getElementById('new-key-image-index').value = newKeyIndex !== null ? newKeyIndex : '';
+    }
+
+    function setNewKeyImage(idx) {
+        newKeyIndex = idx;
+        renderNewPreviews();
+    }
+
+    function removeNewImage(idx) {
+        newSelectedFiles.splice(idx, 1);
+        if (newKeyIndex !== null && newKeyIndex >= newSelectedFiles.length) {
+            newKeyIndex = newSelectedFiles.length > 0 ? 0 : null;
+        }
+        renderNewPreviews();
+        syncNewFileInput();
+    }
+
+    function syncNewFileInput() {
+        const dt = new DataTransfer();
+        newSelectedFiles.forEach(f => dt.items.add(f));
+        document.getElementById('new-image-input').files = dt.files;
+    }
+
+    // ── EXISTING VARIANT DELETION ─────────────────────────────
+    const deletedVariants = new Set();
+
+    function markDeleteVariant(variantId) {
+        const row = document.getElementById('variant-row-' + variantId);
+        if (!row) return;
+
+        if (deletedVariants.has(variantId)) {
+            deletedVariants.delete(variantId);
+            row.classList.remove('marked-delete');
+            row.style.pointerEvents = '';
+            row.style.opacity = '';
+        } else {
+            deletedVariants.add(variantId);
+            row.classList.add('marked-delete');
+            row.style.opacity = '0.35';
+            row.style.pointerEvents = 'none';
+        }
+
+        // Sync hidden inputs
+        const container = document.getElementById('delete-variant-inputs');
+        container.innerHTML = '';
+        deletedVariants.forEach(id => {
+            const inp = document.createElement('input');
+            inp.type  = 'hidden';
+            inp.name  = 'delete_variants[]';
+            inp.value = id;
+            container.appendChild(inp);
+        });
+    }
+
+    // ── NEW VARIANT ROWS ──────────────────────────────────────
+    const SIZES = JSON.parse(document.getElementById('sizes-data').textContent);
+
+    function buildSizeOptions() {
+        return SIZES.map(s => `<option value="${s.id}">${s.value} (${s.type})</option>`).join('');
+    }
+
+    function addNewVariantRow() {
+        const container = document.getElementById('new-variants-container');
+        const row = document.createElement('div');
+        row.className = 'variant-editor-row';
+        row.innerHTML = `
+            <select name="size_ids[]" class="variant-select">
+                <option value="">— Select size —</option>
+                ${buildSizeOptions()}
+            </select>
+            <input type="number" name="size_stocks[]" class="form-input-element"
+                   style="min-width:80px; flex:1;" placeholder="Stock" value="0" min="0">
+            <input type="number" name="size_adjustments[]" class="form-input-element"
+                   style="min-width:110px; flex:1;" placeholder="Price adj. (₦)" value="0.00" step="0.01">
+            <input type="text" name="size_skus[]" class="form-input-element"
+                   style="min-width:110px; flex:1;" placeholder="Variant SKU (optional)">
+            <button type="button" class="action-btn btn-icon" onclick="this.closest('.variant-editor-row').remove()" title="Remove">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        `;
+        container.appendChild(row);
+    }
+
+    // ── AUTO-DISMISS MESSAGES ─────────────────────────────────
+    setTimeout(() => {
+        document.querySelectorAll('.msg-alert').forEach(el => {
+            el.style.transition = 'opacity 0.4s';
+            el.style.opacity    = '0';
+            setTimeout(() => el.remove(), 400);
+        });
+    }, 6000);
+</script>
+
+</body>
+</html>

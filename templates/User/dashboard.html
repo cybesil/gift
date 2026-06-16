@@ -1,0 +1,303 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}
+<title>Dashboard | Gift Empire</title>
+{% endblock %}
+
+{% block content %}
+		<main class="main">
+			<div class="page-header">
+				<div class="container d-flex flex-column align-items-center">
+					<nav aria-label="breadcrumb" class="breadcrumb-nav">
+						<div class="container">
+							<ol class="breadcrumb">
+								<li class="breadcrumb-item"><a href="{% url 'ecommerce:home' %}">Home</a></li>
+								<li class="breadcrumb-item active" aria-current="page">
+									My Account
+								</li>
+							</ol>
+						</div>
+					</nav>
+
+					<h1>My Account</h1>
+				</div>
+			</div>
+
+			<div class="container account-container custom-account-container">
+				{% if messages %}
+					<div class="row mt-3">
+						<div class="col-12">
+							{% for message in messages %}
+								<div class="alert alert-{{ message.tags }}" role="alert">
+									{{ message }}
+								</div>
+							{% endfor %}
+						</div>
+					</div>
+				{% endif %}
+
+				<div class="row">
+					<div class="sidebar widget widget-dashboard mb-lg-0 mb-3 col-lg-3 order-0">
+						<h2 class="text-uppercase">My Account</h2>
+						<ul class="nav nav-tabs list flex-column mb-0" role="tablist">
+							<li class="nav-item">
+								<a class="nav-link" id="dashboard-tab" data-toggle="tab" href="#dashboard"
+									role="tab" aria-controls="dashboard" aria-selected="true">Dashboard</a>
+							</li>
+
+							<li class="nav-item">
+								<a class="nav-link" id="order-tab" data-toggle="tab" href="#order" role="tab"
+									aria-controls="order" aria-selected="true">Orders</a>
+							</li>
+
+							<li class="nav-item">
+								<a class="nav-link" id="edit-tab" data-toggle="tab" href="#edit" role="tab"
+									aria-controls="edit" aria-selected="false">Account
+									details</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="shop-address-tab" data-toggle="tab" href="#shipping" role="tab"
+									aria-controls="edit" aria-selected="false">Shipping Address</a>
+							</li>
+<!--							<li class="nav-item">-->
+<!--								<a class="nav-link" href="wishlist.html">Wishlist</a>-->
+<!--							</li>-->
+							<li class="nav-item">
+								<a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
+							</li>
+						</ul>
+					</div>
+					<div class="col-lg-9 order-lg-last order-1 tab-content">
+						<div class="tab-pane fade show active" id="dashboard" role="tabpanel">
+							<div class="dashboard-content">
+								<p>
+									Hello <strong class="text-dark">{{ request.user.username }}</strong> (not
+									<strong class="text-dark">{{ request.user.username }}</strong>?
+									<a href="{% url 'accounts:logout' %}" class="btn btn-link ">Log out</a>)
+								</p>
+
+								<p>
+									From your account dashboard you can view your
+									<a class="btn btn-link link-to-tab" href="#order">recent orders</a>,
+									manage your
+									<a class="btn btn-link link-to-tab" href="#shipping">shipping and billing
+										addresses</a>, and
+									<a class="btn btn-link link-to-tab" href="#edit">edit your account
+										details.</a>
+								</p>
+
+								<div class="mb-4"></div>
+
+								<div class="row row-lg">
+									<div class="col-6 col-md-4">
+										<div class="feature-box text-center pb-4">
+											<a href="#order" class="link-to-tab"><i
+													class="sicon-social-dropbox"></i></a>
+											<div class="feature-box-content">
+												<h3>ORDERS</h3>
+											</div>
+										</div>
+									</div>
+
+									<div class="col-6 col-md-4">
+										<div class="feature-box text-center pb-4">
+											<a href="#edit" class="link-to-tab"><i class="icon-user-2"></i></a>
+											<div class="feature-box-content p-0">
+												<h3>ACCOUNT DETAILS</h3>
+											</div>
+										</div>
+									</div>
+									<div class="col-6 col-md-4">
+										<div class="feature-box text-center pb-4">
+											<a href="#shipping" class="link-to-tab"><i
+													class="sicon-location-pin"></i></a>
+											<div class="feature-box-content">
+												<h3>SHIPPING ADDRESS</h3>
+											</div>
+										</div>
+									</div>
+									<div class="col-6 col-md-4">
+										<div class="feature-box text-center pb-4">
+											<a href="{% url 'accounts:logout' %}"><i class="sicon-logout"></i></a>
+											<div class="feature-box-content">
+												<h3>LOGOUT</h3>
+											</div>
+										</div>
+									</div>
+								</div><!-- End .row -->
+							</div>
+						</div><!-- End .tab-pane -->
+
+						<div class="tab-pane fade" id="order" role="tabpanel">
+							<div class="order-content">
+								<h3 class="account-sub-title d-none d-md-block"><i
+										class="sicon-social-dropbox align-middle mr-3"></i>Orders</h3>
+								<div class="order-table-container text-center">
+									<table class="table table-order text-left">
+										<thead>
+											<tr>
+												<th class="order-id">ORDER</th>
+												<th class="order-date">DATE</th>
+												<th class="order-status">STATUS</th>
+												<th class="order-price">TOTAL</th>
+												<th class="order-action">ACTIONS</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td class="text-center p-0" colspan="5">
+													<p class="mb-5 mt-5">
+														No Order has been made yet.
+													</p>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+									<hr class="mt-0 mb-3 pb-2" />
+
+									<a href="{% url 'ecommerce:home' %}" class="btn btn-dark">Go Shop</a>
+								</div>
+							</div>
+						</div><!-- End .tab-pane -->
+
+						<div class="tab-pane fade" id="edit" role="tabpanel">
+							<h3 class="account-sub-title d-none d-md-block mt-0 pt-1 ml-1"><i
+									class="icon-user-2 align-middle mr-3 pr-1"></i>Account Details</h3>
+							<div class="account-content">
+								<form action="{% url 'ecommerce:dashboard' %}" method="post">
+									{% csrf_token %}
+									<input type="hidden" name="form_type" value="account_details" />
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="{{ account_form.first_name.id_for_label }}">First name <span class="required">*</span></label>
+												{{ account_form.first_name }}
+											</div>
+										</div>
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="{{ account_form.last_name.id_for_label }}">Last name <span
+														class="required">*</span></label>
+												{{ account_form.last_name }}
+											</div>
+										</div>
+									</div>
+
+									<div class="form-group mb-2">
+										<label for="{{ account_form.full_name.id_for_label }}">Display name <span class="required">*</span></label>
+										{{ account_form.full_name }}
+										<p>This will be how your name will be displayed in the account section and
+											in
+											reviews</p>
+									</div>
+
+									<div class="form-group mb-4">
+										<label for="{{ account_form.email.id_for_label }}">Email address <span class="required">*</span></label>
+										{{ account_form.email }}
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="{{ account_form.phone_num.id_for_label }}">Phone (Call line)</label>
+												{{ account_form.phone_num }}
+											</div>
+										</div>
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="{{ account_form.phone_num2.id_for_label }}">Phone (WhatsApp)</label>
+												{{ account_form.phone_num2 }}
+											</div>
+										</div>
+									</div>
+
+									<div class="form-group mb-4">
+										<label for="{{ account_form.address.id_for_label }}">Address</label>
+										{{ account_form.address }}
+									</div>
+
+									<div class="form-footer mt-3 mb-0">
+										<button type="submit" class="btn btn-dark mr-0">
+											Save changes
+										</button>
+									</div>
+								</form>
+							</div>
+						</div><!-- End .tab-pane -->
+
+						<div class="tab-pane fade" id="shipping" role="tabpanel">
+							<div class="address account-content mt-0 pt-2">
+								<h4 class="title mb-3">Shipping Address</h4>
+
+								<form class="mb-2" action="{% url 'ecommerce:dashboard' %}" method="post">
+									{% csrf_token %}
+									<input type="hidden" name="form_type" value="shipping_address" />
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="{{ shipping_form.full_name.id_for_label }}">First name <span class="required">*</span></label>
+												{{ shipping_form.full_name }}
+											</div>
+										</div>
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="{{ shipping_form.phone.id_for_label }}">Phone <span class="required">*</span></label>
+												{{ shipping_form.phone }}
+											</div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="{{ shipping_form.email.id_for_label }}">Email</label>
+										{{ shipping_form.email }}
+									</div>
+
+									<div class="select-custom">
+										<label for="{{ shipping_form.country.id_for_label }}">Country / Region <span class="required">*</span></label>
+										{{ shipping_form.country }}
+									</div>
+
+									<div class="form-group">
+										<label for="{{ shipping_form.street_address.id_for_label }}">Street address <span class="required">*</span></label>
+										{{ shipping_form.street_address }}
+									</div>
+
+									<div class="form-group">
+										<label for="{{ shipping_form.city.id_for_label }}">Town / City <span class="required">*</span></label>
+										{{ shipping_form.city }}
+									</div>
+
+									<div class="form-group">
+										<label for="{{ shipping_form.state.id_for_label }}">State / Province <span class="required">*</span></label>
+										{{ shipping_form.state }}
+									</div>
+
+									<div class="form-group">
+										<label for="{{ shipping_form.postal_code.id_for_label }}">Postcode / ZIP <span class="required">*</span></label>
+										{{ shipping_form.postal_code }}
+									</div>
+
+									<div class="form-footer mb-0">
+										<div class="form-footer-right">
+											<button type="submit" class="btn btn-dark py-4">
+												Save Address
+											</button>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div><!-- End .tab-pane -->
+					</div><!-- End .tab-content -->
+				</div><!-- End .row -->
+			</div><!-- End .container -->
+
+			<div class="mb-5"></div><!-- margin -->
+		</main><!-- End .main -->
+{% endblock %}

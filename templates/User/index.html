@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block title %}
+<title>Home | Gift Empire</title>
+{% endblock %}
+{% block content %}
+
+        <main class="main">
+            <div class="container">
+                <div class="row m-b-3">
+                    <div class="home-slider-container col-lg-9 offset-lg-3">
+                        <div class="home-slider owl-carousel owl-carousel-lazy owl-theme slide-animate" data-owl-options="{
+                            'nav': false
+                        }">
+                            <div class="home-slide banner">
+                                <a href="demo9-shop.html">
+                                    <img class="slide-bg" src="{% static 'assets/images/demoes/demo9/slider/slide-1.jpg' %}" style="background-color: #ccc;" alt="banner" width="835" height="410" />
+                                </a>
+                                <div class="banner-layer slide-1 text-xl-right banner-layer-middle">
+                                    <h4 class="text-xl-right slide-title appear-animate" data-animation-delay="100" data-animation-name="fadeInUpShorter">Find the Boundaries. Push Through!</h4>
+                                    <h2 class="text-xl-right text-uppercase sub-title appear-animate" data-animation-delay="300" data-animation-name="fadeInUpShorter">Shoes Sale</h2>
+                                    <div class="row">
+                                        <div class="col-auto col-md-6 appear-animate" data-animation-delay="500" data-animation-name="fadeInRightShorter">
+                                            <h3 class="sale-label line-height-1 mb-0 d-inline-block text-center">
+                                                40<small><sup>%</sup><sub>OFF</sub></small></h3>
+                                        </div>
+                                        <div class="col-auto col-md-6 content-right appear-animate" data-animation-delay="700" data-animation-name="fadeInRightShorter">
+                                            <h4 class="d-inline-block text-left text-uppercase line-height-1 d-inline-block">
+                                                Starting At</h4>
+                                            <h5 class="text-left coupon-sale-text">$<b>119</b>99</h5>
+                                            <div class="mb-0">
+                                                <a href="demo9-shop.html" class="btn btn-modern btn-md btn-dark">SHOP
+                                                    NOW!
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="home-slide banner">
+                                <a href="demo9-shop.html">
+                                    <img class="slide-bg" src="{% static 'assets/images/demoes/demo9/slider/slide-2.jpg' %}" style="background-color: #444;" alt="banner" width="835" height="410" />
+                                </a>
+                                <div class="banner-layer slide-2 text-right banner-layer-middle">
+                                    <div>
+                                        <h2 class="text-right text-uppercase text-primary ls-n-20 m-b-2 appear-animate" data-animation-delay="100" data-animation-name="fadeInUpShorter">FLASH SALE
+                                        </h2>
+                                        <h4 class="text-right m-b-2 appear-animate" data-animation-delay="300" data-animation-name="fadeInUpShorter">TOP BRANDS<br>SUMMER SUNGLASSES
+                                        </h4>
+                                        <h3 class="text-right text-uppercase text-light ls-n-20 m-b-4 appear-animate" data-animation-delay="500" data-animation-name="fadeInUpShorter">
+                                            STARTING<br>AT<sup class="pl-2 ml-1">$</sup>199<sup>99</sup></h3>
+                                        <div class="pt-1">
+                                            <a href="demo9-shop.html" class="btn btn-modern btn-lg btn-light appear-animate" data-animation-delay="700" data-animation-name="fadeInUpShorter">View
+                                                Sale</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End .home-slider -->
+                    </div>
+                    <!-- End .col-lg-9 -->
+                </div>
+                <!-- End .row -->
+                {% if products %}
+                <section class="featured-products-section">
+                    <h2 class="section-title title-decorate text-center d-flex align-items-center appear-animate" data-animation-delay="100" data-animation-duration="1500">Latest Additions</h2>
+
+                    <div class="owl-carousel owl-theme nav-image-center" data-owl-options="{
+                            'margin': 20,
+                            'dots': false,
+                            'nav': true,
+                            'loop': false,
+                            'autoplay': false,
+                            'responsive': {
+                                '0': {
+                                    'items': 2
+                                },
+                                '768': {
+                                    'items': 3
+                                },
+                                '1200': {
+                                    'items': 4
+                                }
+                            }
+                        }">
+
+                        {% for x in products %}
+                        <div class="product-default left-details">
+                            <figure>
+                                <a href="{{ x.get_absolute_url }}">
+                                    {% if x.primary_image %}
+                                        <img src="{{ x.primary_image }}" alt="{{ x.name }}" width="300" height="300">
+                                    {% else %}
+                                        <img src="{% static 'assets/images/placeholder.jpg' %}" alt="{{ x.name }}" width="300" height="300">
+                                    {% endif %}
+                                </a>
+                                <div class="label-group">
+                                    <span class="product-label label-hot">HOT</span>
+                                    {% if x.discount_percent %}
+                                        <span class="product-label label-sale">-{{ x.discount_percent }}%</span>
+                                    {% endif %}
+                                </div>
+                            </figure>
+                            <div class="product-details">
+                                <div class="category-list">
+                                    <a href="#" class="product-category">{{ x.category.name }}</a>
+                                </div>
+                                <h3 class="product-title"><a href="{{ x.get_absolute_url }}">{{ x.name }}</a></h3>
+                                <div class="price-box">
+                                    {% if x.is_on_sale %}
+                                        <span class="old-price">&#8358;{{ x.price|intcomma }}</span>
+                                        <span class="product-price">&#8358;{{ x.discount_price|intcomma }}</span>
+                                    {% else %}
+                                        <span class="product-price">&#8358;{{ x.display_price }}</span>
+                                    {% endif %}
+                                </div>
+                                <!-- End .price-box -->
+                                <div class="product-action">
+                                    <a href="{{x.get_absolute_url}}" class="btn-icon btn-add-cart product-type-simple"><i
+                                            class="icon-shopping-cart"></i><span>MORE DETAILS</span></a>
+<!--                                    <a href="wishlist.html" class="btn-icon-wish" title="wishlist"><i-->
+<!--                                            class="icon-heart"></i></a>-->
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+                </section>
+                {% endif %}
+
+                <div class="mb-3"></div>
+                <!-- margin -->
+                {% if ft_products %}
+                <section class="fashion-products-section pb-2 appear-animate" data-animation-delay="100" data-animation-duration="1500">
+                    <h2 class="section-title title-decorate text-center d-flex align-items-center">FEATURED SELECTION
+                    </h2>
+                    <div class="owl-carousel owl-theme nav-image-center" data-owl-options="{
+                        'margin': 20,
+                        'dots': false,
+                        'nav': true,
+                        'loop': false,
+                        'autoplay': false,
+                        'responsive': {
+                            '0': {
+                                'items': 2
+                            },
+                            '768': {
+                                'items': 3
+                            },
+                            '1200': {
+                                'items': 4
+                            }
+                        }
+                    }">
+                        {% for x in ft_products %}
+                        <div class="product-default left-details">
+                            <figure>
+                                <a href="{{ x.get_absolute_url }}">
+                                    {% if x.primary_image %}
+                                        <img src="{{ x.primary_image }}" alt="{{ x.name }}" width="300" height="300">
+                                    {% else %}
+                                        <img src="{% static 'assets/images/placeholder.jpg' %}" alt="{{ x.name }}" width="300" height="300">
+                                    {% endif %}
+                                </a>
+                                <div class="label-group">
+                                    <span class="product-label label-hot">HOT</span>
+                                    {% if x.discount_percent %}
+                                        <span class="product-label label-sale">-{{ x.discount_percent }}%</span>
+                                    {% endif %}
+                                </div>
+                            </figure>
+                            <div class="product-details">
+                                <div class="category-list">
+                                    <a href="#" class="product-category">{{ x.category.name }}</a>
+                                </div>
+                                <h3 class="product-title"><a href="{{ x.get_absolute_url }}">{{ x.name }}</a></h3>
+                                <div class="price-box">
+                                    {% if x.is_on_sale %}
+                                        <span class="old-price">&#8358;{{ x.price }}</span>
+                                        <span class="product-price">&#8358;{{ x.discount_price }}</span>
+                                    {% else %}
+                                        <span class="product-price">&#8358;{{ x.display_price }}</span>
+                                    {% endif %}
+                                </div>
+                                <!-- End .price-box -->
+                                <div class="product-action">
+                                    <a href="{{ x.get_absolute_url }}" class="btn-icon btn-add-cart product-type-simple"><i
+                                            class="icon-shopping-cart"></i><span>MORE DETAILS</span></a>
+<!--                                    <a href="wishlist.html" class="btn-icon-wish" title="wishlist"><i-->
+<!--                                            class="icon-heart"></i></a>-->
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+                {% endif %}
+                <div class="m-b-1"></div>
+                <!-- margin -->
+            </div>
+            <!-- End .container -->
+        </main>
+        <!-- End .main -->
+
+
+
+{% endblock %}
