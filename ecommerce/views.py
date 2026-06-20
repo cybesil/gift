@@ -5,8 +5,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q, Sum, F
 from django.http import JsonResponse
-from .models import Category, Product, ProductImage, ProductSize, Size, Order, OrderItem, ShippingAddress
-
+from .models import Category, Product, ProductImage, ProductSize, Size, Order, OrderItem, ShippingAddress, ExchangeRate
+import requests
+from django.http import JsonResponse
+from django.utils import timezone
+from django.conf import settings
+from datetime import timedelta
 # Create your views here.
 
 def home(request):
@@ -335,11 +339,6 @@ def admin_dashboard(request):
 
     return render(request, 'Admin/admin.html', context)
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-
-from .models import Product, ProductImage, ProductSize, Size, Category
 
 
 # ─────────────────────────────────────────────────────────────
@@ -721,3 +720,42 @@ def edit_product(request, slug):
         'existing_variants': product.sizes.select_related('size').all(),
     }
     return render(request, 'Admin/edit_product.html', context)
+
+
+def set_currency(request, code):
+    valid = ['NGN'] + list(ExchangeRate.objects.values_list('currency', flat=True))
+    if code in valid:
+        request.session['currency'] = code
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+def refresh_exchange_rates(request):
+    # Simple shared-secret check so randos on the internet can't spam this
+    if request.GET.get('token') != settings.RATE_REFRESH_TOKEN:
+        return JsonResponse({'error': 'forbidden'}, status=403)
+
+    # Skip if rates were refreshed recently, even if pinged more than hourly
+    latest = ExchangeRate.objects.order_by('-updated_at').first()
+    if latest and latest.updated_at > timezone.now() - timedelta(hours=1):
+        return JsonResponse({'status': 'skipped', 'reason': 'recently updated'})
+
+    try:
+        response = requests.get('https://open.er-api.com/v6/latest/NGN', timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        if data.get('result') != 'success':
+            return JsonResponse({'status': 'error', 'detail': data}, status=502)
+
+        rates = data['rates']
+        updated = []
+        for code in ['USD', 'EUR']:
+            if code in rates:
+                rate_to_ngn = round(1 / rates[code], 4)
+                ExchangeRate.objects.update_or_create(
+                    currency=code, defaults={'rate_to_ngn': rate_to_ngn}
+                )
+                updated.append(code)
+        return JsonResponse({'status': 'success', 'updated': updated})
+
+    except (requests.RequestException, KeyError, ValueError) as e:
+        return JsonResponse({'status': 'error', 'detail': str(e)}, status=502)

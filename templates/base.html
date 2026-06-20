@@ -182,16 +182,16 @@
 <!--                            </div>-->
                             <!-- End .header-menu -->
                         </div>
-<!--                        <div class="header-dropdown">-->
-<!--                            <a href="#" class="pl-0">USD</a>-->
-<!--                            <div class="header-menu">-->
-<!--                                <ul>-->
-<!--                                    <li><a href="#">EUR</a></li>-->
-<!--                                    <li><a href="#">USD</a></li>-->
-<!--                                </ul>-->
-<!--                            </div>-->
-<!--                            &lt;!&ndash; End .header-menu &ndash;&gt;-->
-<!--                        </div>-->
+                        <div class="header-dropdown">
+                            <a class="pl-0">{{ current_currency }}</a>
+                            <div class="header-menu">
+                                <ul>
+                                    <li><a href="{% url 'ecommerce:set_currency' code='EUR' %}">EUR</a></li>
+                                    <li><a href="{% url 'ecommerce:set_currency' code='USD' %}">USD</a></li>
+                                    <li><a href="{% url 'ecommerce:set_currency' code='NGN' %}">NGN</a></li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                     <!-- End .header-left -->
 

@@ -378,6 +378,20 @@ class OrderItem(models.Model):
         return self.price * self.quantity
 
 
+class ExchangeRate(models.Model):
+    CURRENCY_CHOICES = [
+        ('USD', 'US Dollar'),
+        ('EUR', 'Euro'),
+    ]
+    currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, unique=True)
+    rate_to_ngn = models.DecimalField(
+        max_digits=12, decimal_places=4,
+        help_text="How many NGN equal 1 unit of this currency, e.g. 1550.0000"
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"1 {self.currency} = {self.rate_to_ngn} NGN"
 
 
 @receiver(post_save, sender=User)

@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-31n3p#=v*rdk4%*&bbdt%%jc7ntzji&yszsi@4agz!douicspj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -71,6 +71,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'ecommerce.context_processors.categories',
                 'cart.context_processors.cart_quantity',
+                'ecommerce.context_processors.currency',
             ],
         },
     },
@@ -171,5 +172,6 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'support@firstnatiionalbank.com'
 
 RESEND_API_KEY = 're_NQiqFcaB_77fCDjPhx4PJaSYzppDSg66D'
+RATE_REFRESH_TOKEN = 'willstestosterone'
 
 

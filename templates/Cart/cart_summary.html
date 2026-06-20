@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load humanize %}
-
+{% load currency_filters %}
 {% block title %}
 <title>Cart | Gift Empire</title>
 {% endblock %}
@@ -59,7 +59,7 @@
 											</div>
 											{% endif %}
 										</td>
-										<td>&#8358;{{ item.price|intcomma }}</td>
+										<td>{% to_currency item.price %}</td>
 										<td>
 											<div class="product-single-qty">
 												<input class="horizontal-quantity form-control cart-qty-input"
@@ -72,7 +72,7 @@
 											</div><!-- End .product-single-qty -->
 										</td>
 										<td class="text-right">
-											<span class="subtotal-price">&#8358;{{ item.total_price|intcomma }}</span>
+											<span class="subtotal-price">{% to_currency item.total_price %}</span>
 										</td>
 									</tr>
 									{% endfor %}
@@ -123,7 +123,7 @@
 								<tbody>
 									<tr>
 										<td>Subtotal</td>
-										<td class="cart-subtotal">&#8358;{{ total_sum|intcomma }}</td>
+										<td class="cart-subtotal">{% to_currency total_sum %}</td>
 									</tr>
 
 									<tr>
@@ -148,7 +148,7 @@
 								<tfoot>
 									<tr>
 										<td>Total</td>
-										<td class="cart-total">&#8358;{{ total_sum|intcomma }}</td>
+										<td class="cart-total">{% to_currency total_sum %}</td>
 									</tr>
 								</tfoot>
 							</table>

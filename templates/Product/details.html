@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load humanize %}
+{% load currency_filters %}
 {% block title %}
 <title>{{product.name}} | Gift Empire</title>
 {% endblock %}
@@ -95,10 +96,10 @@
 
                             <div class="price-box">
                                 {% if product.is_on_sale %}
-                                    <span class="old-price"><del>&#8358;{{ product.price|intcomma }}</del></span>
-                                    <span class="new-price">&#8358;{{ product.discount_price|intcomma }}</span>
+                                    <span class="old-price">{%to_currency product.price %}</span>
+                                    <span class="product-price">{% to_currency product.discount_price %}</span>
                                 {% else %}
-                                    <span class="product-price">&#8358;{{ product.price|intcomma }}</span>
+                                    <span class="product-price">{% to_currency product.display_price %}</span>
                                 {% endif %}
                             </div>
                             <!-- End .price-box -->
