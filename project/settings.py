@@ -99,12 +99,12 @@ WSGI_APPLICATION = 'project.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
-
+database_url = "postgresql://postgres.aixwnkljavhmjemiurnm:%40Nosikesamue@aws-1-us-west-2.pooler.supabase.com:5432/postgres"
 DATABASES = {
-    "default": dj_database_url.parse(os.getenv("DATABASE_URL"))
+    "default": dj_database_url.parse(database_url)
 }
 
-DATABASES['default']['CONN_MAX_AGE'] = 60
+# DATABASES['default']['CONN_MAX_AGE'] = 60
 
 
 # Password validation
