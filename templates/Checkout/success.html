@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}<title>Payment Successful | Gift Empire</title>{% endblock %}
+{% block content %}
+<main class="main" style="min-height: 80vh; display: flex; align-items: center; justify-content: center; background: #fff;">
+  <div style="text-align: center; padding: 2rem;">
+    <div style="width: 88px; height: 88px; border-radius: 50%; background: #e8f8f0; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; animation: pulse-green 1.8s ease-out infinite;">
+      <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+        <path d="M12 22.5L19.5 30L32 15" stroke="#22c55e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h1 style="font-size: 22px; font-weight: 500; color: #111; margin-bottom: 0.5rem;">Payment successful</h1>
+    <p style="font-size: 15px; color: #6b7280; max-width: 320px; margin: 0 auto 2.5rem; line-height: 1.6;">
+      Your order has been placed and is being processed. You'll receive a confirmation shortly.
+    </p>
+    <a href="{% url 'ecommerce:dashboard' %}" class="btn" style="background: #111; color: #fff; padding: 14px 40px; border-radius: 8px; font-size: 15px; font-weight: 500; text-decoration: none; transition: background 0.2s;"
+       onmouseover="this.style.background='#e879a0'"
+       onmouseout="this.style.background='#111'">
+      View my order
+    </a>
+  </div>
+</main>
+<style>
+@keyframes pulse-green {
+  0%   { box-shadow: 0 0 0 0 rgba(34,197,94,0.45); }
+  60%  { box-shadow: 0 0 0 18px rgba(34,197,94,0); }
+  100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+}
+</style>
+{% endblock %}

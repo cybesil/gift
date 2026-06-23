@@ -160,13 +160,21 @@
                                 <input type="hidden" id="selected-size-id" value="">
 
                                 <div class="product-single-qty">
-                                    <input class="horizontal-quantity form-control" id="product-qty" type="text" value="1" min="1" max="{{ product.stock_quantity }}">
+                                    <input class="horizontal-quantity form-control" id="product-qty" type="text" value="1" min="1">
                                 </div>
 
-                                {% if product.stock_quantity > 0 %}
-                                    <a href="javascript:;" class="btn btn-dark add-cart mr-2" title="Add to Cart">Add to Cart</a>
+                                {% if product.sizes.exists %}
+                                    <a href="javascript:;" id="add-to-cart-btn"
+                                       class="btn btn-secondary mr-2 disabled"
+                                       title="Select a size">
+                                        Select a size
+                                    </a>
                                 {% else %}
-                                    <a href="javascript:;" class="btn btn-secondary mr-2 disabled" title="Out of Stock">Out of Stock</a>
+                                    {% if product.stock_quantity > 0 %}
+                                        <a href="javascript:;" class="btn btn-dark add-cart mr-2" title="Add to Cart">Add to Cart</a>
+                                    {% else %}
+                                        <a href="javascript:;" class="btn btn-secondary mr-2 disabled" title="Out of Stock">Out of Stock</a>
+                                    {% endif %}
                                 {% endif %}
 
                                 <a href="{% url 'cart:cart_summary' %}" class="btn btn-gray view-cart d-none">View cart</a>
@@ -482,58 +490,91 @@
 document.addEventListener('DOMContentLoaded', function () {
     const sizeOptions = document.querySelectorAll('.size-option');
     const selectedSizeInput = document.getElementById('selected-size-id');
+    const addCartBtn = document.getElementById('add-to-cart-btn');
+    const hasSizes = sizeOptions.length > 0;
 
-    sizeOptions.forEach(option => {
+    // --- Size selection ---
+    sizeOptions.forEach(function (option) {
         option.addEventListener('click', function () {
-            sizeOptions.forEach(o => o.classList.remove('active'));
+            sizeOptions.forEach(function (o) { o.classList.remove('active'); });
             this.classList.add('active');
-            selectedSizeInput.value = this.dataset.sizeId;
+
+            const sizeId = this.dataset.sizeId;
+            const stock = parseInt(this.dataset.stock, 10);
+            selectedSizeInput.value = sizeId;
+
+            // Update quantity max to this size's stock
+            const qtyInput = document.getElementById('product-qty');
+            if (qtyInput) {
+                qtyInput.setAttribute('max', stock);
+                if (parseInt(qtyInput.value, 10) > stock) {
+                    qtyInput.value = stock;
+                }
+            }
+
+            // Update the add-to-cart button state
+            if (addCartBtn) {
+                if (stock != 0) {
+                    addCartBtn.classList.remove('btn-secondary', 'disabled');
+                    addCartBtn.classList.add('btn-dark', 'add-cart');
+                    addCartBtn.title = 'Add to Cart';
+                    addCartBtn.textContent = 'Add to Cart';
+                } else {
+                    addCartBtn.classList.remove('btn-dark', 'add-cart');
+                    addCartBtn.classList.add('btn-secondary', 'disabled');
+                    addCartBtn.title = 'Out of Stock';
+                    addCartBtn.textContent = 'Out of Stock';
+                }
+            }
         });
     });
 
-    const addCartBtn = document.querySelector('.add-cart');
-    if (addCartBtn) {
-        addCartBtn.addEventListener('click', function () {
-            const hasSizes = sizeOptions.length > 0;
-            const sizeId = selectedSizeInput.value;
+    // --- Add to cart ---
+    // Handles both: #add-to-cart-btn (sized products) and .add-cart (no-size products)
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('#add-to-cart-btn, .add-cart');
+        if (!btn) return;
+        if (btn.classList.contains('disabled')) return;
 
-            if (hasSizes && !sizeId) {
-                alert('Please select a size before adding to cart.');
+        const sizeId = selectedSizeInput.value;
+
+        if (hasSizes && !sizeId) {
+            alert('Please select a size before adding to cart.');
+            return;
+        }
+
+        const productId = document.getElementById('product-id').value;
+        const quantity = document.getElementById('product-qty').value || 1;
+
+        fetch("{% url 'cart:cart_add' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: new URLSearchParams({
+                action: 'post',
+                product_id: productId,
+                quantity: quantity,
+                size_id: sizeId
+            })
+        })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+            if (data.success === false) {
+                alert(data.error || 'Could not add to cart.');
                 return;
             }
 
-            const productId = document.getElementById('product-id').value;
-            const quantity = document.getElementById('product-qty').value || 1;
+            document.querySelector('.cart-message').classList.remove('d-none');
+            document.querySelector('.view-cart').classList.remove('d-none');
 
-            fetch("{% url 'cart:cart_add' %}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: new URLSearchParams({
-                    action: 'post',
-                    product_id: productId,
-                    quantity: quantity,
-                    size_id: sizeId
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success === false) {
-                    alert(data.error || 'Could not add to cart.');
-                    return;
-                }
-
-                document.querySelector('.cart-message').classList.remove('d-none');
-                document.querySelector('.view-cart').classList.remove('d-none');
-
-                const cartCountEls = document.querySelectorAll('.cart-count');
-                cartCountEls.forEach(el => el.textContent = data.qty);
-            })
-            .catch(err => console.error('Cart add error:', err));
-        });
-    }
+            document.querySelectorAll('.cart-count').forEach(function (el) {
+                el.textContent = data.qty;
+            });
+        })
+        .catch(function (err) { console.error('Cart add error:', err); });
+    });
 });
 </script>
 {% endblock %}

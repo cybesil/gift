@@ -1,10 +1,19 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .cart import Cart
 from django.views.decorators.csrf import csrf_exempt
-from ecommerce.models import Product, Size, ProductSize
+from ecommerce.models import Product, Size, ProductSize, Order, OrderItem, ShippingAddress
 from django.http import JsonResponse
 import json
+import uuid
+import json
+import requests
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.db.models import F
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 
 
 def cart_summary(request):
@@ -34,12 +43,12 @@ def cart_add(request):
 
         added = cart.add(product=product, quantity=quantity, size=size_id)
 
-        product.stock_quantity = F('stock_quantity') - quantity
-        product.save()
+        # product.stock_quantity = F('stock_quantity') - quantity
+        # product.save()
 
-        if product_size:
-            product_size.stock = F('stock') - quantity
-            product_size.save()
+        # if product_size:
+        #     product_size.stock = F('stock') - quantity
+        #     product_size.save()
 
         if not added:
             return JsonResponse({
@@ -86,15 +95,202 @@ def update_cart(request):
         cart = Cart(request)
         cart_data = json.loads(request.POST.get('cart_data', '[]'))
 
+        capped_items = []
+
         for item in cart_data:
             product_id = item.get('product_id')
             quantity = item.get('quantity')
             size_id = item.get('size_id', '')
 
             product = get_object_or_404(Product, id=product_id)
-            cart.update(product, quantity, size=size_id or None)
+            result = cart.update(product, quantity, size=size_id or None)
+
+            if result.get('capped'):
+                capped_items.append({
+                    'product_id': product_id,
+                    'size_id': size_id,
+                    'allowed': result['allowed'],
+                })
 
         cart_quantity = cart.total_quantities()
-        return JsonResponse({'qty': cart_quantity})
+        return JsonResponse({
+            'qty': cart_quantity,
+            'capped_items': capped_items,  # empty list = all quantities accepted as-is
+        })
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+
+@login_required
+def initiate_checkout(request):
+    cart = Cart(request)
+    cart_products, total_sum = cart.get_prods()
+
+    if not cart_products:
+        messages.error(request, "Your cart is empty.")
+        return redirect('cart:cart_summary')
+
+    shipping_address = ShippingAddress.objects.filter(user=request.user).first()
+    required = [
+        shipping_address.full_name if shipping_address else None,
+        shipping_address.phone if shipping_address else None,
+        shipping_address.street_address if shipping_address else None,
+        shipping_address.country if shipping_address else None,
+        shipping_address.state if shipping_address else None,
+    ]
+    if not shipping_address or not all(required):
+        messages.error(request, "Please complete your shipping details before checking out.")
+        return redirect('ecommerce:dashboard')
+
+    # Reuse the same pending order on retry — tracked via session, not a
+    # generic "any pending order for this user" query, so stale orders
+    # from earlier abandoned sessions never get accidentally resurrected.
+    order = None
+    pending_order_id = request.session.get('pending_order_id')
+    if pending_order_id:
+        order = Order.objects.filter(
+            id=pending_order_id, user=request.user, status='pending'
+        ).first()
+
+    if order:
+        order.items.all().delete()  # rebuild snapshot fresh from current cart
+    else:
+        order = Order(user=request.user, status='pending')
+
+    order.shipping_address = shipping_address
+    order.shipping_address_snapshot = (
+        f"{shipping_address.full_name}\n{shipping_address.street_address}\n"
+        f"{shipping_address.city}, {shipping_address.state}\n"
+        f"{shipping_address.country}\nPhone: {shipping_address.phone}"
+    )
+    order.total = total_sum
+    order.tx_ref = f"GE-{uuid.uuid4().hex[:12]}"
+    order.save()
+
+    request.session['pending_order_id'] = order.id
+
+    for item in cart_products:
+        # item['size_id'] is the Size model's id, NOT ProductSize's pk —
+        # re-resolve the actual ProductSize row for the FK.
+        product_size = None
+        if item['size_id']:
+            product_size = item['product_obj'].sizes.filter(
+                size_id=item['size_id']
+            ).first()
+
+        OrderItem.objects.create(
+            order=order,
+            product=item['product_obj'],
+            product_size=product_size,
+            size_display=item['size'],
+            product_name=item['product_name'],
+            quantity=item['quantity'],
+            price=item['price'],
+        )
+
+    context = {
+        'order': order,
+        'flw_public_key': settings.FLW_PUBLIC_KEY,
+        'customer_email': request.user.email,
+        'customer_name': shipping_address.full_name,
+        'customer_phone': shipping_address.phone,
+        'cart_products': cart_products,   # <-- ADD
+        'total_sum': total_sum,
+    }
+    return render(request, 'Cart/cart_summary.html', context)
+
+
+def _confirm_paid_order(order, transaction_id):
+    """Mark an order paid and decrement stock. Called from both the
+    redirect-based verify view and the webhook, guarded so it only
+    ever runs once per order no matter which path gets there first."""
+    if order.status == 'paid':
+        print(f'order stat{order.status}')
+        return
+    with transaction.atomic():
+        order.status = 'paid'
+        order.flw_transaction_id = transaction_id
+
+        order.save()
+        print(f'order stat{order.status}')
+        print(f'order transact-id{order.flw_transaction_id}')
+        for item in order.items.select_related('product', 'product_size'):
+            if item.product:
+                item.product.stock_quantity = F('stock_quantity') - item.quantity
+                item.product.save()
+            if item.product_size:
+                item.product_size.stock = F('stock') - item.quantity
+                item.product_size.save()
+
+
+@login_required
+def verify_payment(request):
+    tx_ref = request.GET.get('tx_ref')
+    transaction_id = request.GET.get('transaction_id')
+    order = get_object_or_404(Order, tx_ref=tx_ref, user=request.user)
+    print(f"tx-{tx_ref}, transact-{transaction_id}")
+    if order.status == 'paid':
+        return render(request, 'checkout/success.html', {'order': order})
+
+    headers = {'Authorization': f'Bearer {settings.FLW_SECRET_KEY}'}
+    resp = requests.get(
+        f'https://api.flutterwave.com/v3/transactions/{transaction_id}/verify',
+        headers=headers, timeout=15
+    )
+    data = resp.json()
+
+    verified_ok = (
+        data.get('status') == 'success'
+        and data.get('data', {}).get('status') == 'successful'
+        and data['data'].get('tx_ref') == order.tx_ref
+        and float(data['data'].get('amount', 0)) >= float(order.total)
+        and data['data'].get('currency') == 'NGN'
+    )
+
+    if verified_ok:
+        _confirm_paid_order(order, transaction_id)
+        request.session['session_key'] = {}
+        request.session.modified = True
+        request.session.pop('pending_order_id', None)
+        return render(request, 'Checkout/success.html', {'order': order})
+
+    messages.error(request, "We couldn't confirm your payment. Please try again or contact support.")
+    return redirect('cart:cart_summary')
+
+
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def flutterwave_webhook(request):
+    if request.method != 'POST':
+        return HttpResponse(status=405)
+
+    signature = request.headers.get('verif-hash')
+    if not signature or signature != settings.FLW_WEBHOOK_HASH:
+        return HttpResponse(status=401)
+
+    payload = json.loads(request.body)
+    data = payload.get('data', {})
+    tx_ref = data.get('tx_ref')
+    transaction_id = data.get('id')
+    status = data.get('status')
+
+    if status == 'successful' and tx_ref:
+        order = Order.objects.filter(tx_ref=tx_ref).first()
+        if order and order.status != 'paid':
+            headers = {'Authorization': f'Bearer {settings.FLW_SECRET_KEY}'}
+            resp = requests.get(
+                f'https://api.flutterwave.com/v3/transactions/{transaction_id}/verify',
+                headers=headers, timeout=15
+            )
+            verify_data = resp.json()
+            if (
+                verify_data.get('status') == 'success'
+                and verify_data.get('data', {}).get('status') == 'successful'
+                and verify_data['data'].get('tx_ref') == order.tx_ref
+                and float(verify_data['data'].get('amount', 0)) >= float(order.total)
+            ):
+                _confirm_paid_order(order, transaction_id)
+
+    return HttpResponse(status=200)

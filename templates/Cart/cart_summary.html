@@ -1,248 +1,311 @@
-{% extends 'base.html' %}
-{% load static %}
-{% load humanize %}
-{% load currency_filters %}
-{% block title %}
-<title>Cart | Gift Empire</title>
-{% endblock %}
+	{% extends 'base.html' %}
+	{% load static %}
+	{% load humanize %}
+	{% load l10n %}
+	{% load currency_filters %}
+	{% block title %}
+	<title>Cart | Gift Empire</title>
+	{% endblock %}
 
-{% block content %}
-		<main class="main">
-			<div class="container">
-				<ul class="checkout-progress-bar d-flex justify-content-center flex-wrap">
-				</ul>
+	{% block content %}
+			<main class="main">
+				<div class="container">
+					<ul class="checkout-progress-bar d-flex justify-content-center flex-wrap">
+					</ul>
 
-				<div class="row">
-					<div class="col-lg-8">
-						<div class="cart-table-container">
-							{% if cart_products %}
-							<table class="table table-cart">
-								<thead>
-									<tr>
-										<th class="thumbnail-col"></th>
-										<th class="product-col">Product</th>
-										<th class="price-col">Price</th>
-										<th class="qty-col">Quantity</th>
-										<th class="text-right">Subtotal</th>
-									</tr>
-								</thead>
-								<tbody>
-									{% for item in cart_products %}
-									<tr class="product-row" data-cart-key="{{ item.cart_key }}">
-										<td>
-											<figure class="product-image-container">
-												<a href="{{ item.product_obj.get_absolute_url }}" class="product-image">
-													{% if item.product_img %}
-														<img src="{{ item.product_img }}" alt="{{ item.product_name }}"
-														width="32"
-														height="32"
-														style="object-fit: cover; border-radius: 50px;">
-													{% else %}
-														<img src="{% static 'assets/images/placeholder.jpg' %}" alt="{{ item.product_name }}">
-													{% endif %}
-												</a>
+					<div class="row">
+						<div class="col-lg-8">
+							<div class="cart-table-container">
+								{% if cart_products %}
+								<table class="table table-cart">
+									<thead>
+										<tr>
+											<th class="thumbnail-col"></th>
+											<th class="product-col">Product</th>
+											<th class="price-col">Price</th>
+											<th class="qty-col">Quantity</th>
+											<th class="text-right">Subtotal</th>
+										</tr>
+									</thead>
+									<tbody>
+										{% for item in cart_products %}
+										<tr class="product-row" data-cart-key="{{ item.cart_key }}">
+											<td>
+												<figure class="product-image-container">
+													<a href="{{ item.product_obj.get_absolute_url }}" class="product-image">
+														{% if item.product_img %}
+															<img src="{{ item.product_img }}" alt="{{ item.product_name }}"
+															width="32"
+															height="32"
+															style="object-fit: cover; border-radius: 50px;">
+														{% else %}
+															<img src="{% static 'assets/images/placeholder.jpg' %}" alt="{{ item.product_name }}">
+														{% endif %}
+													</a>
 
-												<a href="javascript:;"
-												   class="btn-remove icon-cancel cart-remove"
-												   data-product-id="{{ item.id }}"
-												   data-size-id="{{ item.size_id|default:'' }}"
-												   title="Remove Product"></a>
-											</figure>
-										</td>
-										<td class="product-col">
-											<h5 class="product-title">
-												<a href="{{ item.product_obj.get_absolute_url }}">{{ item.product_name }}</a>
-											</h5>
-											{% if item.size %}
-											<div class="cart-item-size text-muted">
-												<small>Variant: {{ item.size }}</small>
-											</div>
-											{% endif %}
-										</td>
-										<td>{% to_currency item.price %}</td>
-										<td>
-											<div class="product-single-qty">
-												<input class="horizontal-quantity form-control cart-qty-input"
-												       type="text"
-												       value="{{ item.quantity }}"
-												       min="1"
-												       data-product-id="{{ item.id }}"
-												       data-size-id="{{ item.size_id|default:'' }}"
-												       data-cart-key="{{ item.cart_key }}">
-											</div><!-- End .product-single-qty -->
-										</td>
-										<td class="text-right">
-											<span class="subtotal-price">{% to_currency item.total_price %}</span>
-										</td>
-									</tr>
-									{% endfor %}
-								</tbody>
+													<a href="javascript:;"
+													   class="btn-remove icon-cancel cart-remove"
+													   data-product-id="{{ item.id }}"
+													   data-size-id="{{ item.size_id|default:'' }}"
+													   title="Remove Product"></a>
+												</figure>
+											</td>
+											<td class="product-col">
+												<h5 class="product-title">
+													<a href="{{ item.product_obj.get_absolute_url }}">{{ item.product_name }}</a>
+												</h5>
+												{% if item.size %}
+												<div class="cart-item-size text-muted">
+													<small>Variant: {{ item.size }}</small>
+												</div>
+												{% endif %}
+											</td>
+											<td>{% to_currency item.price %}</td>
+											<td>
+												<div class="product-single-qty">
+													<input class="horizontal-quantity form-control cart-qty-input"
+														   type="text"
+														   value="{{ item.quantity }}"
+														   min="1"
+														   data-product-id="{{ item.id }}"
+														   data-size-id="{{ item.size_id|default:'' }}"
+														   data-cart-key="{{ item.cart_key }}">
+												</div><!-- End .product-single-qty -->
+											</td>
+											<td class="text-right">
+												<span class="subtotal-price">{% to_currency item.total_price %}</span>
+											</td>
+										</tr>
+										{% endfor %}
+									</tbody>
 
 
-								<tfoot>
-									<tr>
-										<td colspan="5" class="clearfix">
-											<div class="float-left">
-<!--												<div class="cart-discount">-->
-<!--													<form action="#">-->
-<!--														<div class="input-group">-->
-<!--															<input type="text" class="form-control form-control-sm"-->
-<!--																placeholder="Coupon Code" required>-->
-<!--															<div class="input-group-append">-->
-<!--																<button class="btn btn-sm" type="submit">Apply-->
-<!--																	Coupon</button>-->
-<!--															</div>-->
-<!--														</div>&lt;!&ndash; End .input-group &ndash;&gt;-->
-<!--													</form>-->
-<!--												</div>-->
-											</div><!-- End .float-left -->
+									<tfoot>
+										<tr>
+											<td colspan="5" class="clearfix">
+												<div class="float-left">
+	<!--												<div class="cart-discount">-->
+	<!--													<form action="#">-->
+	<!--														<div class="input-group">-->
+	<!--															<input type="text" class="form-control form-control-sm"-->
+	<!--																placeholder="Coupon Code" required>-->
+	<!--															<div class="input-group-append">-->
+	<!--																<button class="btn btn-sm" type="submit">Apply-->
+	<!--																	Coupon</button>-->
+	<!--															</div>-->
+	<!--														</div>&lt;!&ndash; End .input-group &ndash;&gt;-->
+	<!--													</form>-->
+	<!--												</div>-->
+												</div><!-- End .float-left -->
 
-											<div class="float-right">
-												<button type="button" class="btn btn-shop btn-update-cart">
-													Update Cart
-												</button>
-											</div><!-- End .float-right -->
-										</td>
-									</tr>
-								</tfoot>
-							</table>
-							{% else %}
-							<div class="text-center py-5">
-								<p>Your cart is currently empty.</p>
-								<a href="{% url 'ecommerce:home' %}" class="btn btn-dark">Continue Shopping</a>
-							</div>
-							{% endif %}
-						</div><!-- End .cart-table-container -->
-					</div><!-- End .col-lg-8 -->
+												<div class="float-right">
+													<button type="button" class="btn btn-shop btn-update-cart">
+														Update Cart
+													</button>
+												</div><!-- End .float-right -->
+											</td>
+										</tr>
+									</tfoot>
+								</table>
+								{% else %}
+								<div class="text-center py-5">
+									<p>Your cart is currently empty.</p>
+									<a href="{% url 'ecommerce:home' %}" class="btn btn-dark">Continue Shopping</a>
+								</div>
+								{% endif %}
+							</div><!-- End .cart-table-container -->
+						</div><!-- End .col-lg-8 -->
 
-					<div class="col-lg-4">
-						<div class="cart-summary">
-							<h3>CART TOTAL</h3>
+						<div class="col-lg-4">
+							<div class="cart-summary">
+								<h3>CART TOTAL</h3>
 
-							<table class="table table-totals">
-								<tbody>
-									<tr>
-										<td>Subtotal</td>
-										<td class="cart-subtotal">{% to_currency total_sum %}</td>
-									</tr>
+								<table class="table table-totals">
+									<tbody>
+										<tr>
+											<td>Subtotal</td>
+											<td class="cart-subtotal">{% to_currency total_sum %}</td>
+										</tr>
 
-									<tr>
-										<td colspan="2" class="text-left">
-											<h4>Shipping</h4>
+										<tr>
+											<td colspan="2" class="text-left">
+												<h4>Shipping</h4>
 
-											<div class="form-group form-group-custom-control">
-												<div class="custom-control custom-radio">
-													<input type="radio" class="custom-control-input" name="radio"
-														checked>
-													<label class="custom-control-label">Waybill pickup</label>
-												</div><!-- End .custom-checkbox -->
-											</div><!-- End .form-group -->
+												<div class="form-group form-group-custom-control">
+													<div class="custom-control custom-radio">
+														<input type="radio" class="custom-control-input" name="radio"
+															checked>
+														<label class="custom-control-label">Waybill pickup</label>
+													</div><!-- End .custom-checkbox -->
+												</div><!-- End .form-group -->
 
-												<a href="{% url 'ecommerce:dashboard' %}" class="btn btn-shop btn-update-total">
-													Edit Shipping Info
-												</a>
-										</td>
-									</tr>
-								</tbody>
+													<a href="{% url 'ecommerce:dashboard' %}" class="btn btn-shop btn-update-total">
+														Edit Shipping Info
+													</a>
+											</td>
+										</tr>
+									</tbody>
 
-								<tfoot>
-									<tr>
-										<td>Total</td>
-										<td class="cart-total">{% to_currency total_sum %}</td>
-									</tr>
-								</tfoot>
-							</table>
+									<tfoot>
+										<tr>
+											<td>Total</td>
+											<td class="cart-total">{% to_currency total_sum %}</td>
+										</tr>
+									</tfoot>
+								</table>
 
-							<div class="checkout-methods">
-								<a href="#" class="btn btn-block btn-dark">Proceed to Checkout
-									<i class="fa fa-arrow-right"></i></a>
-							</div>
-						</div><!-- End .cart-summary -->
-					</div><!-- End .col-lg-4 -->
-				</div><!-- End .row -->
-			</div><!-- End .container -->
+								<!-- Cart/cart_summary.html -->
+								<div class="checkout-methods">
+									{% if order %}
+										<a href="#" id="payBtn" class="btn btn-block btn-dark">
+											Pay Via Flutterwave <i class="fa fa-arrow-right"></i>
+										</a>
+									{% else %}
+										<a href="{% url 'cart:initiate_checkout' %}" class="btn btn-block btn-dark">
+											Proceed to Checkout <i class="fa fa-arrow-right"></i>
+										</a>
+									{% endif %}
+								</div>
+							</div><!-- End .cart-summary -->
+						</div><!-- End .col-lg-4 -->
+					</div><!-- End .row -->
+				</div><!-- End .container -->
 
-			<div class="mb-6"></div><!-- margin -->
-		</main><!-- End .main -->
+				<div class="mb-6"></div><!-- margin -->
+			</main><!-- End .main -->
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const csrftoken = '{{ csrf_token }}';
+	<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		const csrftoken = '{{ csrf_token }}';
 
-    // Remove item
-    document.querySelectorAll('.cart-remove').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            const row = btn.closest('.product-row');
-            const productId = btn.dataset.productId;
-            const sizeId = btn.dataset.sizeId || '';
+		// Remove item
+		document.querySelectorAll('.cart-remove').forEach(function (btn) {
+			btn.addEventListener('click', function () {
+				const row = btn.closest('.product-row');
+				const productId = btn.dataset.productId;
+				const sizeId = btn.dataset.sizeId || '';
 
-            fetch("{% url 'cart:cart_delete' %}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRFToken': csrftoken
-                },
-                body: new URLSearchParams({
-                    action: 'post',
-                    product_id: productId,
-                    size_id: sizeId
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    row.remove();
-                    document.querySelectorAll('.cart-count').forEach(function (el) {
-                        el.textContent = data.total_quantity;
-                    });
+				fetch("{% url 'cart:cart_delete' %}", {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded',
+						'X-CSRFToken': csrftoken
+					},
+					body: new URLSearchParams({
+						action: 'post',
+						product_id: productId,
+						size_id: sizeId
+					})
+				})
+				.then(res => res.json())
+				.then(data => {
+					if (data.success) {
+						row.remove();
+						document.querySelectorAll('.cart-count').forEach(function (el) {
+							el.textContent = data.total_quantity;
+						});
 
-                    // If cart is now empty, reload to show the empty state
-                    if (document.querySelectorAll('.product-row').length === 0) {
-                        window.location.reload();
-                    }
-                }
-            })
-            .catch(err => console.error('Cart remove error:', err));
-        });
-    });
+						// If cart is now empty, reload to show the empty state
+						if (document.querySelectorAll('.product-row').length === 0) {
+							window.location.reload();
+						}
+					}
+				})
+				.catch(err => console.error('Cart remove error:', err));
+			});
+		});
 
-    // Update cart quantities
-    const updateBtn = document.querySelector('.btn-update-cart');
-    if (updateBtn) {
-        updateBtn.addEventListener('click', function () {
-            const cartData = [];
+		// Update cart quantities
+		const updateBtn = document.querySelector('.btn-update-cart');
+		if (updateBtn) {
+			updateBtn.addEventListener('click', function () {
+				const cartData = [];
 
-            document.querySelectorAll('.cart-qty-input').forEach(function (input) {
-                cartData.push({
-                    product_id: parseInt(input.dataset.productId, 10),
-                    size_id: input.dataset.sizeId || null,
-                    quantity: parseInt(input.value, 10) || 1
-                });
-            });
+				document.querySelectorAll('.cart-qty-input').forEach(function (input) {
+					cartData.push({
+						product_id: parseInt(input.dataset.productId, 10),
+						size_id: input.dataset.sizeId || null,
+						quantity: parseInt(input.value, 10) || 1
+					});
+				});
 
-            fetch("{% url 'cart:update_cart' %}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRFToken': csrftoken
-                },
-                body: new URLSearchParams({
-                    cart_data: JSON.stringify(cartData)
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.qty !== undefined) {
-                    document.querySelectorAll('.cart-count').forEach(function (el) {
-                        el.textContent = data.qty;
-                    });
-                    // Reload to recompute subtotals/totals
-                    window.location.reload();
-                }
-            })
-            .catch(err => console.error('Cart update error:', err));
-        });
-    }
-});
-</script>
-{% endblock %}
+				fetch("{% url 'cart:update_cart' %}", {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded',
+						'X-CSRFToken': csrftoken
+					},
+					body: new URLSearchParams({
+						cart_data: JSON.stringify(cartData)
+					})
+				})
+				.then(res => res.json())
+				.then(data => {
+					if (data.qty !== undefined) {
+						document.querySelectorAll('.cart-count').forEach(function (el) {
+							el.textContent = data.qty;
+						});
+
+						if (data.capped_items && data.capped_items.length > 0) {
+							// Correct the input values before reload so the user sees the capped qty briefly
+							data.capped_items.forEach(function (capped) {
+								document.querySelectorAll('.cart-qty-input').forEach(function (input) {
+									const matchesProduct = parseInt(input.dataset.productId, 10) === parseInt(capped.product_id, 10);
+									const matchesSize = (input.dataset.sizeId || '') === (String(capped.size_id || ''));
+									if (matchesProduct && matchesSize) {
+										input.value = capped.allowed;
+									}
+								});
+							});
+
+							// Brief delay so the user sees the corrected value, then reload
+							const names = data.capped_items.map(function (c) {
+								const input = document.querySelector(
+									`.cart-qty-input[data-product-id="${c.product_id}"][data-size-id="${c.size_id || ''}"]`
+								);
+								return input ? input.closest('.product-row').querySelector('.product-title a').textContent.trim() : `Product #${c.product_id}`;
+							});
+
+							alert(`Stock limit reached for: ${names.join(', ')}. Quantities have been adjusted.`);
+						}
+
+						window.location.reload();
+					}
+				})
+				.catch(err => console.error('Cart update error:', err));
+			});
+		}
+	});
+	</script>
+	{% if order %}
+	<script src="https://checkout.flutterwave.com/v3.js"></script>
+	<script>
+	document.getElementById('payBtn').addEventListener('click', function () {
+		FlutterwaveCheckout({
+			public_key: "{{ flw_public_key }}",
+			tx_ref: "{{ order.tx_ref }}",
+			amount: {{ order.total|unlocalize }},
+			currency: "NGN",
+			payment_options: "card, banktransfer, ussd",
+			customer: {
+				email: "{{ customer_email }}",
+				phone_number: "{{ customer_phone }}",
+				name: "{{ customer_name }}"
+			},
+			customizations: {
+				title: "Gift Empire",
+				description: "Payment for order #{{ order.id }}"
+			},
+			callback: function (data) {
+				// Browser-side only — not proof of payment. Just hand off
+				// to the server, which does the real verification.
+				window.location.href = "{% url 'cart:verify_payment' %}?tx_ref=" + encodeURIComponent(data.tx_ref) + "&transaction_id=" + encodeURIComponent(data.transaction_id);
+			},
+			onclose: function () {
+				// user closed the modal — order stays 'pending', they can retry
+			}
+		});
+	});
+	</script>
+	{% endif %}
+	{% endblock %}

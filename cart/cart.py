@@ -93,10 +93,29 @@ class Cart():
 
         cart_key = self.make_key(product_id, size_id)
 
-        if cart_key in self.cart:
-            self.cart[cart_key]['quantity']['quantity'] = quantity
-            self.session.modified = True
-            self._sync_session_to_profile()
+        if cart_key not in self.cart:
+            return {'error': 'Item not in cart', 'capped': False}
+
+        # Determine available stock
+        if size_id:
+            product_size = ProductSize.objects.filter(
+                product=product, size_id=size_id
+            ).first()
+            available_stock = product_size.stock if product_size else 0
+        else:
+            available_stock = product.stock_quantity
+
+        capped = quantity > available_stock
+        clamped_quantity = min(quantity, available_stock)
+
+        if clamped_quantity < 1:
+            return {'error': 'Out of stock', 'capped': True, 'allowed': 0}
+
+        self.cart[cart_key]['quantity']['quantity'] = clamped_quantity
+        self.session.modified = True
+        self._sync_session_to_profile()
+
+        return {'error': None, 'capped': capped, 'allowed': clamped_quantity}
 
     def __len__(self):
         return len(self.cart)

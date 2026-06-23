@@ -332,7 +332,7 @@ class ShippingAddress(models.Model):
 class Order(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
-        ('processing', 'Processing'),
+        ('paid', 'Paid'),
         ('shipped', 'Shipped'),
         ('delivered', 'Delivered'),
         ('cancelled', 'Cancelled'),
@@ -351,6 +351,8 @@ class Order(models.Model):
     total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     billing_address = models.TextField(blank=True)
     tracking_number = models.CharField(max_length=255, blank=True)
+    tx_ref = models.CharField(max_length=100, unique=True, blank=True, null=True)
+    flw_transaction_id = models.CharField(max_length=100, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
