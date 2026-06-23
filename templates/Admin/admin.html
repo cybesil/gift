@@ -125,8 +125,11 @@
 
     /* ── DATA TABLE ── */
     .modern-list-container {
-        background: var(--card-white); border-radius: var(--radius-premium);
-        border: 1px solid var(--border-soft); overflow: hidden;
+        background: var(--card-white);
+        border-radius: var(--radius-premium);
+        border: 1px solid var(--border-soft);
+        overflow-x: auto; /* Enables horizontal scroll */
+        -webkit-overflow-scrolling: touch;
         box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     }
 
@@ -146,10 +149,10 @@
     .list-row-item:last-child { border-bottom: none; }
     .list-row-item:hover { background: #FCFCFD; }
 
-    /* Column grids per section */
-    .orders-grid         { grid-template-columns: 1.1fr 1.4fr 2fr 1.2fr 1.2fr 1fr; }
-    .products-grid       { grid-template-columns: 1fr 3fr 1.2fr 1.2fr 1.5fr 2fr; }
-    .categories-grid     { grid-template-columns: 4fr 1.2fr; }
+    /* Column grids per section - min-widths added to ensure no crushing */
+    .orders-grid         { grid-template-columns: 1.1fr 1.4fr 2fr 1.2fr 1.2fr 1fr; min-width: 850px; }
+    .products-grid       { grid-template-columns: 1fr 3fr 1.2fr 1.2fr 1.5fr 2fr; min-width: 900px; }
+    .categories-grid     { grid-template-columns: 4fr 1.2fr; min-width: 500px; }
 
     /* ── STATUS PILLS ── */
     .status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 50px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
@@ -233,23 +236,7 @@
     /* ── ORDER DETAIL LAYOUT ── */
     .asymmetrical-split { display: grid; grid-template-columns: 6.5fr 3.5fr; gap: 32px; }
 
-    /* ── MEDIA GRID ── */
-    .media-mosaic-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 110px)); gap: 12px; }
-    .media-thumbnail-card { width: 110px; height: 110px; border-radius: var(--radius-inner); border: 1px solid var(--border-soft); position: relative; background: #F4F4F5; overflow: hidden; }
-    .media-thumbnail-card img { width: 100%; height: 100%; object-fit: cover; }
-    .dropzone-trigger-card {
-        width: 110px; height: 110px; border: 2px dashed var(--text-muted);
-        border-radius: var(--radius-inner); display: flex; flex-direction: column;
-        align-items: center; justify-content: center; font-size: 0.7rem;
-        font-weight: 700; gap: 6px; color: var(--text-body);
-        transition: var(--transition-smooth); cursor: pointer; text-align: center;
-    }
-    .dropzone-trigger-card:hover { border-color: var(--pink-accent); color: var(--pink-accent); background: var(--pink-glow); }
-
-    /* ── VARIANT ROW ── */
-    .variant-editor-row { display: flex; gap: 12px; align-items: center; background: var(--bg-main); padding: 12px; border-radius: var(--radius-inner); border: 1px solid var(--border-soft); }
-
-    /* ── BLUR MODAL ── */
+    /* ── MODALS ── */
     .blur-overlay {
         position: fixed; top: 0; left: 0; right: 0; bottom: 0;
         background: rgba(10, 10, 12, 0.35); backdrop-filter: blur(8px);
@@ -288,55 +275,39 @@
     .confirm-card p  { font-size: 0.9rem; color: var(--text-body); line-height: 1.5; }
     .confirm-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 28px; }
 
-    /* ── UPLOAD DROPZONE (full-width) ── */
-    .upload-trigger-box {
-        width: 100%; border: 2px dashed var(--text-muted);
-        border-radius: var(--radius-premium); height: 115px;
-        display: flex; flex-direction: column; align-items: center;
-        justify-content: center; gap: 8px; cursor: pointer;
-        font-weight: 600; font-size: 0.8rem; color: var(--text-body);
-        transition: var(--transition-smooth);
-    }
-    .upload-trigger-box:hover { border-color: var(--pink-accent); color: var(--pink-accent); background: var(--pink-glow); }
-
-    /* ── ORDER STATUS BADGE MAP ── */
-    /* dynamic via JS */
-
-    /* ── RESPONSIVE ── */
+    /* ── RESPONSIVE REFINEMENTS ── */
     @media (max-width: 1100px) {
-        .sectioned-form-block { grid-template-columns: 1fr; gap: 16px; }
+        .sectioned-form-block { grid-template-columns: 1fr; gap: 24px; }
         .asymmetrical-split   { grid-template-columns: 1fr; }
     }
     @media (max-width: 768px) {
         .sidebar { transform: translateX(-100%); }
         .sidebar.mobile-open { transform: translateX(0); }
-        .main-wrapper { margin-left: 0; }
+        .main-wrapper { margin-left: 0; width: 100%; }
         .mobile-toggle { display: block; }
-        .global-header { padding: 0 24px; }
-        .page-content-pane { padding: 32px 24px; }
-        .orders-grid { grid-template-columns: 1fr 1.5fr 1fr; }
-        .products-grid {
-            grid-template-columns: auto 1fr auto auto;
-            gap: 8px;
+
+        .global-header { padding: 0 20px; }
+        .page-content-pane { padding: 24px 16px; }
+
+        /* Perfect Mobile Filters */
+        .search-filter-dock { flex-direction: column; align-items: stretch; gap: 12px; }
+        .search-pill-input { min-width: 100%; width: 100%; }
+        .custom-dropdown-select { width: 100%; }
+        .filter-submit-btn { width: 100%; justify-content: center; }
+
+        /* Edge-to-edge tables */
+        .modern-list-container {
+            border-radius: 0;
+            border-left: none;
+            border-right: none;
+            margin-left: -16px;
+            margin-right: -16px;
         }
-        .products-grid .list-row-item {
-            padding: 14px 16px;
-            align-items: start;
-        }
-        .product-node > div:nth-child(2) {
-            min-width: 0;
-        }
-        .product-node strong {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: block;
-        }
-        .product-node > div:last-child > div {
-            flex-direction: column;
-            gap: 4px;
-        }
-        .categories-grid { grid-template-columns: 2fr 1fr; }
+
+        /* Modal sizing */
+        .modal-body-card { padding: 24px; margin: 16px; }
+        .confirm-card { padding: 24px; margin: 16px; }
+
         .hide-mobile { display: none !important; }
     }
 
@@ -345,16 +316,10 @@
     .text-title { color: var(--text-title); font-weight: 700; }
     .text-muted { color: var(--text-muted); }
     .text-pink  { color: var(--pink-accent); }
-    .mt-4  { margin-top: 4px; }
-    .mt-8  { margin-top: 8px; }
-    .mt-16 { margin-top: 16px; }
-    .mt-24 { margin-top: 24px; }
-    hr.soft { border: 0; border-top: 1px solid var(--border-soft); }
 </style>
 </head>
 <body>
 
-<!-- ─────────── SIDEBAR ─────────── -->
 <aside class="sidebar" id="sidebar">
     <div class="brand-container">
         <div class="brand-logo"><i class="fa-solid fa-feather-pointed"></i></div>
@@ -396,7 +361,6 @@
     </ul>
 </aside>
 
-<!-- ─────────── MAIN WRAPPER ─────────── -->
 <div class="main-wrapper">
 
     <header class="global-header">
@@ -413,12 +377,8 @@
 
     <main>
 
-        <!-- ════════════════════════════════════
-             TAB 1 · ORDERS
-        ════════════════════════════════════ -->
         <section id="tab-orders" class="page-content-pane {% if active_tab == 'orders' or not active_tab %}active-view{% endif %}">
 
-            <!-- flash messages -->
             {% if messages %}
             <div class="messages-container">
                 {% for message in messages %}
@@ -436,7 +396,6 @@
                 <p>Review and manage customer orders, shipment statuses, and order details.</p>
             </div>
 
-            <!-- Order filters -->
             <form method="GET" action="{% url 'ecommerce:admin_dashboard' %}">
                 <input type="hidden" name="tab" value="orders">
                 <div class="search-filter-dock">
@@ -462,7 +421,7 @@
                     <div>Order #</div>
                     <div>Date</div>
                     <div>Customer</div>
-                    <div class="hide-mobile">Total</div>
+                    <div>Total</div>
                     <div>Status</div>
                     <div style="text-align:right;">Actions</div>
                 </div>
@@ -475,7 +434,7 @@
                         <strong style="color:var(--text-title);">{{ order.user.get_full_name|default:order.user.username }}</strong><br>
                         <span style="font-size:0.78rem; color:var(--text-muted);">{{ order.user.email }}</span>
                     </div>
-                    <div class="hide-mobile" style="font-weight:600; color:var(--text-title);">₦{{ order.total|floatformat:2 }}</div>
+                    <div style="font-weight:600; color:var(--text-title);">₦{{ order.total|floatformat:2 }}</div>
                     <div>
                         <span class="status-pill
                             {% if order.status == 'pending' %}pill-yellow
@@ -504,7 +463,6 @@
                 {% endfor %}
             </div>
 
-            <!-- Orders Pagination -->
             {% if orders.paginator.num_pages > 1 %}
             <div class="pagination">
                 <span class="pagination-info">
@@ -531,7 +489,6 @@
             </div>
             {% endif %}
 
-            <!-- ── ORDER DETAIL PANEL (inline, triggered by ?view_order=) ── -->
             {% if view_order %}
             <div id="order-detail-panel" style="margin-top: 48px; padding-top: 40px; border-top: 2px solid var(--border-soft);">
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:32px; flex-wrap:wrap; gap:16px;">
@@ -545,7 +502,6 @@
                 </div>
 
                 <div class="asymmetrical-split">
-                    <!-- LEFT: line items -->
                     <div style="display:flex; flex-direction:column; gap:24px;">
                         <div class="modern-list-container" style="padding:24px;">
                             <h3 style="font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); margin-bottom:20px;">Items Ordered</h3>
@@ -574,19 +530,10 @@
                                 </span>
                             </div>
                         </div>
-
-                        {% if view_order.tracking_number %}
-                        <div class="modern-list-container" style="padding:24px;">
-                            <h3 style="font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); margin-bottom:12px;">Tracking</h3>
-                            <p style="font-family:monospace; font-size:0.95rem; color:var(--text-title);">{{ view_order.tracking_number }}</p>
-                        </div>
-                        {% endif %}
                     </div>
 
-                    <!-- RIGHT: status update + address -->
                     <div style="display:flex; flex-direction:column; gap:24px;">
 
-                        <!-- Status Update Form -->
                         <div class="modern-list-container" style="padding:24px;">
                             <h3 style="font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); margin-bottom:16px;">Update Status</h3>
                             <form method="POST" action="{% url 'ecommerce:admin_dashboard' %}">
@@ -606,45 +553,13 @@
                                 </button>
                             </form>
                         </div>
-
-                        <!-- Customer Info -->
-                        <div class="modern-list-container" style="padding:24px;">
-                            <h3 style="font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); margin-bottom:12px;">Customer</h3>
-                            <p style="font-weight:600; color:var(--text-title);">{{ view_order.user.get_full_name|default:view_order.user.username }}</p>
-                            <p style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">{{ view_order.user.email }}</p>
-                        </div>
-
-                        <!-- Shipping Address -->
-                        <div class="modern-list-container" style="padding:24px; background:#FAFAFA;">
-                            <h3 style="font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); margin-bottom:12px;">Shipping Address</h3>
-                            {% if view_order.shipping_address %}
-                            <address style="font-style:normal; font-size:0.88rem; color:var(--text-body); line-height:1.7;">
-                                <strong>{{ view_order.shipping_address.full_name }}</strong><br>
-                                {% if view_order.shipping_address.phone %}{{ view_order.shipping_address.phone }}<br>{% endif %}
-                                {{ view_order.shipping_address.street_address }}<br>
-                                {{ view_order.shipping_address.city }}, {{ view_order.shipping_address.state }}
-                                {% if view_order.shipping_address.postal_code %} {{ view_order.shipping_address.postal_code }}{% endif %}<br>
-                                {{ view_order.shipping_address.country }}
-                            </address>
-                            {% elif view_order.shipping_address_snapshot %}
-                            <p style="font-size:0.85rem; color:var(--text-body); line-height:1.7; font-style:italic;">{{ view_order.shipping_address_snapshot }}</p>
-                            {% else %}
-                            <p style="font-size:0.85rem; color:var(--text-muted);">No address on record.</p>
-                            {% endif %}
-                        </div>
-
                     </div>
                 </div>
             </div>
             {% endif %}
-            <!-- end order detail -->
-
         </section>
 
 
-        <!-- ════════════════════════════════════
-             TAB 2 · PRODUCTS
-        ════════════════════════════════════ -->
         <section id="tab-products" class="page-content-pane {% if active_tab == 'products' %}active-view{% endif %}">
 
             {% if messages and active_tab == 'products' %}
@@ -694,8 +609,8 @@
                 <div class="list-row-header products-grid">
                     <div>SKU</div>
                     <div>Product</div>
-                    <div class="hide-mobile">Price</div>
-                    <div class="hide-mobile">Stock</div>
+                    <div>Price</div>
+                    <div>Stock</div>
                     <div>Flags</div>
                     <div style="text-align:right;">Actions</div>
                 </div>
@@ -707,11 +622,11 @@
                         <strong style="color:var(--text-title); font-size:0.92rem;">{{ product.name }}</strong><br>
                         <span style="font-size:0.75rem; color:var(--text-muted);">{{ product.category.name }}</span>
                     </div>
-                    <div class="hide-mobile" style="font-weight:600; color:var(--text-title);">
+                    <div style="font-weight:600; color:var(--text-title);">
                         ₦{{ product.display_price|floatformat:2 }}
                         {% if product.is_on_sale %}<br><span style="font-size:0.75rem; color:var(--text-muted); text-decoration:line-through;">₦{{ product.price|floatformat:2 }}</span>{% endif %}
                     </div>
-                    <div class="hide-mobile">{{ product.stock_quantity }} units</div>
+                    <div>{{ product.stock_quantity }} units</div>
                     <div style="display:flex; gap:4px; flex-wrap:wrap;">
                         {% if product.is_active %}<span class="status-pill pill-blue">Active</span>{% else %}<span class="status-pill pill-dark">Inactive</span>{% endif %}
                         {% if product.is_featured %}<span class="status-pill pill-pink">Featured</span>{% endif %}
@@ -767,9 +682,6 @@
         </section>
 
 
-        <!-- ════════════════════════════════════
-             TAB 3 · CATEGORIES LIST
-        ════════════════════════════════════ -->
         <section id="tab-categories" class="page-content-pane {% if active_tab == 'categories' %}active-view{% endif %}">
 
             {% if messages and active_tab == 'categories' %}
@@ -853,99 +765,9 @@
                 {% endfor %}
             </div>
 
-            {% if categories.paginator.num_pages > 1 %}
-            <div class="pagination">
-                <span class="pagination-info">
-                    Showing {{ categories.start_index }}–{{ categories.end_index }} of {{ categories.paginator.count }} categories
-                </span>
-                <div class="pagination-controls">
-                    {% if categories.has_previous %}
-                    <a href="?tab=categories&category_search={{ category_search }}&categories_page={{ categories.previous_page_number }}" class="page-btn">
-                        <i class="fa-solid fa-chevron-left"></i> Prev
-                    </a>
-                    {% endif %}
-                    {% for num in categories.paginator.page_range %}
-                        {% if categories.number == num %}
-                        <span class="page-btn current">{{ num }}</span>
-                        {% elif num > categories.number|add:'-3' and num < categories.number|add:'3' %}
-                        <a href="?tab=categories&category_search={{ category_search }}&categories_page={{ num }}" class="page-btn">{{ num }}</a>
-                        {% endif %}
-                    {% endfor %}
-                    {% if categories.has_next %}
-                    <a href="?tab=categories&category_search={{ category_search }}&categories_page={{ categories.next_page_number }}" class="page-btn">
-                        Next <i class="fa-solid fa-chevron-right"></i>
-                    </a>
-                    {% endif %}
-                </div>
-            </div>
-            {% endif %}
-
-            <!-- ── INLINE EDIT CATEGORY FORM (shows when ?edit_category=id) ── -->
-            {% if edit_category_obj %}
-            <div style="margin-top:48px; padding-top:40px; border-top:2px solid var(--border-soft);">
-                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:32px; flex-wrap:wrap; gap:16px;">
-                    <div>
-                        <h2 style="font-size:1.3rem; font-weight:800; color:var(--text-title);">Edit Category: {{ edit_category_obj.name }}</h2>
-                        <p style="font-size:0.88rem; color:var(--text-muted); margin-top:4px;">Update name or swap the category image.</p>
-                    </div>
-                    <a href="{% url 'ecommerce:admin_dashboard' %}?tab=categories" class="action-btn action-btn-secondary">
-                        <i class="fa-solid fa-xmark"></i> Cancel
-                    </a>
-                </div>
-
-                <form method="POST" action="{% url 'ecommerce:admin_dashboard' %}" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="edit_category">
-                    <input type="hidden" name="category_id" value="{{ edit_category_obj.id }}">
-
-                    <div class="sectioned-form-block">
-                        <div class="form-explanation-side">
-                            <h3>Category Details</h3>
-                            <p>The name is used as the category label across the storefront. The image appears on category listings.</p>
-                        </div>
-                        <div class="form-card-side">
-                            <div class="input-wrapper">
-                                <label>Category Name</label>
-                                <input type="text" name="category_name" class="form-input-element"
-                                       value="{{ edit_category_obj.name }}" required>
-                            </div>
-                            <div class="input-wrapper">
-                                <label>Category Image</label>
-                                {% if edit_category_obj.image %}
-                                <div style="display:flex; align-items:center; gap:16px; padding:12px; background:var(--bg-main); border-radius:var(--radius-inner); border:1px solid var(--border-soft);">
-                                    <img src="{{ edit_category_obj.image.url }}" alt="{{ edit_category_obj.name }}"
-                                         style="width:80px; height:80px; object-fit:cover; border-radius:var(--radius-inner);">
-                                    <div>
-                                        <p style="font-size:0.85rem; font-weight:600; color:var(--text-title);">Current image</p>
-                                        <label style="display:flex; align-items:center; gap:8px; margin-top:8px; cursor:pointer; font-size:0.85rem; text-transform:none; font-weight:500; color:var(--text-body);">
-                                            <input type="checkbox" name="remove_image" value="on"> Remove this image
-                                        </label>
-                                    </div>
-                                </div>
-                                {% endif %}
-                                <label style="display:flex; align-items:center; gap:8px; text-transform:none; font-weight:500; font-size:0.85rem; color:var(--text-muted);">
-                                    {% if edit_category_obj.image %}Replace with new image:{% else %}Upload an image:{% endif %}
-                                </label>
-                                <input type="file" name="category_image" class="form-input-element" accept="image/*">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="display:flex; justify-content:flex-end; margin-top:8px; gap:12px;">
-                        <a href="{% url 'ecommerce:admin_dashboard' %}?tab=categories" class="action-btn action-btn-secondary">Cancel</a>
-                        <button type="submit" class="action-btn action-btn-primary" style="padding:14px 32px;">
-                            <i class="fa-solid fa-check"></i> Save Changes
-                        </button>
-                    </div>
-                </form>
-            </div>
-            {% endif %}
         </section>
 
 
-        <!-- ════════════════════════════════════
-             TAB 4 · ADD CATEGORY
-        ════════════════════════════════════ -->
         <section id="tab-add_category" class="page-content-pane {% if active_tab == 'add_category' %}active-view{% endif %}">
 
             {% if messages and active_tab == 'add_category' %}
@@ -1005,9 +827,6 @@
 </div>
 
 
-<!-- ════════════════════════════════════
-     PRODUCT QUICK-VIEW MODAL
-════════════════════════════════════ -->
 <div class="blur-overlay" id="modal-product-view">
     <div class="modal-body-card">
         <button class="modal-close-btn" onclick="closeProductModal()"><i class="fa-solid fa-xmark"></i></button>
@@ -1049,9 +868,6 @@
 </div>
 
 
-<!-- ════════════════════════════════════
-     DELETE CATEGORY CONFIRM MODAL
-════════════════════════════════════ -->
 <div class="confirm-overlay" id="modal-delete-confirm">
     <div class="confirm-card">
         <h3>Delete Category?</h3>
@@ -1071,41 +887,28 @@
 </div>
 
 
-<!-- ════════════════════════════════════
-     JAVASCRIPT
-════════════════════════════════════ -->
 <script>
-    // ── TAB SWITCHING ──────────────────────────────
     function switchTab(tabName) {
-        // Hide all panes
         document.querySelectorAll('.page-content-pane').forEach(p => p.classList.remove('active-view'));
-        // Deactivate all nav items
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
-        // Show target pane
         const pane = document.getElementById('tab-' + tabName);
         if (pane) pane.classList.add('active-view');
 
-        // Activate matching nav button
         document.querySelectorAll('.nav-item').forEach(btn => {
             if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes("'" + tabName + "'")) {
                 btn.classList.add('active');
             }
         });
 
-        // Close mobile sidebar
         document.getElementById('sidebar').classList.remove('mobile-open');
         window.scrollTo({ top: 0, behavior: 'instant' });
     }
 
-    // Auto-switch tab on page load based on active_tab from Django context
-    // (already handled by server-side class injection, but this handles
-    //  cases where messages redirect back and tab needs to be visible)
     document.addEventListener('DOMContentLoaded', function() {
         const activePane = document.querySelector('.page-content-pane.active-view');
         if (activePane) {
             const tabName = activePane.id.replace('tab-', '');
-            // Ensure correct nav item is highlighted
             document.querySelectorAll('.nav-item').forEach(btn => {
                 if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes("'" + tabName + "'")) {
                     btn.classList.add('active');
@@ -1113,22 +916,6 @@
             });
         }
 
-        // Scroll to order detail panel if ?view_order is present
-        const orderDetailPanel = document.getElementById('order-detail-panel');
-        if (orderDetailPanel) {
-            setTimeout(() => orderDetailPanel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
-        }
-
-        // Scroll to edit category form if ?edit_category is present
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('edit_category')) {
-            const editForm = document.querySelector('[name="action"][value="edit_category"]');
-            if (editForm) {
-                setTimeout(() => editForm.closest('div').scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
-            }
-        }
-
-        // Auto-dismiss messages after 6 seconds
         setTimeout(() => {
             document.querySelectorAll('.msg-alert').forEach(el => {
                 el.style.transition = 'opacity 0.4s';
@@ -1138,7 +925,6 @@
         }, 6000);
     });
 
-    // ── PRODUCT QUICK-VIEW MODAL ───────────────────
     function openProductModal(id, name, sku, slug, displayPrice, basePrice, stock, isActive, isFeatured, imageUrl) {
         document.getElementById('modal-product-name').textContent = name;
         document.getElementById('modal-product-slug').textContent = '/products/' + slug;
@@ -1147,7 +933,6 @@
         document.getElementById('modal-product-base-price').textContent = '₦' + basePrice;
         document.getElementById('modal-product-stock').textContent = stock + ' units';
 
-        // Flags
         const flagsEl = document.getElementById('modal-product-flags');
         flagsEl.innerHTML = '';
         if (isActive) flagsEl.innerHTML += '<span class="status-pill pill-blue">Active</span>';
@@ -1155,7 +940,6 @@
         if (isFeatured) flagsEl.innerHTML += '<span class="status-pill pill-pink">Featured</span>';
         if (stock === 0) flagsEl.innerHTML += '<span class="status-pill pill-red">Out of Stock</span>';
 
-        // Image
         const imgWrap = document.getElementById('modal-product-image-wrap');
         const img     = document.getElementById('modal-product-image');
         if (imageUrl && imageUrl.trim() !== '') {
@@ -1172,7 +956,6 @@
         document.getElementById('modal-product-view').classList.remove('open');
     }
 
-    // ── DELETE CATEGORY CONFIRM ────────────────────
     function confirmDeleteCategory(id, name) {
         document.getElementById('delete-cat-id').value  = id;
         document.getElementById('delete-cat-name').textContent = name;
@@ -1183,7 +966,6 @@
         document.getElementById('modal-delete-confirm').classList.remove('open');
     }
 
-    // Close modals when clicking backdrop
     document.getElementById('modal-product-view').addEventListener('click', function(e) {
         if (e.target === this) closeProductModal();
     });
@@ -1191,7 +973,6 @@
         if (e.target === this) closeDeleteModal();
     });
 
-    // ESC key closes modals
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeProductModal();
@@ -1199,7 +980,6 @@
         }
     });
 
-    // ── CATEGORY IMAGE PREVIEW ─────────────────────
     function previewCatImage(event) {
         const file = event.target.files[0];
         if (!file) return;
