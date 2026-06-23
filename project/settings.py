@@ -18,6 +18,16 @@ from django.contrib.messages import constants as message_constants
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+import os
+import sys
+
+print("=" * 60)
+print(f"SETTINGS FILE LOADED: {__file__}")
+print(f"DATABASE_URL: {os.getenv('DATABASE_URL')}")
+print(f"ALL ENV VARS: {[k for k in os.environ.keys() if 'DATABASE' in k.upper()]}")
+print("=" * 60)
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
