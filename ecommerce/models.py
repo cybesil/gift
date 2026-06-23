@@ -159,6 +159,14 @@ class Product(models.Model):
         return self.discount_price if self.is_on_sale else self.price
 
     def save(self, *args, **kwargs):
+        if self.discount_price is not None and self.price and self.price > 0:
+            if self.discount_price < self.price:
+                raw_percent = ((self.price - self.discount_price) / self.price) * 100
+                self.discount_percent = round(raw_percent)
+            else:
+                self.discount_percent = None
+        else:
+            self.discount_percent = None
         # Auto-generate slug
         if not self.slug:
             base = slugify(self.name)
