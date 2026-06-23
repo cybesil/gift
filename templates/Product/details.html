@@ -56,7 +56,6 @@
                                     </div>
                                     {% endfor %}
                                 </div>
-                                <!-- End .product-single-carousel -->
                                 <span class="prod-full-screen">
                                     <i class="icon-plus"></i>
                                 </span>
@@ -72,50 +71,33 @@
                                 {% endfor %}
                             </div>
                         </div>
-                        <!-- End .product-single-gallery -->
 
                         <div class="col-lg-7 col-md-6 product-single-details mb-1">
                             <h1 class="product-title">{{ product.name }}</h1>
 
-                            <div class="product-nav">
-                            </div>
-
                             <div class="ratings-container">
-<!--                                <div class="product-ratings">-->
-<!--                                    <span class="ratings" style="width:60%"></span>-->
-<!--                                    &lt;!&ndash; End .ratings &ndash;&gt;-->
-<!--                                    <span class="tooltiptext tooltip-top"></span>-->
-<!--                                </div>-->
-<!--                                &lt;!&ndash; End .product-ratings &ndash;&gt;-->
-
-<!--                                <a href="#" class="rating-link">( 6 Reviews )</a>-->
                             </div>
-                            <!-- End .ratings-container -->
 
                             <hr class="short-divider">
 
                             <div class="price-box">
                                 {% if product.is_on_sale %}
-                                    <span class="old-price">{%to_currency product.price %}</span>
+                                    <span class="old-price">{% to_currency product.price %}</span>
                                     <span class="product-price">{% to_currency product.discount_price %}</span>
                                 {% else %}
                                     <span class="product-price">{% to_currency product.display_price %}</span>
                                 {% endif %}
                             </div>
-                            <!-- End .price-box -->
 
                             <div class="product-desc">
                                 <p>{{ product.description }}</p>
                             </div>
-                            <!-- End .product-desc -->
 
                             <ul class="single-info-list">
-                                <!---->
                                 <li>
                                     SKU:
                                     <strong>{{ product.sku }}</strong>
                                 </li>
-
                                 <li>
                                     CATEGORY:
                                     <strong>
@@ -136,6 +118,7 @@
                                                    class="d-flex align-items-center justify-content-center size-option"
                                                    data-size-id="{{ product_size.size.id }}"
                                                    data-price-adjustment="{{ product_size.price_adjustment }}"
+                                                   data-stock="{{ product_size.stock }}"
                                                    title="{{ product_size.stock }} in stock">
                                                     {{ product_size.size.value }}
                                                 </a>
@@ -160,7 +143,13 @@
                                 <input type="hidden" id="selected-size-id" value="">
 
                                 <div class="product-single-qty">
-                                    <input class="horizontal-quantity form-control" id="product-qty" type="text" value="1" min="1">
+                                    <input class="horizontal-quantity form-control"
+                                           id="product-qty"
+                                           type="number"
+                                           value="1"
+                                           min="1"
+                                           max="{{ product.stock_quantity }}"
+                                           data-product-stock="{{ product.stock_quantity }}">
                                 </div>
 
                                 {% if product.sizes.exists %}
@@ -179,13 +168,11 @@
 
                                 <a href="{% url 'cart:cart_summary' %}" class="btn btn-gray view-cart d-none">View cart</a>
                             </div>
-                            <!-- End .product-action -->
 
                             <hr class="divider mb-0 mt-0">
 
                             <div class="product-single-share mb-1 pb-2 mt-0 pt-2">
                                 <label class="sr-only">Share:</label>
-
                                 <div class="social-icons mr-2">
                                     <a href="#" class="social-icon social-facebook icon-facebook" target="_blank" title="Facebook"></a>
                                     <a href="#" class="social-icon social-twitter icon-twitter" target="_blank" title="Twitter"></a>
@@ -193,26 +180,16 @@
                                     <a href="#" class="social-icon social-gplus fab fa-google-plus-g" target="_blank" title="Google +"></a>
                                     <a href="#" class="social-icon social-mail icon-mail-alt" target="_blank" title="Mail"></a>
                                 </div>
-                                <!-- End .social-icons -->
-
-<!--                                <a href="wishlist.html" class="btn-icon-wish add-wishlist" title="Add to Wishlist"><i-->
-<!--                                        class="icon-wishlist-2"></i><span>Add to-->
-<!--                                        Wishlist</span></a>-->
                             </div>
-                            <!-- End .product single-share -->
                         </div>
-                        <!-- End .product-single-details -->
                     </div>
-                    <!-- End .row -->
                 </div>
-                <!-- End .product-single-container -->
 
                 <div class="product-single-tabs">
                     <ul class="nav nav-tabs" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link active" id="product-tab-desc" data-toggle="tab" href="#product-desc-content" role="tab" aria-controls="product-desc-content" aria-selected="true">Description</a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link" id="product-tab-tags" data-toggle="tab" href="#product-tags-content" role="tab" aria-controls="product-tags-content" aria-selected="false">Additional Information</a>
                         </li>
@@ -227,9 +204,7 @@
                                     <p>No description available for this product.</p>
                                 {% endif %}
                             </div>
-                            <!-- End .product-desc-content -->
                         </div>
-                        <!-- End .tab-pane -->
 
                         <div class="tab-pane fade" id="product-tags-content" role="tabpanel" aria-labelledby="product-tab-tags">
                             <table class="table table-striped mt-2">
@@ -256,130 +231,23 @@
                                         <th>Dimensions</th>
                                         <td>12 × 24 × 35 cm</td>
                                     </tr>
-
                                     <tr>
                                         <th>Variants</th>
                                         <td>
                                           {% for x in sizes %}
                                           {{x.size.value}},
-                                          {% endfor %}</td>
+                                          {% endfor %}
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-                        <!-- End .tab-pane -->
-
-                        <div class="tab-pane fade" id="product-reviews-content" role="tabpanel" aria-labelledby="product-tab-reviews">
-                            <div class="product-reviews-content">
-                                <h3 class="reviews-title">1 review for {{ product.name }}</h3>
-
-                                <div class="comment-list">
-                                    <div class="comments">
-                                        <figure class="img-thumbnail">
-                                            <img src="assets/images/blog/author.jpg" alt="author" width="80" height="80">
-                                        </figure>
-
-                                        <div class="comment-block">
-                                            <div class="comment-header">
-                                                <div class="comment-arrow"></div>
-
-                                                <div class="ratings-container float-sm-right">
-                                                    <div class="product-ratings">
-                                                        <span class="ratings" style="width:60%"></span>
-                                                        <!-- End .ratings -->
-                                                        <span class="tooltiptext tooltip-top"></span>
-                                                    </div>
-                                                    <!-- End .product-ratings -->
-                                                </div>
-
-                                                <span class="comment-by">
-                                                    <strong>Joe Doe</strong> – April 12, 2018
-                                                </span>
-                                            </div>
-
-                                            <div class="comment-content">
-                                                <p>Excellent.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="divider"></div>
-
-                                <div class="add-product-review">
-                                    <h3 class="review-title">Add a review</h3>
-
-                                    <form action="#" class="comment-form m-0">
-                                        <div class="rating-form">
-                                            <label for="rating">Your rating <span class="required">*</span></label>
-                                            <span class="rating-stars">
-                                                <a class="star-1" href="#">1</a>
-                                                <a class="star-2" href="#">2</a>
-                                                <a class="star-3" href="#">3</a>
-                                                <a class="star-4" href="#">4</a>
-                                                <a class="star-5" href="#">5</a>
-                                            </span>
-
-                                            <select name="rating" id="rating" required="" style="display: none;">
-                                                <option value="">Rate…</option>
-                                                <option value="5">Perfect</option>
-                                                <option value="4">Good</option>
-                                                <option value="3">Average</option>
-                                                <option value="2">Not that bad</option>
-                                                <option value="1">Very poor</option>
-                                            </select>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Your review <span class="required">*</span></label>
-                                            <textarea cols="5" rows="6" class="form-control form-control-sm"></textarea>
-                                        </div>
-                                        <!-- End .form-group -->
-
-                                        <div class="row">
-                                            <div class="col-md-6 col-xl-12">
-                                                <div class="form-group">
-                                                    <label>Name <span class="required">*</span></label>
-                                                    <input type="text" class="form-control form-control-sm" required>
-                                                </div>
-                                                <!-- End .form-group -->
-                                            </div>
-
-                                            <div class="col-md-6 col-xl-12">
-                                                <div class="form-group">
-                                                    <label>Email <span class="required">*</span></label>
-                                                    <input type="text" class="form-control form-control-sm" required>
-                                                </div>
-                                                <!-- End .form-group -->
-                                            </div>
-
-                                            <div class="col-md-12">
-                                                <div class=" custom-control custom-checkbox">
-                                                    <input type="checkbox" class="custom-control-input" id="save-name" />
-                                                    <label class="custom-control-label mb-0" for="save-name">Save my
-                                                        name, email, and website in this browser for the next time I
-                                                        comment.</label>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <input type="submit" class="btn btn-primary" value="Submit">
-                                    </form>
-                                </div>
-                                <!-- End .add-product-review -->
-                            </div>
-                            <!-- End .product-reviews-content -->
-                        </div>
-                        <!-- End .tab-pane -->
                     </div>
-                    <!-- End .tab-content -->
                 </div>
-                <!-- End .product-single-tabs -->
 
                 {% if related %}
                 <div class="products-section pt-0">
                     <h2 class="section-title">Related Products</h2>
-
                     <div class="products-slider owl-carousel owl-theme dots-top dots-small">
                         {% for p in related %}
                         <div class="product-default left-details">
@@ -400,12 +268,9 @@
                                 <div class="ratings-container">
                                     <div class="product-ratings">
                                         <span class="ratings" style="width:0%"></span>
-                                        <!-- End .ratings -->
                                         <span class="tooltiptext tooltip-top"></span>
                                     </div>
-                                    <!-- End .product-ratings -->
                                 </div>
-                                <!-- End .product-container -->
                                 <div class="price-box">
                                     {% if p.is_on_sale %}
                                         <span class="old-price">&#8358;{{ p.price|intcomma }}</span>
@@ -414,24 +279,16 @@
                                         <span class="product-price">&#8358;{{ p.price|intcomma }}</span>
                                     {% endif %}
                                 </div>
-                                <!-- End .price-box -->
                                 <div class="product-action">
-                                    <a href="{{ p.get_absolute_url }}" class="btn-icon btn-add-cart product-type-simple"><i
-                                            class="icon-shopping-cart"></i><span>MORE DETAILS</span></a>
-<!--                                    <a href="wishlist.html" class="btn-icon-wish" title="wishlist"><i-->
-<!--                                            class="icon-heart"></i></a>-->
-                                    <a href="ajax/product-quick-view.html" class="btn-quickview" title="Quick View"><i
-                                            class="fas fa-external-link-alt"></i></a>
+                                    <a href="{{ p.get_absolute_url }}" class="btn-icon btn-add-cart product-type-simple"><i class="icon-shopping-cart"></i><span>MORE DETAILS</span></a>
+                                    <a href="ajax/product-quick-view.html" class="btn-quickview" title="Quick View"><i class="fas fa-external-link-alt"></i></a>
                                 </div>
                             </div>
-                            <!-- End .product-details -->
                         </div>
                         {% endfor %}
                     </div>
-                    <!-- End .products-slider -->
                 </div>
                 {% endif %}
-                <!-- End .products-section -->
 
                 <hr class="mt-0 m-b-5" />
                 {% if ft_related %}
@@ -455,10 +312,7 @@
                                     <a href="{{ p.get_absolute_url }}">{{ p.name }}</a>
                                 </h3>
                                 <div class="ratings-container">
-
-                                    <!-- End .product-ratings -->
                                 </div>
-                                <!-- End .product-container -->
                                 <div class="price-box">
                                     {% if p.is_on_sale %}
                                         <span class="product-price">&#8358;{{ p.display_price|intcomma }}</span>
@@ -466,14 +320,9 @@
                                         <span class="product-price">&#8358;{{ p.price|intcomma }}</span>
                                     {% endif %}
                                 </div>
-                                <!-- End .price-box -->
                                 <div class="product-action">
-                                    <a href="{{ p.get_absolute_url }}" class="btn-icon btn-add-cart product-type-simple"><i
-                                            class="icon-shopping-cart"></i><span>MORE DETAILS</span></a>
-<!--                                    <a href="wishlist.html" class="btn-icon-wish" title="wishlist"><i-->
-<!--                                            class="icon-heart"></i></a>-->
-                                    <a href="ajax/product-quick-view.html" class="btn-quickview" title="Quick View"><i
-                                            class="fas fa-external-link-alt"></i></a>
+                                    <a href="{{ p.get_absolute_url }}" class="btn-icon btn-add-cart product-type-simple"><i class="icon-shopping-cart"></i><span>MORE DETAILS</span></a>
+                                    <a href="ajax/product-quick-view.html" class="btn-quickview" title="Quick View"><i class="fas fa-external-link-alt"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -481,19 +330,48 @@
                     </div>
                 </div>
                 {% endif %}
-                <!-- End .row -->
-
             </div>
-            <!-- End .container -->
         </main>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const sizeOptions = document.querySelectorAll('.size-option');
     const selectedSizeInput = document.getElementById('selected-size-id');
     const addCartBtn = document.getElementById('add-to-cart-btn');
+    const qtyInput = document.getElementById('product-qty');
     const hasSizes = sizeOptions.length > 0;
 
-    // --- Size selection ---
+    const productStock = parseInt(qtyInput.dataset.productStock || qtyInput.getAttribute('max') || '999', 10);
+
+    function getCurrentMaxStock() {
+        const selectedSizeId = selectedSizeInput.value;
+        if (hasSizes && selectedSizeId) {
+            const selectedOption = document.querySelector(`.size-option[data-size-id="${selectedSizeId}"]`);
+            if (selectedOption) {
+                return parseInt(selectedOption.dataset.stock, 10);
+            }
+        }
+        return productStock;
+    }
+
+    function enforceQuantityLimit() {
+        const max = getCurrentMaxStock();
+        let val = parseInt(qtyInput.value, 10) || 1;
+        if (val > max) {
+            qtyInput.value = max;
+        } else if (val < 1) {
+            qtyInput.value = 1;
+        }
+        qtyInput.setAttribute('max', max);
+    }
+
+    if (qtyInput) {
+        qtyInput.setAttribute('max', productStock);
+        qtyInput.addEventListener('input', enforceQuantityLimit);
+        qtyInput.addEventListener('change', enforceQuantityLimit);
+        qtyInput.addEventListener('blur', enforceQuantityLimit);
+    }
+
     sizeOptions.forEach(function (option) {
         option.addEventListener('click', function () {
             sizeOptions.forEach(function (o) { o.classList.remove('active'); });
@@ -503,18 +381,13 @@ document.addEventListener('DOMContentLoaded', function () {
             const stock = parseInt(this.dataset.stock, 10);
             selectedSizeInput.value = sizeId;
 
-            // Update quantity max to this size's stock
-            const qtyInput = document.getElementById('product-qty');
             if (qtyInput) {
                 qtyInput.setAttribute('max', stock);
-                if (parseInt(qtyInput.value, 10) > stock) {
-                    qtyInput.value = stock;
-                }
+                enforceQuantityLimit();
             }
 
-            // Update the add-to-cart button state
             if (addCartBtn) {
-                if (stock != 0) {
+                if (stock > 0) {
                     addCartBtn.classList.remove('btn-secondary', 'disabled');
                     addCartBtn.classList.add('btn-dark', 'add-cart');
                     addCartBtn.title = 'Add to Cart';
@@ -529,8 +402,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // --- Add to cart ---
-    // Handles both: #add-to-cart-btn (sized products) and .add-cart (no-size products)
     document.addEventListener('click', function (e) {
         const btn = e.target.closest('#add-to-cart-btn, .add-cart');
         if (!btn) return;
@@ -543,8 +414,16 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+        const currentMax = getCurrentMaxStock();
+        const requestedQty = parseInt(qtyInput.value, 10) || 1;
+        if (requestedQty > currentMax) {
+            alert('Only ' + currentMax + ' item(s) available.');
+            qtyInput.value = currentMax;
+            return;
+        }
+
         const productId = document.getElementById('product-id').value;
-        const quantity = document.getElementById('product-qty').value || 1;
+        const quantity = qtyInput.value || 1;
 
         fetch("{% url 'cart:cart_add' %}", {
             method: 'POST',

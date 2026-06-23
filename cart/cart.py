@@ -63,6 +63,13 @@ class Cart():
                     # Out of stock for this size — don't add
                     return False
 
+                elif quantity > product_size.stock:
+                    # Out of stock for this size — don't add
+                    return False
+
+            if not size_id and quantity > product.stock_quantity:
+                return False
+
         cart_key = self.make_key(product_id, size_id)
 
         if cart_key in self.cart:
