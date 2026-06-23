@@ -184,3 +184,6 @@ FLW_PUBLIC_KEY = 'FLWPUBK_TEST-bc210a18feb88bbf6bd5602eb320c8c2-X'
 FLW_SECRET_KEY = 'FLWSECK_TEST-f0a33c9fd4ef1b19117ac5e5a3409eda-X'
 
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://elen.com.ng/",
+]
