@@ -16,6 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from . import errors
+
+handler404 = errors.error_404_view
+handler500 = errors.error_500_view
+handler403 = errors.error_403_view
+handler400 = errors.error_400_view
 
 urlpatterns = [
     path('accounts/', include('accounts.urls', namespace='accounts')),

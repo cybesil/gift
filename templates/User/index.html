@@ -99,7 +99,9 @@
                                     {% endif %}
                                 </a>
                                 <div class="label-group">
+                                    {% if x.is_featured %}
                                     <span class="product-label label-hot">HOT</span>
+                                    {% endif %}
                                     {% if x.discount_percent %}
                                         <span class="product-label label-sale">-{{ x.discount_percent }}%</span>
                                     {% endif %}
@@ -121,7 +123,7 @@
                                 </div>
                                 <!-- End .price-box -->
                                 <div class="product-action">
-                                    <a href="{{x.get_absolute_url}}" class="btn-icon btn-add-cart product-type-simple"><i
+                                    <a href="{{x.get_absolute_url}}" class="btn-icon btn-add-cart"><i
                                             class="icon-shopping-cart"></i><span>MORE DETAILS</span></a>
 <!--                                    <a href="wishlist.html" class="btn-icon-wish" title="wishlist"><i-->
 <!--                                            class="icon-heart"></i></a>-->
@@ -191,7 +193,7 @@
                                 </div>
                                 <!-- End .price-box -->
                                 <div class="product-action">
-                                    <a href="{{ x.get_absolute_url }}" class="btn-icon btn-add-cart product-type-simple"><i
+                                    <a href="{{ x.get_absolute_url }}" class="btn-icon btn-add-cart"><i
                                             class="icon-shopping-cart"></i><span>MORE DETAILS</span></a>
 <!--                                    <a href="wishlist.html" class="btn-icon-wish" title="wishlist"><i-->
 <!--                                            class="icon-heart"></i></a>-->

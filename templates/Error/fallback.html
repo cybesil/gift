@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Not Found</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #FFFFFF;
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .error-code {
+            /* clamp allows the font to scale perfectly between 6rem on mobile and 12rem on desktop */
+            font-size: clamp(6rem, 15vw, 12rem);
+            font-weight: 800;
+            color: #FF4D8D; /* Clean, vibrant girly pink */
+            letter-spacing: -0.04em;
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            font-size: clamp(1rem, 3vw, 1.25rem);
+            color: #0A0A0C;
+            font-weight: 500;
+            margin-bottom: 32px;
+        }
+
+        .back-button {
+            background-color: #0A0A0C;
+            color: #FFFFFF;
+            border: none;
+            padding: 14px 36px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 50px; /* Soft, pill-shaped edge */
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .back-button:hover {
+            background-color: #FF4D8D;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(255, 77, 141, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="error-code">404</div>
+    <div class="error-message">Looks like you wandered off track.</div>
+    <button class="back-button" onclick="window.history.back()">Go Back</button>
+
+</body>
+</html>
