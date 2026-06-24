@@ -373,7 +373,7 @@
             <!-- ── SECTION 5: SIZE VARIANTS ── -->
             <div class="sectioned-form-block">
                 <div class="form-explanation-side">
-                    <h3>Size Variants</h3>
+                    <h3>Variants</h3>
                     <p>
                         Update stock and price adjustments on existing variants, or remove them.
                         Add new variants below. Changes take effect on save.
@@ -392,7 +392,7 @@
                             <div class="variant-editor-row" id="variant-row-{{ variant.id }}">
                                 <!-- Hidden ID so the view knows which PS to update -->
                                 <input type="hidden" name="variant_ids[]" value="{{ variant.id }}">
-                                <span class="variant-size-label">{{ variant.size.value }} <small style="color:var(--text-muted); font-weight:500;">({{ variant.size.get_size_type_display }})</small></span>
+                                <span class="variant-size-label">{{ variant.size }}</span>
                                 <input type="number" name="variant_stocks[]" class="form-input-element"
                                        style="min-width:80px; flex:1;" placeholder="Stock"
                                        value="{{ variant.stock }}" min="0">
@@ -426,14 +426,6 @@
                         </button>
                     </div>
 
-                    <!-- Sizes data for JS -->
-                    <script id="sizes-data" type="application/json">
-                        [
-                            {% for size in sizes %}
-                            {"id": {{ size.id }}, "value": "{{ size.value|escapejs }}", "type": "{{ size.get_size_type_display|escapejs }}"}{% if not forloop.last %},{% endif %}
-                            {% endfor %}
-                        ]
-                    </script>
                 </div>
             </div>
 
@@ -458,14 +450,11 @@
     const markedForDeletion = new Set();
 
     function setExistingKeyImage(imageId) {
-        // Visually update all existing thumbs
         document.querySelectorAll('#existing-image-grid .image-thumb').forEach(thumb => {
             const id = parseInt(thumb.dataset.imageId);
             thumb.classList.remove('is-key');
-            // Remove any existing key badge
             const badge = thumb.querySelector('.key-badge');
             if (badge) badge.remove();
-            // Re-show "Set Primary" button if not already there
             const actions = thumb.querySelector('.thumb-actions');
             if (actions && !actions.querySelector('.thumb-btn-key') && !markedForDeletion.has(id)) {
                 const btn = document.createElement('button');
@@ -477,7 +466,6 @@
             }
         });
 
-        // Mark the selected one
         const selected = document.getElementById('existing-thumb-' + imageId);
         if (selected) {
             selected.classList.add('is-key');
@@ -485,7 +473,6 @@
             badge.className = 'key-badge';
             badge.textContent = 'Primary';
             selected.appendChild(badge);
-            // Remove its "Set Primary" button
             const keyBtn = selected.querySelector('.thumb-btn-key');
             if (keyBtn) keyBtn.remove();
         }
@@ -498,16 +485,13 @@
         if (!thumb) return;
 
         if (markedForDeletion.has(imageId)) {
-            // Undo
             markedForDeletion.delete(imageId);
             thumb.classList.remove('marked-delete');
             const deleteBadge = thumb.querySelector('.delete-badge');
             if (deleteBadge) deleteBadge.remove();
-            // Restore delete button text
             const deleteBtn = thumb.querySelector('.thumb-btn-remove');
             if (deleteBtn) deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i> Delete';
         } else {
-            // Mark for deletion
             markedForDeletion.add(imageId);
             thumb.classList.add('marked-delete');
             thumb.classList.remove('is-key');
@@ -517,16 +501,13 @@
             thumb.appendChild(badge);
             const deleteBtn = thumb.querySelector('.thumb-btn-remove');
             if (deleteBtn) deleteBtn.innerHTML = '<i class="fa-solid fa-rotate-left"></i> Undo';
-            // Clear key badge if this was the key image
             const keyBadge = thumb.querySelector('.key-badge');
             if (keyBadge) keyBadge.remove();
-            // If this was the key image, clear the hidden input
             if (parseInt(document.getElementById('set-key-image-input').value) === imageId) {
                 document.getElementById('set-key-image-input').value = '';
             }
         }
 
-        // Sync hidden inputs
         const container = document.getElementById('delete-image-inputs');
         container.innerHTML = '';
         markedForDeletion.forEach(id => {
@@ -540,7 +521,7 @@
 
     // ── NEW IMAGE UPLOADS ─────────────────────────────────────
     let newSelectedFiles = [];
-    let newKeyIndex      = null;  // null = no new image is key
+    let newKeyIndex      = null;
 
     function handleNewImages(event) {
         const files = Array.from(event.target.files);
@@ -618,7 +599,6 @@
             row.style.pointerEvents = 'none';
         }
 
-        // Sync hidden inputs
         const container = document.getElementById('delete-variant-inputs');
         container.innerHTML = '';
         deletedVariants.forEach(id => {
@@ -631,21 +611,13 @@
     }
 
     // ── NEW VARIANT ROWS ──────────────────────────────────────
-    const SIZES = JSON.parse(document.getElementById('sizes-data').textContent);
-
-    function buildSizeOptions() {
-        return SIZES.map(s => `<option value="${s.id}">${s.value} (${s.type})</option>`).join('');
-    }
-
     function addNewVariantRow() {
         const container = document.getElementById('new-variants-container');
         const row = document.createElement('div');
         row.className = 'variant-editor-row';
         row.innerHTML = `
-            <select name="size_ids[]" class="variant-select">
-                <option value="">— Select size —</option>
-                ${buildSizeOptions()}
-            </select>
+            <input type="text" name="size_values[]" class="form-input-element variant-select"
+                   placeholder="e.g. XL, 42, 20&quot;" style="min-width:160px;">
             <input type="number" name="size_stocks[]" class="form-input-element"
                    style="min-width:80px; flex:1;" placeholder="Stock" value="0" min="0">
             <input type="number" name="size_adjustments[]" class="form-input-element"

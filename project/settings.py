@@ -100,7 +100,6 @@ CSRF_TRUSTED_ORIGINS = [
 
 
 database_url = os.getenv("DATABASE_URL")
-print(f"DEBUG URL: {repr(database_url)}")  # Verify it's correct
 
 DATABASES = {
     "default": dj_database_url.parse(database_url)

@@ -116,11 +116,11 @@
                                             <li>
                                                 <a href="javascript:;"
                                                    class="d-flex align-items-center justify-content-center size-option"
-                                                   data-size-id="{{ product_size.size.id }}"
+                                                   data-size-val="{{ product_size.size }}"
                                                    data-price-adjustment="{{ product_size.price_adjustment }}"
                                                    data-stock="{{ product_size.stock }}"
                                                    title="{{ product_size.stock }} in stock">
-                                                    {{ product_size.size.value }}
+                                                    {{ product_size.size }}
                                                 </a>
                                             </li>
                                             {% else %}
@@ -128,7 +128,7 @@
                                                 <a href="javascript:;"
                                                    class="d-flex align-items-center justify-content-center disabled"
                                                    title="Out of stock">
-                                                    {{ product_size.size.value }}
+                                                    {{ product_size.size }}
                                                 </a>
                                             </li>
                                             {% endif %}
@@ -140,7 +140,7 @@
 
                             <div class="product-action">
                                 <input type="hidden" id="product-id" value="{{ product.id }}">
-                                <input type="hidden" id="selected-size-id" value="">
+                                <input type="hidden" id="selected-size-val" value="">
 
                                 <div class="product-single-qty">
                                     <input class="horizontal-quantity form-control"
@@ -174,11 +174,19 @@
                             <div class="product-single-share mb-1 pb-2 mt-0 pt-2">
                                 <label class="sr-only">Share:</label>
                                 <div class="social-icons mr-2">
-                                    <a href="#" class="social-icon social-facebook icon-facebook" target="_blank" title="Facebook"></a>
-                                    <a href="#" class="social-icon social-twitter icon-twitter" target="_blank" title="Twitter"></a>
-                                    <a href="#" class="social-icon social-linkedin fab fa-linkedin-in" target="_blank" title="Linkedin"></a>
-                                    <a href="#" class="social-icon social-gplus fab fa-google-plus-g" target="_blank" title="Google +"></a>
-                                    <a href="#" class="social-icon social-mail icon-mail-alt" target="_blank" title="Mail"></a>
+                                    <a target="_blank" rel="noopener noreferrer nofollow" class="social-icon social-facebook" href="https://www.facebook.com/share/1J7HSpg2qg/" title="Facebook">
+                                        <i class="fab fa-facebook-f"></i>
+                                    </a>
+                                    <a target="_blank" rel="noopener noreferrer nofollow" class="social-icon social-tiktok" href="https://tiktok.com/@empiregift0" title="TikTok">
+                                        <i class="fab fa-tiktok"></i>
+                                    </a>
+                                    <a target="_blank" rel="noopener noreferrer nofollow" class="social-icon social-instagram" href="https://www.instagram.com/empi.regift1?igsh=YXJxOXF4dWZqc3Ft" title="Instagram">
+                                        <i class="fab fa-instagram"></i>
+                                    </a>
+                                    <a target="_blank" rel="noopener noreferrer nofollow" class="social-icon social-whatsapp" href="https://wa.link/1aj0wu" title="Whatsapp">
+                                        <i class="fab fa-whatsapp"></i>
+                                    </a>
+
                                 </div>
                             </div>
                         </div>
@@ -231,7 +239,7 @@
                                         <th>Variants</th>
                                         <td>
                                           {% for x in sizes %}
-                                          {{x.size.value}},
+                                            {{ x.size }}{% if not forloop.last %}, {% endif %}
                                           {% endfor %}
                                         </td>
                                     </tr>
@@ -316,7 +324,7 @@
                                     {% endif %}
                                 </div>
                                 <div class="product-action">
-                                    <a href="{{ p.get_absolute_url }}" class="btn-icon btn-add-cart "><i class="icon-shopping-cart"></i><span>MORE DETAILS</span></a>
+                                    <a href="{{ p.get_absolute_url }}" class="btn-icon btn-add-cart"><i class="icon-shopping-cart"></i><span>MORE DETAILS</span></a>
                                 </div>
                             </div>
                         </div>
@@ -330,7 +338,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const sizeOptions = document.querySelectorAll('.size-option');
-    const selectedSizeInput = document.getElementById('selected-size-id');
+    const selectedSizeInput = document.getElementById('selected-size-val');
     const addCartBtn = document.getElementById('add-to-cart-btn');
     const qtyInput = document.getElementById('product-qty');
     const hasSizes = sizeOptions.length > 0;
@@ -338,9 +346,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const productStock = parseInt(qtyInput.dataset.productStock || qtyInput.getAttribute('max') || '999', 10);
 
     function getCurrentMaxStock() {
-        const selectedSizeId = selectedSizeInput.value;
-        if (hasSizes && selectedSizeId) {
-            const selectedOption = document.querySelector(`.size-option[data-size-id="${selectedSizeId}"]`);
+        const selectedSizeVal = selectedSizeInput.value;
+        if (hasSizes && selectedSizeVal) {
+            const selectedOption = document.querySelector(`.size-option[data-size-val="${selectedSizeVal}"]`);
             if (selectedOption) {
                 return parseInt(selectedOption.dataset.stock, 10);
             }
@@ -371,9 +379,9 @@ document.addEventListener('DOMContentLoaded', function () {
             sizeOptions.forEach(function (o) { o.classList.remove('active'); });
             this.classList.add('active');
 
-            const sizeId = this.dataset.sizeId;
+            const sizeVal = this.dataset.sizeVal;
             const stock = parseInt(this.dataset.stock, 10);
-            selectedSizeInput.value = sizeId;
+            selectedSizeInput.value = sizeVal;
 
             if (qtyInput) {
                 qtyInput.setAttribute('max', stock);
@@ -401,9 +409,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!btn) return;
         if (btn.classList.contains('disabled')) return;
 
-        const sizeId = selectedSizeInput.value;
+        const sizeVal = selectedSizeInput.value;
 
-        if (hasSizes && !sizeId) {
+        if (hasSizes && !sizeVal) {
             alert('Please select a size before adding to cart.');
             return;
         }
@@ -429,7 +437,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 action: 'post',
                 product_id: productId,
                 quantity: quantity,
-                size_id: sizeId
+                size_id: sizeVal   // now sends the string value e.g. 'XL', '42'
             })
         })
         .then(function (res) { return res.json(); })

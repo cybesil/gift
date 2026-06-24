@@ -8,6 +8,7 @@ from cloudinary import CloudinaryImage
 from django.utils.text import slugify
 from PIL import Image
 from io import BytesIO
+from django.db.models import CheckConstraint, Q
 from django.core.files.uploadedfile import InMemoryUploadedFile
 import sys
 
@@ -129,7 +130,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     discount_percent = models.PositiveIntegerField(null=True, blank=True)
     discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    stock_quantity = models.PositiveIntegerField(default=0)
+    stock_quantity = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
     is_featured = models.BooleanField(default=False)
     weight = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
@@ -137,6 +138,9 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        constraints = [
+            CheckConstraint(condition=Q(stock_quantity__gte=0), name='product_stock_quantity_gte_0')
+        ]
         ordering = ['-created_at']
 
     def get_absolute_url(self):
@@ -292,8 +296,8 @@ class Size(models.Model):
 
 class ProductSize(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='sizes')
-    size = models.ForeignKey(Size, on_delete=models.CASCADE, related_name='product_entries')
-    stock = models.PositiveIntegerField(default=0)
+    size = models.CharField(max_length=20, null=True, blank=True)
+    stock = models.IntegerField(default=0)
     price_adjustment = models.DecimalField(
         max_digits=10, decimal_places=2, default=0,
         help_text="Additional cost for this size variant")
@@ -301,9 +305,15 @@ class ProductSize(models.Model):
 
     class Meta:
         unique_together = ['product', 'size']
+        constraints = [
+            CheckConstraint(
+                condition=Q(stock__gte=0),
+                name='productsize_stock_gte_0'
+            )
+        ]
 
     def __str__(self):
-        return f"{self.product.name} - {self.size.value}"
+        return f"{self.product.name} - {self.size or 'No size'}"
 
     @property
     def final_price(self):

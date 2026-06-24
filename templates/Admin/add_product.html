@@ -307,8 +307,8 @@
             <!-- ── SECTION 5: SIZE VARIANTS ── -->
             <div class="sectioned-form-block">
                 <div class="form-explanation-side">
-                    <h3>Size Variants</h3>
-                    <p>Add size options from your existing sizes. Each variant has its own stock count, an optional price adjustment, and an optional variant SKU.</p>
+                    <h3>Variants</h3>
+                    <p>Add options from your existing variants. Each variant has its own stock count, an optional price adjustment, and an optional variant SKU.</p>
                 </div>
                 <div class="form-card-side">
                     <div id="variants-container" style="display:flex; flex-direction:column; gap:12px;">
@@ -317,17 +317,8 @@
 
                     <button type="button" class="action-btn btn-secondary" style="width:max-content; font-size:0.82rem; padding:8px 16px;"
                             onclick="addVariantRow()">
-                        <i class="fa-solid fa-plus"></i> Add Size Variant
+                        <i class="fa-solid fa-plus"></i> Add Variant
                     </button>
-
-                    <!-- Sizes data embedded for JS -->
-                    <script id="sizes-data" type="application/json">
-                        [
-                            {% for size in sizes %}
-                            {"id": {{ size.id }}, "value": "{{ size.value|escapejs }}", "type": "{{ size.get_size_type_display|escapejs }}"}{% if not forloop.last %},{% endif %}
-                            {% endfor %}
-                        ]
-                    </script>
                 </div>
             </div>
 
@@ -350,7 +341,6 @@
     function handleImageSelection(event) {
         const newFiles = Array.from(event.target.files);
         appendFiles(newFiles);
-        // Reset file input so the same file can be re-selected if removed
         event.target.value = '';
     }
 
@@ -404,31 +394,19 @@
     }
 
     function syncFilesInput() {
-        // We must keep the actual <input type="file"> in sync.
-        // Since FileList is immutable, we use a DataTransfer object.
         const dt = new DataTransfer();
         selectedFiles.forEach(f => dt.items.add(f));
         document.getElementById('image-file-input').files = dt.files;
     }
 
     // ── SIZE VARIANTS ─────────────────────────────────────────
-    const SIZES = JSON.parse(document.getElementById('sizes-data').textContent);
-
-    function buildSizeOptions(selectedId) {
-        return SIZES.map(s =>
-            `<option value="${s.id}" ${selectedId == s.id ? 'selected' : ''}>${s.value} (${s.type})</option>`
-        ).join('');
-    }
-
-    function addVariantRow(selectedId, stock, adjustment, sku) {
+    function addVariantRow(sizeValue, stock, adjustment, sku) {
         const container = document.getElementById('variants-container');
         const row = document.createElement('div');
         row.className = 'variant-editor-row';
         row.innerHTML = `
-            <select name="size_ids[]" class="variant-select">
-                <option value="">— Select size —</option>
-                ${buildSizeOptions(selectedId || '')}
-            </select>
+            <input type="text" name="size_values[]" class="form-input-element variant-select"
+                   placeholder="e.g. XL, 42, 20&quot;" value="${sizeValue || ''}" style="min-width:160px;">
             <input type="number" name="size_stocks[]" class="form-input-element"
                    style="min-width:90px; flex:1;" placeholder="Stock" value="${stock || 0}" min="0">
             <input type="number" name="size_adjustments[]" class="form-input-element"

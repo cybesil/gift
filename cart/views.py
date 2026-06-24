@@ -32,23 +32,10 @@ def cart_add(request):
     if request.POST.get('action') == 'post':
         product_id = int(request.POST.get('product_id'))
         quantity = int(request.POST.get('quantity', 1))
-        size_id = request.POST.get('size_id', '')  # may be '' or a numeric string
-        size = None
-        product_size = None
+        size_val = request.POST.get('size_id', '').strip() or None  # now a string value like 'XL' or '20"'
         product = get_object_or_404(Product, id=product_id)
 
-        if size_id:
-            size = get_object_or_404(Size, id=size_id)
-            product_size = get_object_or_404(ProductSize, product=product, size=size)
-
-        added = cart.add(product=product, quantity=quantity, size=size_id)
-
-        # product.stock_quantity = F('stock_quantity') - quantity
-        # product.save()
-
-        # if product_size:
-        #     product_size.stock = F('stock') - quantity
-        #     product_size.save()
+        added = cart.add(product=product, quantity=quantity, size=size_val)
 
         if not added:
             return JsonResponse({
@@ -57,10 +44,10 @@ def cart_add(request):
                 'qty': cart.total_quantities(),
             }, status=400)
 
-        cart_key = Cart.make_key(product_id, int(size_id) if size_id else None)
+        cart_key = Cart.make_key(product_id, size_val)
         product_cart_data = cart.cart.get(cart_key, {}).get('quantity', {})
 
-        response = JsonResponse({
+        return JsonResponse({
             'success': True,
             'qty': cart.total_quantities(),
             'cart_data': {
@@ -70,7 +57,6 @@ def cart_add(request):
                 'cart_key': cart_key,
             }
         })
-        return response
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
@@ -143,9 +129,6 @@ def initiate_checkout(request):
         messages.error(request, "Please complete your shipping details before checking out.")
         return redirect('ecommerce:dashboard')
 
-    # Reuse the same pending order on retry — tracked via session, not a
-    # generic "any pending order for this user" query, so stale orders
-    # from earlier abandoned sessions never get accidentally resurrected.
     order = None
     pending_order_id = request.session.get('pending_order_id')
     if pending_order_id:
@@ -154,7 +137,7 @@ def initiate_checkout(request):
         ).first()
 
     if order:
-        order.items.all().delete()  # rebuild snapshot fresh from current cart
+        order.items.all().delete()
     else:
         order = Order(user=request.user, status='pending')
 
@@ -171,12 +154,11 @@ def initiate_checkout(request):
     request.session['pending_order_id'] = order.id
 
     for item in cart_products:
-        # item['size_id'] is the Size model's id, NOT ProductSize's pk —
-        # re-resolve the actual ProductSize row for the FK.
+        # size_id here is now the size string value e.g. 'XL', '20"'
         product_size = None
         if item['size_id']:
             product_size = item['product_obj'].sizes.filter(
-                size_id=item['size_id']
+                size=item['size_id']
             ).first()
 
         OrderItem.objects.create(
@@ -195,7 +177,7 @@ def initiate_checkout(request):
         'customer_email': request.user.email,
         'customer_name': shipping_address.full_name,
         'customer_phone': shipping_address.phone,
-        'cart_products': cart_products,   # <-- ADD
+        'cart_products': cart_products,
         'total_sum': total_sum,
     }
     return render(request, 'Cart/cart_summary.html', context)
@@ -209,6 +191,7 @@ def _confirm_paid_order(order, transaction_id):
         print(f'order stat{order.status}')
         return
     with transaction.atomic():
+        order = Order.objects.select_for_update().get(pk=order.pk)
         order.status = 'paid'
         order.flw_transaction_id = transaction_id
 
@@ -216,11 +199,15 @@ def _confirm_paid_order(order, transaction_id):
         print(f'order stat{order.status}')
         print(f'order transact-id{order.flw_transaction_id}')
         for item in order.items.select_related('product', 'product_size'):
-            if item.product:
+            if not item.product_size:
+                print(f"Before: stock={item.product.stock_quantity}, deducting={item.quantity}")
                 item.product.stock_quantity = F('stock_quantity') - item.quantity
+                print(f"After: stock={item.product.stock_quantity}")
                 item.product.save()
             if item.product_size:
+                print(f"Before: stock={item.product_size.stock}, deducting={item.quantity}")
                 item.product_size.stock = F('stock') - item.quantity
+                print(f"After: stock={item.product_size.stock}")
                 item.product_size.save()
 
 

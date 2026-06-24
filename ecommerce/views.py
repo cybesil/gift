@@ -26,7 +26,7 @@ def product_detail(request, slug):
     product = get_object_or_404(Product, slug=slug, is_active=True)
     related = Product.objects.filter(category=product.category, is_active=True).exclude(pk=product.pk)[:5]
     ft_related = Product.objects.filter(category=product.category, is_active=True, is_featured=True).exclude(pk=product.pk)[:5]
-    sizes = product.sizes.select_related('size').order_by('size__display_order', 'size__value')
+    sizes = product.sizes.all().order_by('size')
     context = {
         "product": product,
         "related": related,
@@ -217,7 +217,7 @@ def admin_dashboard(request):
     tab = request.GET.get('tab', 'orders')  # Default tab
 
     # ─── ORDERS FILTERING ───
-    orders_qs = Order.objects.select_related('user', 'shipping_address').prefetch_related('items__product', 'items__product_size__size')
+    orders_qs = Order.objects.select_related('user', 'shipping_address').prefetch_related('items__product', 'items__product_size')
 
     order_search = request.GET.get('order_search', '')
     order_status = request.GET.get('order_status', 'all')
@@ -241,7 +241,7 @@ def admin_dashboard(request):
     orders_page = orders_paginator.get_page(orders_page_num)
 
     # ─── PRODUCTS FILTERING ───
-    products_qs = Product.objects.select_related('category').prefetch_related('images', 'sizes__size')
+    products_qs = Product.objects.select_related('category').prefetch_related('images', 'sizes')
 
     product_search = request.GET.get('product_search', '')
     product_category = request.GET.get('product_category', '')
@@ -299,7 +299,7 @@ def admin_dashboard(request):
     if view_order_id:
         try:
             view_order = Order.objects.select_related('user', 'shipping_address').prefetch_related(
-                'items__product', 'items__product_size__size'
+                'items__product', 'items__product_size'
             ).get(pk=view_order_id)
         except Order.DoesNotExist:
             pass
@@ -482,31 +482,30 @@ def add_product(request):
         #   size_stocks[]     → stock for each variant
         #   size_adjustments[] → price_adjustment
         #   size_skus[]       → optional variant SKU
-        size_ids        = request.POST.getlist('size_ids[]')
+        size_values     = request.POST.getlist('size_values[]')
         size_stocks     = request.POST.getlist('size_stocks[]')
         size_adjustments = request.POST.getlist('size_adjustments[]')
         size_skus       = request.POST.getlist('size_skus[]')
 
-        for i, size_id in enumerate(size_ids):
-            if not size_id:
+        for i, size_val in enumerate(size_values):
+            if not size_val:
                 continue
             try:
-                size_obj   = Size.objects.get(pk=size_id)
                 stock      = int(size_stocks[i]) if i < len(size_stocks) and size_stocks[i] else 0
                 adjustment = float(size_adjustments[i]) if i < len(size_adjustments) and size_adjustments[i] else 0.0
                 variant_sku = size_skus[i].strip() if i < len(size_skus) else ''
 
                 ProductSize.objects.get_or_create(
                     product = product,
-                    size    = size_obj,
+                    size    = size_val,
                     defaults={
                         'stock'            : stock,
                         'price_adjustment' : adjustment,
                         'sku'              : variant_sku,
                     }
                 )
-            except (Size.DoesNotExist, ValueError, IndexError):
-                continue  # Skip malformed entries silently
+            except (ValueError, IndexError):
+                continue
 
         messages.success(request, f'Product "{product.name}" created successfully.')
         return redirect('ecommerce:admin_dashboard')
@@ -533,7 +532,6 @@ def edit_product(request, slug):
     """
     product    = get_object_or_404(Product, slug=slug)
     categories = Category.objects.filter(is_active=True).order_by('name')
-    sizes      = Size.objects.all().order_by('size_type', 'display_order', 'value')
 
     if request.method == 'POST':
         # ── Core fields ──────────────────────────────────────
@@ -597,9 +595,8 @@ def edit_product(request, slug):
             context = {
                 'product'   : product,
                 'categories': categories,
-                'sizes'     : sizes,
                 'existing_images'  : product.images.all(),
-                'existing_variants': product.sizes.select_related('size').all(),
+                'existing_variants': product.sizes.all(),
             }
             return render(request, 'Admin/edit_product.html', context)
 
@@ -621,14 +618,12 @@ def edit_product(request, slug):
             context = {
                 'product'          : product,
                 'categories'       : categories,
-                'sizes'            : sizes,
                 'existing_images'  : product.images.all(),
-                'existing_variants': product.sizes.select_related('size').all(),
+                'existing_variants': product.sizes.all(),
             }
             return render(request, 'Admin/edit_product.html', context)
 
         # ── Handle image deletions ───────────────────────────
-        # The form sends a list of image IDs the user wants deleted
         delete_image_ids = request.POST.getlist('delete_images[]')
         if delete_image_ids:
             ProductImage.objects.filter(
@@ -636,12 +631,10 @@ def edit_product(request, slug):
             ).delete()
 
         # ── Handle key image change on existing images ───────
-        # The form sends 'set_key_image' with the ID of the image to mark as key
         set_key_image_id = request.POST.get('set_key_image')
         if set_key_image_id:
             try:
                 key_img = ProductImage.objects.get(pk=set_key_image_id, product=product)
-                # The model's save() handles unsetting other key images
                 key_img.is_key = True
                 key_img.save()
             except ProductImage.DoesNotExist:
@@ -655,7 +648,6 @@ def edit_product(request, slug):
         except (ValueError, TypeError):
             new_key_image_idx = None
 
-        # Determine starting sort order so new images go to the end
         existing_count = product.images.count()
         for idx, img_file in enumerate(new_images):
             is_key = (new_key_image_idx is not None and idx == new_key_image_idx)
@@ -667,10 +659,6 @@ def edit_product(request, slug):
             )
 
         # ── Handle size variant updates ──────────────────────
-        # Existing variants: form sends variant_id[], variant_stock[], etc.
-        # If a variant_id is in 'delete_variants[]', delete it.
-        # Otherwise update stock/adjustment/sku.
-
         delete_variant_ids = request.POST.getlist('delete_variants[]')
         if delete_variant_ids:
             ProductSize.objects.filter(
@@ -695,30 +683,29 @@ def edit_product(request, slug):
                 continue
 
         # New size variants
-        new_size_ids        = request.POST.getlist('size_ids[]')
+        new_size_values     = request.POST.getlist('size_values[]')
         new_size_stocks     = request.POST.getlist('size_stocks[]')
         new_size_adjustments = request.POST.getlist('size_adjustments[]')
         new_size_skus       = request.POST.getlist('size_skus[]')
 
-        for i, size_id in enumerate(new_size_ids):
-            if not size_id:
+        for i, size_val in enumerate(new_size_values):
+            if not size_val:
                 continue
             try:
-                size_obj   = Size.objects.get(pk=size_id)
                 stock      = int(new_size_stocks[i])     if i < len(new_size_stocks)     and new_size_stocks[i]     else 0
                 adjustment = float(new_size_adjustments[i]) if i < len(new_size_adjustments) and new_size_adjustments[i] else 0.0
                 variant_sku = new_size_skus[i].strip()   if i < len(new_size_skus)       else ''
 
                 ProductSize.objects.get_or_create(
                     product = product,
-                    size    = size_obj,
+                    size    = size_val,
                     defaults={
                         'stock'            : stock,
                         'price_adjustment' : adjustment,
                         'sku'              : variant_sku,
                     }
                 )
-            except (Size.DoesNotExist, ValueError, IndexError):
+            except (ValueError, IndexError):
                 continue
 
         messages.success(request, f'Product "{product.name}" updated successfully.')
@@ -728,9 +715,8 @@ def edit_product(request, slug):
     context = {
         'product'          : product,
         'categories'       : categories,
-        'sizes'            : sizes,
         'existing_images'  : product.images.all(),
-        'existing_variants': product.sizes.select_related('size').all(),
+        'existing_variants': product.sizes.all(),
     }
     return render(request, 'Admin/edit_product.html', context)
 
