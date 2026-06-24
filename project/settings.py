@@ -13,9 +13,12 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os, cloudinary, dj_database_url
 from pathlib import Path
 from django.contrib.messages import constants as message_constants
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+env_path = BASE_DIR / ".env"  # Adjust if .env is in project root
+load_dotenv(env_path, override=True)
 
 
 # Quick-start development settings - unsuitable for production
@@ -79,6 +82,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'project.wsgi.application'
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://gift-73je.onrender.com",
+    "https://giftempire.com.ng"
+]
+
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
@@ -89,12 +97,21 @@ WSGI_APPLICATION = 'project.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
-database_url = "postgresql://postgres.aixwnkljavhmjemiurnm:%40Nosikesamue@aws-1-us-west-2.pooler.supabase.com:5432/postgres"
+
+
+database_url = os.getenv("DATABASE_URL")
+print(f"DEBUG URL: {repr(database_url)}")  # Verify it's correct
+
 DATABASES = {
     "default": dj_database_url.parse(database_url)
 }
 
-# DATABASES['default']['CONN_MAX_AGE'] = 60
+if not DATABASES["default"]["PORT"]:
+    DATABASES["default"]["PORT"] = "5432"
+
+DATABASES["default"]["OPTIONS"] = {
+    "sslmode": "require",
+}
 
 
 # Password validation
@@ -180,10 +197,8 @@ DEFAULT_FROM_EMAIL = 'support@firstnatiionalbank.com'
 RESEND_API_KEY = 're_NQiqFcaB_77fCDjPhx4PJaSYzppDSg66D'
 RATE_REFRESH_TOKEN = 'willstestosterone'
 
-FLW_PUBLIC_KEY = 'FLWPUBK_TEST-bc210a18feb88bbf6bd5602eb320c8c2-X'
-FLW_SECRET_KEY = 'FLWSECK_TEST-f0a33c9fd4ef1b19117ac5e5a3409eda-X'
 
+FLW_PUBLIC_KEY = os.getenv("FLW_PUBLIC_KEY")
+FLW_SECRET_KEY = os.getenv("FLW_SECRET_KEY")
+FLW_ENCRYPTION_KEY = os.getenv("FLW_ENCRYPTION_KEY")
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://elen.com.ng/",
-]
