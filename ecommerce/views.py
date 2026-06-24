@@ -75,6 +75,10 @@ def products(request, slug):
     }
     return render(request, "Product/products.html", context)
 
+
+from django.core.paginator import Paginator
+
+
 @login_required(login_url="accounts:account")
 def dashboard(request):
     profile = request.user.profile
@@ -84,6 +88,14 @@ def dashboard(request):
 
     account_form = AccountDetailsForm(instance=request.user, profile=profile)
     shipping_form = ShippingAddressForm(instance=shipping_address)
+
+    # Get user's orders
+    orders_list = Order.objects.filter(user=request.user).order_by('-created_at')
+
+    # Paginate orders
+    paginator = Paginator(orders_list, 10)  # 10 orders per page
+    page_number = request.GET.get('orders_page', 1)
+    orders = paginator.get_page(page_number)
 
     if request.method == 'POST':
         form_type = request.POST.get('form_type')
@@ -111,6 +123,7 @@ def dashboard(request):
         'shipping_address': shipping_address,
         'account_form': account_form,
         'shipping_form': shipping_form,
+        'orders': orders,
     }
     return render(request, 'User/dashboard.html', context)
 

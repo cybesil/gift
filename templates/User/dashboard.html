@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load humanize %}
-
+{% load currency_filters %}
 {% block title %}
 <title>Dashboard | Gift Empire</title>
 {% endblock %}
@@ -132,8 +132,9 @@
 
 						<div class="tab-pane fade" id="order" role="tabpanel">
 							<div class="order-content">
-								<h3 class="account-sub-title d-none d-md-block"><i
-										class="sicon-social-dropbox align-middle mr-3"></i>Orders</h3>
+								<h3 class="account-sub-title d-none d-md-block">
+									<i class="sicon-social-dropbox align-middle mr-3"></i>Orders
+								</h3>
 								<div class="order-table-container text-center">
 									<table class="table table-order text-left">
 										<thead>
@@ -146,6 +147,31 @@
 											</tr>
 										</thead>
 										<tbody>
+											{% for order in orders %}
+											<tr>
+												<td>#{{ order.tx_ref }}</td>
+												<td>{{ order.created_at|date:"M d, Y" }}</td>
+												<td>
+													<span style="padding: 4px 10px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+														{% if order.status == 'pending' %}background: #FFFBEB; color: #92400E;
+														{% elif order.status == 'paid' %}background: #F0FDF4; color: #15803D;
+														{% elif order.status == 'shipped' %}background: #EFF6FF; color: #1D4ED8;
+														{% elif order.status == 'delivered' %}background: #F0FDF4; color: #166534;
+														{% elif order.status == 'cancelled' %}background: #FEF2F2; color: #991B1B;
+														{% elif order.status == 'refunded' %}background: #F4F4F5; color: #18181B;
+														{% endif %}">
+														{{ order.get_status_display }}
+													</span>
+												</td>
+												<td>{% to_currency order.total %}</td>
+												<td>
+													<a href="#"
+													   class="btn btn-sm btn-outline-dark">
+														View Details
+													</a>
+												</td>
+											</tr>
+											{% empty %}
 											<tr>
 												<td class="text-center p-0" colspan="5">
 													<p class="mb-5 mt-5">
@@ -153,14 +179,58 @@
 													</p>
 												</td>
 											</tr>
+											{% endfor %}
 										</tbody>
 									</table>
+
+									<!-- Pagination -->
+									{% if orders.paginator.num_pages > 1 %}
+									<div class="pagination" style="display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 24px;">
+										{% if orders.has_previous %}
+										<a href="?tab=order&orders_page={{ orders.previous_page_number }}"
+										   class="page-btn"
+										   style="padding: 8px 14px; border-radius: 6px; border: 1px solid #ECECED; background: #fff; font-size: 0.85rem; font-weight: 600; color: #52525B; text-decoration: none;">
+											<i class="fa-solid fa-chevron-left"></i> Prev
+										</a>
+										{% endif %}
+
+										{% for num in orders.paginator.page_range %}
+											{% if orders.number == num %}
+											<span class="page-btn current"
+												  style="padding: 8px 14px; border-radius: 6px; border: 1px solid #0A0A0C; background: #0A0A0C; font-size: 0.85rem; font-weight: 600; color: #fff;">
+												{{ num }}
+											</span>
+											{% elif num > orders.number|add:'-3' and num < orders.number|add:'3' %}
+											<a href="?tab=order&orders_page={{ num }}"
+											   class="page-btn"
+											   style="padding: 8px 14px; border-radius: 6px; border: 1px solid #ECECED; background: #fff; font-size: 0.85rem; font-weight: 600; color: #52525B; text-decoration: none;">
+												{{ num }}
+											</a>
+											{% endif %}
+										{% endfor %}
+
+										{% if orders.has_next %}
+										<a href="?tab=order&orders_page={{ orders.next_page_number }}"
+										   class="page-btn"
+										   style="padding: 8px 14px; border-radius: 6px; border: 1px solid #ECECED; background: #fff; font-size: 0.85rem; font-weight: 600; color: #52525B; text-decoration: none;">
+											Next <i class="fa-solid fa-chevron-right"></i>
+										</a>
+										{% endif %}
+									</div>
+									<p style="font-size: 0.85rem; color: #A1A1AA; margin-top: 12px;">
+										Showing {{ orders.start_index }}–{{ orders.end_index }} of {{ orders.paginator.count }} orders
+									</p>
+									{% endif %}
+
 									<hr class="mt-0 mb-3 pb-2" />
 
+									{% if not orders %}
 									<a href="{% url 'ecommerce:home' %}" class="btn btn-dark">Go Shop</a>
+									{% endif %}
 								</div>
 							</div>
-						</div><!-- End .tab-pane -->
+						</div>
+						<!-- End .tab-pane -->
 
 						<div class="tab-pane fade" id="edit" role="tabpanel">
 							<h3 class="account-sub-title d-none d-md-block mt-0 pt-1 ml-1"><i

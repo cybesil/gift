@@ -122,7 +122,7 @@ def update_cart(request):
 
 
 
-@login_required
+@login_required(login_url="accounts:account")
 def initiate_checkout(request):
     cart = Cart(request)
     cart_products, total_sum = cart.get_prods()
@@ -224,7 +224,7 @@ def _confirm_paid_order(order, transaction_id):
                 item.product_size.save()
 
 
-@login_required
+@login_required(login_url="accounts:account")
 def verify_payment(request):
     tx_ref = request.GET.get('tx_ref')
     transaction_id = request.GET.get('transaction_id')
