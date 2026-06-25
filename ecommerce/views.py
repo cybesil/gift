@@ -758,3 +758,23 @@ def refresh_exchange_rates(request):
 
     except (requests.RequestException, KeyError, ValueError) as e:
         return JsonResponse({'status': 'error', 'detail': str(e)}, status=502)
+
+
+
+def privacy_policy(request):
+    context = {}
+    return render(request, 'Site/privacy.html', context)
+
+
+def about(request):
+    context = {}
+    return render(request, 'Site/about.html', context)
+
+
+def terms(request):
+    context = {}
+    return render(request, 'Site/terms.html', context)
+
+
+
+

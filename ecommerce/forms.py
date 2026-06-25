@@ -67,7 +67,6 @@ class ShippingAddressForm(forms.ModelForm):
         }
 
     COUNTRY_CHOICES = [
-        ('Nigeria', 'Nigeria'),
         # ─── Africa ───
         ('Algeria', 'Algeria'),
         ('Angola', 'Angola'),
@@ -107,6 +106,7 @@ class ShippingAddressForm(forms.ModelForm):
         ('Mozambique', 'Mozambique'),
         ('Namibia', 'Namibia'),
         ('Niger', 'Niger'),
+        ('Nigeria', 'Nigeria'),
         ('Rwanda', 'Rwanda'),
         ('Sao Tome and Principe', 'Sao Tome and Principe'),
         ('Senegal', 'Senegal'),
@@ -122,28 +122,10 @@ class ShippingAddressForm(forms.ModelForm):
         ('Uganda', 'Uganda'),
         ('Zambia', 'Zambia'),
         ('Zimbabwe', 'Zimbabwe'),
-        # ─── Other / International ───
-        ('United States', 'United States'),
-        ('United Kingdom', 'United Kingdom'),
+        # ─── Other ───
         ('Canada', 'Canada'),
-        ('Germany', 'Germany'),
-        ('France', 'France'),
-        ('Netherlands', 'Netherlands'),
-        ('Spain', 'Spain'),
-        ('Italy', 'Italy'),
-        ('Ireland', 'Ireland'),
-        ('Belgium', 'Belgium'),
-        ('Sweden', 'Sweden'),
-        ('Switzerland', 'Switzerland'),
-        ('United Arab Emirates', 'United Arab Emirates'),
-        ('Saudi Arabia', 'Saudi Arabia'),
-        ('Qatar', 'Qatar'),
-        ('China', 'China'),
-        ('India', 'India'),
-        ('Brunei', 'Brunei'),
-        ('Bulgaria', 'Bulgaria'),
-        ('Australia', 'Australia'),
-        ('Brazil', 'Brazil'),
+        ('United Kingdom', 'United Kingdom'),
+        ('United States', 'United States'),
     ]
 
     def __init__(self, *args, **kwargs):

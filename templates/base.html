@@ -8,15 +8,40 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    {% block title %}
-    {% endblock %}
+    {% block title %}{% endblock %}
 
-    <meta name="keywords" content="Gift Empire Ecommerce" />
-    <meta name="description" content="Gift Empire - ">
-    <meta name="author" content="SW-THEMES">
+    <!-- Standard SEO -->
+    <meta name="description" content="Gift Empire Worldwide - Your Online Fashion Store for trendy apparel, accessories, and unique gifts. Shop now for fast delivery across Nigeria and worldwide.">
+    <meta name="keywords" content="Gift Empire, online fashion store, trendy apparel, accessories, gifts, Nigeria fashion, buy clothes online, gift shop">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph (Facebook, WhatsApp, Instagram, LinkedIn) -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Gift Empire Worldwide">
+    <meta property="og:title" content="{% block og_title %}Gift Empire Worldwide{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Your Online Fashion Store for trendy apparel, accessories, and unique gifts.{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{% static 'assets/images/logos.png' %}{% endblock %}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:locale" content="en_NG">
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@empiregift0">
+    <meta name="twitter:title" content="{% block twitter_title %}Gift Empire Worldwide{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Your Online Fashion Store for trendy apparel, accessories, and unique gifts.{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{% static 'assets/images/logos.png' %}{% endblock %}">
+
+    <!-- TikTok (uses Open Graph, but explicit helps) -->
+    <meta property="og:image:alt" content="Gift Empire Worldwide - Fashion and Gifts">
+
+    <!-- Pinterest -->
+    <meta name="pinterest-rich-pin" content="true">
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{% static 'assets/images/logos.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'assets/images/logos.png' %}">
 
     <script>
         WebFontConfig = {
@@ -646,12 +671,18 @@
             </form>
 
             <div class="social-icons">
-                <a href="#" class="social-icon social-facebook icon-facebook" target="_blank">
-                </a>
-                <a href="#" class="social-icon social-twitter icon-twitter" target="_blank">
-                </a>
-                <a href="#" class="social-icon social-instagram icon-instagram" target="_blank">
-                </a>
+                <a target="_blank" rel="noopener noreferrer nofollow" class="social-icon social-facebook" href="https://www.facebook.com/share/1J7HSpg2qg/" title="Facebook">
+                                            <i class="fab fa-facebook-f"></i>
+                                        </a>
+                <a target="_blank" rel="noopener noreferrer nofollow" class="social-icon social-tiktok" href="https://tiktok.com/@empiregift0" title="TikTok">
+                                            <i class="fab fa-tiktok"></i>
+                                        </a>
+                <a target="_blank" rel="noopener noreferrer nofollow" class="social-icon social-instagram" href="https://www.instagram.com/empi.regift1?igsh=YXJxOXF4dWZqc3Ft" title="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                <a target="_blank" rel="noopener noreferrer nofollow" class="social-icon social-whatsapp" href="https://wa.link/1aj0wu" title="Whatsapp">
+                                            <i class="fab fa-whatsapp"></i>
+                                        </a>
             </div>
         </div>
         <!-- End .mobile-menu-wrapper -->

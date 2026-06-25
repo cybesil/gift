@@ -7,6 +7,10 @@
 <title>{{ category.name }} | Gift Empire</title>
 {% endblock %}
 
+{% block og_title %}{{ category.name }} | Gift Empire{% endblock %}
+{% block og_description %}Shop {{ category.name }} at Gift Empire Worldwide. Discover trendy fashion, accessories, and unique gifts with fast delivery.{% endblock %}
+{% block og_image %}{% if category.image %}{{ category.image.url }}{% else %}{% static 'assets/images/logos.png' %}{% endif %}{% endblock %}
+
 {% block content %}
 <main class="main">
     <div class="container">

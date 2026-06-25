@@ -13,4 +13,7 @@ urlpatterns = [
     path('add-product/<slug:slug>', edit_product, name='edit_product'),
     path('currency/<str:code>/', set_currency, name='set_currency'),
     path('internal/refresh-rates/', refresh_exchange_rates, name='refresh_rates'),
+    path('privacy/', privacy_policy, name='privacy_policy'),
+    path('about-us/', about, name='about'),
+    path('terms-and-conditions/', terms, name='terms')
 ]
