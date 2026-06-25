@@ -7,6 +7,7 @@ from django.db.models import Q, Sum, F
 from django.http import JsonResponse
 from .models import Category, Product, ProductImage, ProductSize, Size, Order, OrderItem, ShippingAddress, ExchangeRate, BannerAd, BannerAd2
 import requests
+from django.core.cache import cache
 from django.http import JsonResponse
 from django.utils import timezone
 from django.conf import settings
@@ -14,10 +15,18 @@ from datetime import timedelta
 # Create your views here.
 
 def home(request):
+    active_banner = cache.get('active_banner')
+    if active_banner is None:
+        active_banner = BannerAd.objects.filter(is_active=True).first()
+        cache.set('active_banner', active_banner, 60 * 10)
+
+    active_banner2 = cache.get('active_banner2')
+    if active_banner2 is None:
+        active_banner2 = BannerAd2.objects.filter(is_active=True).first()
+        cache.set('active_banner2', active_banner2, 60 * 10)
     products = Product.objects.filter(is_active=True)[:8]
     ft_products = Product.objects.filter(is_featured=True, is_active=True)[:8]
-    active_banner = BannerAd.objects.filter(is_active=True).first()
-    active_banner2 = BannerAd2.objects.filter(is_active=True).first()
+
     context = {
         "products": products,
         "ft_products": ft_products,

@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from cloudinary.models import CloudinaryField
 from cloudinary import CloudinaryImage
@@ -11,6 +11,7 @@ from io import BytesIO
 from django.db.models import CheckConstraint, Q
 from django.core.files.uploadedfile import InMemoryUploadedFile
 import sys
+from django.core.cache import cache
 
 
 # ─── USERS ───────────────────────────────────────────
@@ -529,3 +530,13 @@ def create_user_profile(sender, instance, created, **kwargs):
                 user=instance,
                 defaults={'is_default': True}
             )
+
+@receiver(post_save, sender=BannerAd)
+@receiver(post_delete, sender=BannerAd)
+def clear_banner_cache(sender, **kwargs):
+    cache.delete('active_banner')
+
+@receiver(post_save, sender=BannerAd2)
+@receiver(post_delete, sender=BannerAd2)
+def clear_banner2_cache(sender, **kwargs):
+    cache.delete('active_banner2')
