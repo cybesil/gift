@@ -17,6 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . import errors
+from django.contrib.sitemaps.views import sitemap
+from .sitemaps import ProductSitemap, CategorySitemap
+
+sitemaps = {
+    'products': ProductSitemap,
+    'categories': CategorySitemap,
+}
 
 handler404 = errors.error_404_view
 handler500 = errors.error_500_view
@@ -28,5 +35,6 @@ urlpatterns = [
     path('auth/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
     path('', include('ecommerce.urls', namespace='ecommerce')),
-    path('cart/', include('cart.urls', namespace='cart'))
+    path('cart/', include('cart.urls', namespace='cart')),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 ]

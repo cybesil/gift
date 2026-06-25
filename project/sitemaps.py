@@ -1,6 +1,6 @@
 # ecommerce/sitemaps.py
 from django.contrib.sitemaps import Sitemap
-from .models import Product, Category
+from ecommerce.models import Product, Category
 
 class ProductSitemap(Sitemap):
     changefreq = 'weekly'
