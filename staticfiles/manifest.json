@@ -1,0 +1,22 @@
+{
+  "name": "Gift Empire Worldwide",
+  "short_name": "Gift Empire",
+  "description": "Your Online Fashion Store for trendy apparel, accessories, and unique gifts.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#222222",
+  "theme_color": "#222222",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/static/assets/images/logos.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/assets/images/logos.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

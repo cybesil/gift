@@ -66,6 +66,9 @@
     <link rel="stylesheet" type="text/css" href="{% static 'assets/vendor/fontawesome-free/css/all.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/vendor/simple-line-icons/css/simple-line-icons.min.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <meta name="theme-color" content="#222222">
     <style>
         /* Toast Container */
         #django-toast-container {
@@ -722,15 +725,26 @@
 
 
     <a id="scroll-top" href="#top" title="Top" role="button"><i class="icon-angle-up"></i></a>
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register("{% static 'sw.js' %}");
+      }
 
+      // Capture the event globally on any page
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        window._deferredPWAPrompt = e;
+      });
+    </script>
     <!-- Plugins JS File -->
-    <script data-cfasync="false" src="{% static 'cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js' %}"></script>
-    <script src="{% static 'assets/js/jquery.min.js' %}"></script>
-    <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
-    <script src="{% static 'assets/js/plugins.min.js' %}"></script>
-    <script src="{% static 'assets/js/jquery.appear.min.js' %}"></script>
+    <script defer data-cfasync="false" src="{% static 'cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js' %}"></script>
+    <script defer src="{% static 'assets/js/jquery.min.js' %}"></script>
+    <script defer src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+    <script defer src="{% static 'assets/js/plugins.min.js' %}"></script>
+    <script defer src="{% static 'assets/js/jquery.appear.min.js' %}"></script>
     <!-- Main JS File -->
-    <script src="{% static 'assets/js/main.min.js' %}"></script>
+    <script defer src="{% static 'assets/js/main.min.js' %}"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const toasts = document.querySelectorAll('.django-toast');

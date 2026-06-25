@@ -254,5 +254,57 @@
         <!-- End .main -->
 
 
+<!-- PWA Install Prompt -->
+<div id="pwa-install-banner" style="position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+     background:#fff; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.18);
+     padding:18px 24px; z-index:99999; max-width:360px; width:90%;
+     display:none; align-items:center; gap:16px; flex-direction:row;">
+  <img src="{% static 'assets/images/logos.png' %}" width="48" height="48" style="border-radius:10px; flex-shrink:0;">
+  <div style="flex:1;">
+    <div style="font-weight:700; font-size:0.95rem; color:#222;">Install Gift Empire</div>
+    <div style="font-size:0.8rem; color:#666; margin-top:2px;">Shop faster from your home screen</div>
+  </div>
+  <div style="display:flex; flex-direction:column; gap:8px; flex-shrink:0;">
+    <button id="pwa-install-btn" style="background:#c96;border:none;color:#fff;padding:7px 16px;border-radius:6px;font-weight:600;cursor:pointer;font-size:0.85rem;">Install</button>
+    <button id="pwa-dismiss-btn" style="background:transparent;border:none;color:#999;cursor:pointer;font-size:0.8rem;">Not now</button>
+  </div>
+</div>
 
+<script>
+let deferredPrompt = window._deferredPWAPrompt || null;
+const banner = document.getElementById('pwa-install-banner');
+
+// Check on page load if prompt is already available
+if (deferredPrompt && !localStorage.getItem('pwa-dismissed')) {
+  setTimeout(() => { banner.style.display = 'flex'; }, 3000);
+}
+
+// Also listen in case it fires while on the home page
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (!localStorage.getItem('pwa-dismissed')) {
+    setTimeout(() => { banner.style.display = 'flex'; }, 3000);
+  }
+});
+
+document.getElementById('pwa-install-btn').addEventListener('click', async () => {
+  banner.style.display = 'none';
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    window._deferredPWAPrompt = null;
+  }
+});
+
+document.getElementById('pwa-dismiss-btn').addEventListener('click', () => {
+  banner.style.display = 'none';
+  localStorage.setItem('pwa-dismissed', '1');
+});
+
+window.addEventListener('appinstalled', () => {
+  banner.style.display = 'none';
+});
+</script>
 {% endblock %}
