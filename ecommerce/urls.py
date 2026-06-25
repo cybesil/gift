@@ -1,5 +1,12 @@
 from django.urls import path
 from .views import *
+from django.contrib.sitemaps.views import sitemap
+from .sitemaps import ProductSitemap, CategorySitemap
+
+sitemaps = {
+    'products': ProductSitemap,
+    'categories': CategorySitemap,
+}
 
 app_name = 'ecommerce'
 
@@ -15,5 +22,6 @@ urlpatterns = [
     path('internal/refresh-rates/', refresh_exchange_rates, name='refresh_rates'),
     path('privacy/', privacy_policy, name='privacy_policy'),
     path('about-us/', about, name='about'),
-    path('terms-and-conditions/', terms, name='terms')
+    path('terms-and-conditions/', terms, name='terms'),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 ]
