@@ -414,6 +414,108 @@ class ExchangeRate(models.Model):
         return f"1 {self.currency} = {self.rate_to_ngn} NGN"
 
 
+# ─── BANNER ADS ──────────────────────────────────────
+
+class BannerAd(models.Model):
+    name = models.CharField(
+        max_length=255,
+        help_text="Internal label for this ad (not shown on site)"
+    )
+    image = CloudinaryField('image')
+    header = models.CharField(
+        max_length=255,
+        help_text="e.g. 'Find the Boundaries. Push Through!'"
+    )
+    subheading = models.CharField(
+        max_length=255,
+        help_text="Short bold body — e.g. 'Shoes Sale on Gift Empire'"
+    )
+    teaser = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Short teaser — e.g. 'Starting At $119.99. Discounts last till April'"
+    )
+    cta_text = models.CharField(
+        max_length=100,
+        default='Shop Now',
+        help_text="Button text — e.g. 'BUY NOW!'"
+    )
+    price_tag = models.CharField(
+        max_length=50,
+        blank=True,
+        help_text="Optional price display — e.g. '$119.99'. Leave blank to hide."
+    )
+    redirect_url = models.URLField(
+        help_text="Where clicking the ad or CTA button takes the user"
+    )
+    is_active = models.BooleanField(
+        default=False,
+        help_text="Tick to make this the live banner. Only one can be active."
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Banner Ad'
+        verbose_name_plural = 'Banner Ads'
+
+    @property
+    def image_url(self):
+        if self.image:
+            return CloudinaryImage(str(self.image)).build_url(
+                width=1670, height=820, crop='fill', format='jpg', quality='auto'
+            )
+        return None
+
+    def save(self, *args, **kwargs):
+        # Enforce single active banner — deactivate all others when this one is activated
+        if self.is_active:
+            BannerAd.objects.filter(is_active=True).exclude(pk=self.pk).update(is_active=False)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.name} {'✓ LIVE' if self.is_active else ''}"
+
+
+class BannerAd2(models.Model):
+    name = models.CharField(
+        max_length=255,
+        help_text="Internal label for this ad (not shown on site)"
+    )
+    image = CloudinaryField('image')
+    header = models.CharField(max_length=255)
+    subheading = models.CharField(max_length=255)
+    teaser = models.CharField(max_length=255, blank=True)
+    cta_text = models.CharField(max_length=100, default='Shop Now')
+    price_tag = models.CharField(max_length=50, blank=True)
+    redirect_url = models.URLField()
+    is_active = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Banner Ad 2'
+        verbose_name_plural = 'Banner Ads 2'
+
+    @property
+    def image_url(self):
+        if self.image:
+            return CloudinaryImage(str(self.image)).build_url(
+                width=1670, height=820, crop='fill', format='jpg', quality='auto'
+            )
+        return None
+
+    def save(self, *args, **kwargs):
+        if self.is_active:
+            BannerAd2.objects.filter(is_active=True).exclude(pk=self.pk).update(is_active=False)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.name} {'✓ LIVE' if self.is_active else ''}"
+
+
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:

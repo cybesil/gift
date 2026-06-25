@@ -15,49 +15,91 @@
                             'nav': false
                         }">
                             <div class="home-slide banner">
-                                <a href="demo9-shop.html">
-                                    <img class="slide-bg" src="{% static 'assets/images/demoes/demo9/slider/slide-1.jpg' %}" style="background-color: #ccc;" alt="banner" width="835" height="410" />
-                                </a>
-                                <div class="banner-layer slide-1 text-xl-right banner-layer-middle">
-                                    <h4 class="text-xl-right slide-title appear-animate" data-animation-delay="100" data-animation-name="fadeInUpShorter">Find the Boundaries. Push Through!</h4>
-                                    <h2 class="text-xl-right text-uppercase sub-title appear-animate" data-animation-delay="300" data-animation-name="fadeInUpShorter">Shoes Sale</h2>
-                                    <div class="row">
-                                        <div class="col-auto col-md-6 appear-animate" data-animation-delay="500" data-animation-name="fadeInRightShorter">
-                                            <h3 class="sale-label line-height-1 mb-0 d-inline-block text-center">
-                                                40<small><sup>%</sup><sub>OFF</sub></small></h3>
-                                        </div>
-                                        <div class="col-auto col-md-6 content-right appear-animate" data-animation-delay="700" data-animation-name="fadeInRightShorter">
-                                            <h4 class="d-inline-block text-left text-uppercase line-height-1 d-inline-block">
-                                                Starting At</h4>
-                                            <h5 class="text-left coupon-sale-text">$<b>119</b>99</h5>
-                                            <div class="mb-0">
-                                                <a href="demo9-shop.html" class="btn btn-modern btn-md btn-dark">SHOP
-                                                    NOW!
-                                                </a>
+                                {% if active_banner %}
+                                    <a href="{{ active_banner.redirect_url }}">
+                                        <img class="slide-bg" src="{{ active_banner.image_url }}" style="background-color: #ccc;" alt="{{ active_banner.header }}" width="835" height="410" />
+                                    </a>
+                                    <div class="banner-layer slide-1 text-xl-right banner-layer-middle">
+                                        <h4 class="text-xl-right slide-title appear-animate" data-animation-delay="100" data-animation-name="fadeInUpShorter">{{ active_banner.header }}</h4>
+                                        <h2 class="text-xl-right text-uppercase sub-title appear-animate" data-animation-delay="300" data-animation-name="fadeInUpShorter">{{ active_banner.subheading }}</h2>
+                                        <div class="row">
+<!--                                            <div class="col-auto col-md-6 appear-animate" data-animation-delay="500" data-animation-name="fadeInRightShorter"></div>-->
+                                            <div class="col-auto col-md-6 content-right appear-animate" data-animation-delay="700" data-animation-name="fadeInRightShorter">
+                                                {% if active_banner.teaser %}
+                                                    <h4 class="d-inline-block text-left text-uppercase line-height-1">{{ active_banner.teaser }}</h4>
+                                                {% endif %}
+                                                {% if active_banner.price_tag %}
+                                                    <h5 class="text-left coupon-sale-text">{{ active_banner.price_tag }}</h5>
+                                                {% endif %}
+                                                <div class="mb-0">
+                                                    <a href="{{ active_banner.redirect_url }}" class="btn btn-modern btn-md btn-dark">{{ active_banner.cta_text }}</a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                {% else %}
+                                    <a href="#">
+                                        <img class="slide-bg" src="{% static 'assets/images/demoes/demo9/slider/slide-1.jpg' %}" style="background-color: #ccc;" alt="banner" width="835" height="410" />
+                                    </a>
+                                    <div class="banner-layer slide-1 text-xl-right banner-layer-middle">
+                                        <h4 class="text-xl-right slide-title appear-animate" data-animation-delay="100" data-animation-name="fadeInUpShorter">Find the Boundaries. Push Through!</h4>
+                                        <h2 class="text-xl-right text-uppercase sub-title appear-animate" data-animation-delay="300" data-animation-name="fadeInUpShorter">Gift Empire</h2>
+                                        <div class="row">
+<!--                                            <div class="col-auto col-md-6 appear-animate" data-animation-delay="500" data-animation-name="fadeInRightShorter"></div>-->
+                                            <div class="col-auto col-md-6 content-right appear-animate" data-animation-delay="700" data-animation-name="fadeInRightShorter">
+                                                <h4 class="d-inline-block text-left text-uppercase line-height-1 d-inline-block">Starting At $119.99. Discounts lasts till april</h4>
+                                                <h5 class="text-left coupon-sale-text">$119.99</h5>
+                                                <div class="mb-0">
+                                                    <a href="#" class="btn btn-modern btn-md btn-dark">BUY NOW!</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
                             </div>
 
                             <div class="home-slide banner">
-                                <a href="demo9-shop.html">
-                                    <img class="slide-bg" src="{% static 'assets/images/demoes/demo9/slider/slide-2.jpg' %}" style="background-color: #444;" alt="banner" width="835" height="410" />
-                                </a>
-                                <div class="banner-layer slide-2 text-right banner-layer-middle">
-                                    <div>
-                                        <h2 class="text-right text-uppercase text-primary ls-n-20 m-b-2 appear-animate" data-animation-delay="100" data-animation-name="fadeInUpShorter">FLASH SALE
-                                        </h2>
-                                        <h4 class="text-right m-b-2 appear-animate" data-animation-delay="300" data-animation-name="fadeInUpShorter">TOP BRANDS<br>SUMMER SUNGLASSES
-                                        </h4>
-                                        <h3 class="text-right text-uppercase text-light ls-n-20 m-b-4 appear-animate" data-animation-delay="500" data-animation-name="fadeInUpShorter">
-                                            STARTING<br>AT<sup class="pl-2 ml-1">$</sup>199<sup>99</sup></h3>
-                                        <div class="pt-1">
-                                            <a href="demo9-shop.html" class="btn btn-modern btn-lg btn-light appear-animate" data-animation-delay="700" data-animation-name="fadeInUpShorter">View
-                                                Sale</a>
+                                {% if active_banner2 %}
+                                    <a href="{{ active_banner2.redirect_url }}">
+                                        <img class="slide-bg" src="{{ active_banner2.image_url }}" style="background-color: #ccc;" alt="{{ active_banner2.header }}" width="835" height="410" />
+                                    </a>
+                                    <div class="banner-layer slide-1 text-xl-right banner-layer-middle">
+                                        <h4 class="text-xl-right slide-title appear-animate" data-animation-delay="100" data-animation-name="fadeInUpShorter">{{ active_banner2.header }}</h4>
+                                        <h2 class="text-xl-right text-uppercase sub-title appear-animate" data-animation-delay="300" data-animation-name="fadeInUpShorter">{{ active_banner2.subheading }}</h2>
+                                        <div class="row">
+<!--                                            <div class="col-auto col-md-6 appear-animate" data-animation-delay="500" data-animation-name="fadeInRightShorter"></div>-->
+                                            <div class="col-auto col-md-6 content-right appear-animate" data-animation-delay="700" data-animation-name="fadeInRightShorter">
+                                                {% if active_banner2.teaser %}
+                                                    <h4 class="d-inline-block text-left text-uppercase line-height-1 d-inline-block">{{ active_banner2.teaser }}</h4>
+                                                {% endif %}
+                                                {% if active_banner2.price_tag %}
+                                                    <h5 class="text-left coupon-sale-text">{{ active_banner2.price_tag }}</h5>
+                                                {% endif %}
+                                                <div class="mb-0">
+                                                    <a href="{{ active_banner2.redirect_url }}" class="btn btn-modern btn-md btn-dark">{{ active_banner2.cta_text }}</a>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                {% else %}
+                                    <a href="#">
+                                        <img class="slide-bg" src="{% static 'assets/images/demoes/demo9/slider/slide-1.jpg' %}" style="background-color: #ccc;" alt="banner" width="835" height="410" />
+                                    </a>
+                                    <div class="banner-layer slide-1 text-xl-right banner-layer-middle">
+                                        <h4 class="text-xl-right slide-title appear-animate" data-animation-delay="100" data-animation-name="fadeInUpShorter">Find the Boundaries. Push Through!</h4>
+                                        <h2 class="text-xl-right text-uppercase sub-title appear-animate" data-animation-delay="300" data-animation-name="fadeInUpShorter">Gift Empire</h2>
+                                        <div class="row">
+<!--                                            <div class="col-auto col-md-6 appear-animate" data-animation-delay="500" data-animation-name="fadeInRightShorter"></div>-->
+                                            <div class="col-auto col-md-6 content-right appear-animate" data-animation-delay="700" data-animation-name="fadeInRightShorter">
+                                                <h4 class="d-inline-block text-left text-uppercase line-height-1 d-inline-block">Starting At $119.99. Discounts lasts till april</h4>
+                                                <h5 class="text-left coupon-sale-text">$119.99</h5>
+                                                <div class="mb-0">
+                                                    <a href="#" class="btn btn-modern btn-md btn-dark">BUY NOW!</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                         <!-- End .home-slider -->

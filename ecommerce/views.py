@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q, Sum, F
 from django.http import JsonResponse
-from .models import Category, Product, ProductImage, ProductSize, Size, Order, OrderItem, ShippingAddress, ExchangeRate
+from .models import Category, Product, ProductImage, ProductSize, Size, Order, OrderItem, ShippingAddress, ExchangeRate, BannerAd, BannerAd2
 import requests
 from django.http import JsonResponse
 from django.utils import timezone
@@ -16,9 +16,13 @@ from datetime import timedelta
 def home(request):
     products = Product.objects.filter(is_active=True)[:8]
     ft_products = Product.objects.filter(is_featured=True, is_active=True)[:8]
+    active_banner = BannerAd.objects.filter(is_active=True).first()
+    active_banner2 = BannerAd2.objects.filter(is_active=True).first()
     context = {
         "products": products,
-        "ft_products": ft_products
+        "ft_products": ft_products,
+        "active_banner": active_banner,
+        "active_banner2": active_banner2,
     }
     return render(request, 'User/index.html', context)
 
@@ -758,6 +762,109 @@ def refresh_exchange_rates(request):
 
     except (requests.RequestException, KeyError, ValueError) as e:
         return JsonResponse({'status': 'error', 'detail': str(e)}, status=502)
+
+
+
+
+def admin_banner_ads(request):
+    if not request.user.is_superuser:
+        messages.error(request, 'Access Denied')
+        return redirect("ecommerce:home")
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'set_live':
+            ad_id = request.POST.get('ad_id')
+            ad = get_object_or_404(BannerAd, id=ad_id)
+            ad.is_active = True
+            ad.save()  # triggers the single-active enforcement in save()
+            messages.success(request, f'"{ad.name}" is now live.')
+            return redirect('ecommerce:admin_banner_ads')
+
+        elif action == 'deactivate':
+            ad_id = request.POST.get('ad_id')
+            ad = get_object_or_404(BannerAd, id=ad_id)
+            ad.is_active = False
+            ad.save()
+            messages.success(request, f'"{ad.name}" has been deactivated.')
+            return redirect('ecommerce:admin_banner_ads')
+
+        elif action == 'delete':
+            ad_id = request.POST.get('ad_id')
+            ad = get_object_or_404(BannerAd, id=ad_id)
+            name = ad.name
+            ad.delete()
+            messages.success(request, f'"{name}" has been deleted.')
+            return redirect('ecommerce:admin_banner_ads')
+
+        elif action == 'create':
+            BannerAd.objects.create(
+                name=request.POST.get('name'),
+                image=request.FILES.get('image'),
+                header=request.POST.get('header'),
+                subheading=request.POST.get('subheading'),
+                teaser=request.POST.get('teaser', ''),
+                cta_text=request.POST.get('cta_text', 'Shop Now'),
+                price_tag=request.POST.get('price_tag', ''),
+                redirect_url=request.POST.get('redirect_url'),
+                is_active=False,
+            )
+            messages.success(request, 'New banner ad created.')
+            return redirect('ecommerce:admin_banner_ads')
+
+    ads = BannerAd.objects.all()
+    return render(request, 'Admin/admin_banner_ads.html', {'ads': ads})
+
+
+def admin_banner_ads2(request):
+
+    if not request.user.is_superuser:
+        messages.error(request, 'Access Denied')
+        return redirect("ecommerce:home")
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'set_live':
+            ad_id = request.POST.get('ad_id')
+            ad = get_object_or_404(BannerAd2, id=ad_id)
+            ad.is_active = True
+            ad.save()
+            messages.success(request, f'"{ad.name}" is now live.')
+            return redirect('ecommerce:admin_banner_ads2')
+
+        elif action == 'deactivate':
+            ad_id = request.POST.get('ad_id')
+            ad = get_object_or_404(BannerAd2, id=ad_id)
+            ad.is_active = False
+            ad.save()
+            messages.success(request, f'"{ad.name}" has been deactivated.')
+            return redirect('ecommerce:admin_banner_ads2')
+
+        elif action == 'delete':
+            ad_id = request.POST.get('ad_id')
+            ad = get_object_or_404(BannerAd2, id=ad_id)
+            name = ad.name
+            ad.delete()
+            messages.success(request, f'"{name}" has been deleted.')
+            return redirect('ecommerce:admin_banner_ads2')
+
+        elif action == 'create':
+            BannerAd2.objects.create(
+                name=request.POST.get('name'),
+                image=request.FILES.get('image'),
+                header=request.POST.get('header'),
+                subheading=request.POST.get('subheading'),
+                teaser=request.POST.get('teaser', ''),
+                cta_text=request.POST.get('cta_text', 'Shop Now'),
+                price_tag=request.POST.get('price_tag', ''),
+                redirect_url=request.POST.get('redirect_url'),
+                is_active=False,
+            )
+            messages.success(request, 'New banner ad created.')
+            return redirect('ecommerce:admin_banner_ads2')
+
+    ads = BannerAd2.objects.all()
+    return render(request, 'Admin/admin_banner_ads2.html', {'ads': ads})
 
 
 

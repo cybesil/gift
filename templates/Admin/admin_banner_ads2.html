@@ -1,0 +1,536 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banner Ads 2 — Admin Console</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    :root {
+        --bg-main: #FAFAFA;
+        --sidebar-black: #0A0A0C;
+        --card-white: #FFFFFF;
+        --text-title: #121214;
+        --text-body: #52525B;
+        --text-muted: #A1A1AA;
+        --pink-accent: #E11D48;
+        --pink-glow: rgba(225, 29, 72, 0.08);
+        --pink-hover: #BE123C;
+        --border-soft: #ECECED;
+        --radius-premium: 10px;
+        --radius-inner: 6px;
+        --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.015em; }
+    body { background-color: var(--bg-main); color: var(--text-body); display: flex; min-height: 100vh; }
+
+    .sidebar {
+        width: 260px; background: var(--sidebar-black);
+        display: flex; flex-direction: column;
+        position: fixed; top: 0; bottom: 0; left: 0;
+        z-index: 100; padding: 40px 20px;
+        transition: var(--transition-smooth); overflow-y: auto;
+    }
+    .brand-container { display: flex; align-items: center; gap: 12px; padding-left: 12px; margin-bottom: 48px; }
+    .brand-logo { width: 28px; height: 28px; background: var(--pink-accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.85rem; flex-shrink: 0; }
+    .brand-name { font-weight: 800; font-size: 1.05rem; color: #FFFFFF; text-transform: uppercase; letter-spacing: 0.03em; }
+    .nav-group { display: flex; flex-direction: column; gap: 4px; }
+    .nav-label { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; color: #44444F; letter-spacing: 0.08em; padding: 12px 14px 4px 14px; }
+    .nav-item {
+        display: flex; align-items: center; gap: 14px;
+        padding: 12px 14px; color: #71717A;
+        text-decoration: none; font-weight: 600; font-size: 0.88rem;
+        cursor: pointer; border-radius: var(--radius-inner);
+        transition: var(--transition-smooth); list-style: none;
+        background: none; border: none; width: 100%; text-align: left;
+    }
+    .nav-item i { font-size: 1rem; width: 20px; }
+    .nav-item:hover { color: #E4E4E7; background: rgba(255,255,255,0.03); }
+    .nav-item.active { color: #FFFFFF; background: var(--pink-accent); }
+
+    .main-wrapper { margin-left: 260px; flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .global-header {
+        height: 80px; background: var(--card-white);
+        border-bottom: 1px solid var(--border-soft);
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0 56px; position: sticky; top: 0; z-index: 50;
+    }
+    .mobile-toggle { display: none; background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text-title); }
+    .page-content { padding: 56px; }
+
+    .view-title-block { margin-bottom: 40px; }
+    .view-title-block h1 { font-size: 1.85rem; font-weight: 800; color: var(--text-title); }
+    .view-title-block p { color: var(--text-muted); font-size: 0.95rem; margin-top: 4px; }
+
+    .messages-container { margin-bottom: 24px; display: flex; flex-direction: column; gap: 10px; }
+    .msg-alert {
+        padding: 14px 18px; border-radius: var(--radius-inner);
+        font-size: 0.88rem; font-weight: 600;
+        display: flex; align-items: center; gap: 10px;
+        border: 1px solid transparent;
+    }
+    .msg-alert.success { background: #F0FDF4; border-color: #86EFAC; color: #166534; }
+    .msg-alert.error   { background: #FEF2F2; border-color: #FCA5A5; color: #991B1B; }
+    .msg-close { margin-left: auto; background: none; border: none; cursor: pointer; color: inherit; font-size: 1rem; }
+
+    .ads-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 24px;
+        margin-bottom: 48px;
+    }
+    .ad-card {
+        background: var(--card-white);
+        border: 1px solid var(--border-soft);
+        border-radius: var(--radius-premium);
+        overflow: hidden;
+        transition: var(--transition-smooth);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .ad-card.is-live {
+        border-color: var(--pink-accent);
+        box-shadow: 0 0 0 3px var(--pink-glow);
+    }
+    .ad-card-image {
+        width: 100%; height: 180px; object-fit: cover;
+        display: block; background: #F4F4F5;
+    }
+    .ad-card-image-placeholder {
+        width: 100%; height: 180px; background: #F4F4F5;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--text-muted); font-size: 2rem;
+    }
+    .ad-card-body { padding: 20px; }
+    .ad-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .ad-card-name { font-size: 0.95rem; font-weight: 700; color: var(--text-title); }
+    .status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 50px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; flex-shrink: 0; }
+    .pill-live   { background: var(--pink-glow); color: var(--pink-accent); }
+    .pill-draft  { background: #F4F4F5; color: #52525B; }
+
+    .ad-card-meta { display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
+    .ad-meta-row { display: flex; gap: 8px; font-size: 0.82rem; }
+    .ad-meta-label { color: var(--text-muted); font-weight: 600; min-width: 80px; flex-shrink: 0; }
+    .ad-meta-value { color: var(--text-body); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .ad-card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .action-btn {
+        display: inline-flex; align-items: center; justify-content: center;
+        gap: 8px; padding: 9px 16px; font-size: 0.82rem; font-weight: 600;
+        border-radius: var(--radius-inner); cursor: pointer;
+        transition: var(--transition-smooth); border: 1px solid transparent;
+        text-decoration: none;
+    }
+    .action-btn-primary   { background: var(--sidebar-black); color: white; border-color: var(--sidebar-black); }
+    .action-btn-primary:hover { background: var(--pink-accent); border-color: var(--pink-accent); }
+    .action-btn-secondary { background: var(--card-white); border-color: var(--border-soft); color: var(--text-body); }
+    .action-btn-secondary:hover { background: var(--bg-main); color: var(--text-title); }
+    .action-btn-danger    { background: #FEF2F2; border-color: #FCA5A5; color: #B91C1C; }
+    .action-btn-danger:hover { background: #B91C1C; color: white; border-color: #B91C1C; }
+    .action-btn-ghost     { background: transparent; border-color: var(--border-soft); color: var(--text-muted); padding: 9px 12px; }
+    .action-btn-ghost:hover { color: #B91C1C; border-color: #FCA5A5; background: #FEF2F2; }
+
+    .empty-state {
+        padding: 80px 24px; text-align: center;
+        display: flex; flex-direction: column; align-items: center; gap: 12px;
+        background: var(--card-white); border: 1px solid var(--border-soft);
+        border-radius: var(--radius-premium);
+    }
+    .empty-state i { font-size: 2.5rem; color: var(--text-muted); }
+    .empty-state h3 { font-size: 1rem; font-weight: 700; color: var(--text-title); }
+    .empty-state p  { font-size: 0.88rem; color: var(--text-muted); }
+
+    .create-section-header {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 32px; flex-wrap: wrap; gap: 16px;
+    }
+    .create-section-header h2 { font-size: 1.2rem; font-weight: 800; color: var(--text-title); }
+
+    .sectioned-form-block {
+        display: grid; grid-template-columns: 3fr 7fr;
+        gap: 64px; padding: 40px 0;
+        border-bottom: 1px solid var(--border-soft);
+    }
+    .sectioned-form-block:last-of-type { border-bottom: none; }
+    .form-explanation-side h3 { font-size: 1.05rem; font-weight: 700; color: var(--text-title); margin-bottom: 6px; }
+    .form-explanation-side p  { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; }
+    .form-card-side {
+        background: var(--card-white); border: 1px solid var(--border-soft);
+        border-radius: var(--radius-premium); padding: 32px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.01);
+        display: flex; flex-direction: column; gap: 20px;
+    }
+    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .input-wrapper { display: flex; flex-direction: column; gap: 6px; }
+    .input-wrapper label { font-size: 0.78rem; font-weight: 700; color: var(--text-title); text-transform: uppercase; letter-spacing: 0.02em; }
+    .input-hint { font-size: 0.75rem; color: var(--text-muted); font-weight: 400; text-transform: none; letter-spacing: 0; }
+    .form-input-element {
+        width: 100%; padding: 11px 14px;
+        border: 1px solid var(--border-soft); border-radius: var(--radius-inner);
+        font-size: 0.9rem; outline: none; color: var(--text-title);
+        background: var(--bg-main); transition: var(--transition-smooth);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .form-input-element:focus { background: var(--card-white); border-color: var(--pink-accent); box-shadow: 0 0 0 3px var(--pink-glow); }
+
+    .section-divider {
+        border: none; border-top: 2px solid var(--border-soft);
+        margin: 48px 0;
+    }
+
+    .confirm-overlay {
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(10,10,12,0.4); backdrop-filter: blur(6px);
+        z-index: 300; display: none; align-items: center; justify-content: center; padding: 24px;
+    }
+    .confirm-overlay.open { display: flex; }
+    .confirm-card {
+        background: var(--card-white); border-radius: var(--radius-premium);
+        width: 100%; max-width: 420px; padding: 32px; position: relative;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.10); border: 1px solid var(--border-soft);
+    }
+    .confirm-card h3 { font-size: 1.1rem; font-weight: 800; color: var(--text-title); margin-bottom: 8px; }
+    .confirm-card p  { font-size: 0.9rem; color: var(--text-body); line-height: 1.5; }
+    .confirm-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 28px; }
+
+    @media (max-width: 1100px) {
+        .sectioned-form-block { grid-template-columns: 1fr; gap: 24px; }
+    }
+    @media (max-width: 768px) {
+        .sidebar { transform: translateX(-100%); }
+        .sidebar.mobile-open { transform: translateX(0); }
+        .main-wrapper { margin-left: 0; width: 100%; }
+        .mobile-toggle { display: block; }
+        .global-header { padding: 0 20px; }
+        .page-content { padding: 24px 16px; }
+        .ads-grid { grid-template-columns: 1fr; }
+        .input-row { grid-template-columns: 1fr; }
+    }
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+    <div class="brand-container">
+        <div class="brand-logo"><i class="fa-solid fa-feather-pointed"></i></div>
+        <div class="brand-name">Admin Console</div>
+    </div>
+    <ul class="nav-group" style="padding:0; list-style:none;">
+        <div class="nav-label">Orders</div>
+        <li>
+            <a href="{% url 'ecommerce:admin_dashboard' %}?tab=orders" class="nav-item">
+                <i class="fa-solid fa-receipt"></i> Orders
+            </a>
+        </li>
+        <div class="nav-label">Catalog</div>
+        <li>
+            <a href="{% url 'ecommerce:admin_dashboard' %}?tab=products" class="nav-item">
+                <i class="fa-solid fa-folder-open"></i> Products
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'ecommerce:add_product' %}" class="nav-item">
+                <i class="fa-solid fa-circle-plus"></i> Add Products
+            </a>
+        </li>
+        <div class="nav-label">Categories</div>
+        <li>
+            <a href="{% url 'ecommerce:admin_dashboard' %}?tab=categories" class="nav-item">
+                <i class="fa-solid fa-tags"></i> Categories
+            </a>
+        </li>
+        <div class="nav-label">Advertising</div>
+        <li>
+            <a href="{% url 'ecommerce:admin_banner_ads' %}" class="nav-item">
+                <i class="fa-solid fa-rectangle-ad"></i> Banner Slot 1
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'ecommerce:admin_banner_ads2' %}" class="nav-item active">
+                <i class="fa-solid fa-rectangle-ad"></i> Banner Slot 2
+            </a>
+        </li>
+    </ul>
+</aside>
+
+<div class="main-wrapper">
+
+    <header class="global-header">
+        <button class="mobile-toggle" onclick="document.getElementById('sidebar').classList.toggle('mobile-open')">
+            <i class="fa-solid fa-bars-staggered"></i>
+        </button>
+        <div style="font-size:0.82rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">
+            Admin Panel &nbsp;·&nbsp; <span style="color:var(--pink-accent);">Banner Slot 2</span>
+        </div>
+        <a href="{% url 'ecommerce:home' %}" class="action-btn action-btn-secondary" style="font-size:0.8rem; padding:8px 14px;">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> View Site
+        </a>
+    </header>
+
+    <main class="page-content">
+
+        {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+            <div class="msg-alert {{ message.tags }}">
+                <i class="fa-solid {% if message.tags == 'success' %}fa-circle-check{% else %}fa-circle-xmark{% endif %}"></i>
+                {{ message }}
+                <button class="msg-close" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="view-title-block">
+            <h1>Banner Slot 2</h1>
+            <p>Manage ads for the second homepage banner. Only one can be live at a time.</p>
+        </div>
+
+        {% if ads %}
+        <div class="ads-grid">
+            {% for ad in ads %}
+            <div class="ad-card {% if ad.is_active %}is-live{% endif %}">
+                {% if ad.image_url %}
+                    <img class="ad-card-image" src="{{ ad.image_url }}" alt="{{ ad.header }}">
+                {% else %}
+                    <div class="ad-card-image-placeholder">
+                        <i class="fa-regular fa-image"></i>
+                    </div>
+                {% endif %}
+
+                <div class="ad-card-body">
+                    <div class="ad-card-top">
+                        <span class="ad-card-name">{{ ad.name }}</span>
+                        {% if ad.is_active %}
+                            <span class="status-pill pill-live"><i class="fa-solid fa-circle" style="font-size:0.5rem;"></i> Live</span>
+                        {% else %}
+                            <span class="status-pill pill-draft">Draft</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="ad-card-meta">
+                        <div class="ad-meta-row">
+                            <span class="ad-meta-label">Header</span>
+                            <span class="ad-meta-value">{{ ad.header }}</span>
+                        </div>
+                        <div class="ad-meta-row">
+                            <span class="ad-meta-label">Subheading</span>
+                            <span class="ad-meta-value">{{ ad.subheading }}</span>
+                        </div>
+                        {% if ad.teaser %}
+                        <div class="ad-meta-row">
+                            <span class="ad-meta-label">Teaser</span>
+                            <span class="ad-meta-value">{{ ad.teaser }}</span>
+                        </div>
+                        {% endif %}
+                        {% if ad.price_tag %}
+                        <div class="ad-meta-row">
+                            <span class="ad-meta-label">Price Tag</span>
+                            <span class="ad-meta-value">{{ ad.price_tag }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="ad-meta-row">
+                            <span class="ad-meta-label">CTA</span>
+                            <span class="ad-meta-value">{{ ad.cta_text }}</span>
+                        </div>
+                        <div class="ad-meta-row">
+                            <span class="ad-meta-label">Link</span>
+                            <span class="ad-meta-value" style="color:var(--pink-accent);">{{ ad.redirect_url }}</span>
+                        </div>
+                    </div>
+
+                    <div class="ad-card-actions">
+                        {% if not ad.is_active %}
+                        <form method="POST" style="display:contents;">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="set_live">
+                            <input type="hidden" name="ad_id" value="{{ ad.id }}">
+                            <button type="submit" class="action-btn action-btn-primary">
+                                <i class="fa-solid fa-circle-play"></i> Set Live
+                            </button>
+                        </form>
+                        {% else %}
+                        <form method="POST" style="display:contents;">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="deactivate">
+                            <input type="hidden" name="ad_id" value="{{ ad.id }}">
+                            <button type="submit" class="action-btn action-btn-secondary">
+                                <i class="fa-solid fa-circle-pause"></i> Deactivate
+                            </button>
+                        </form>
+                        {% endif %}
+                        <button class="action-btn action-btn-ghost"
+                                onclick="confirmDelete({{ ad.id }}, '{{ ad.name|escapejs }}')">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state" style="margin-bottom:48px;">
+            <i class="fa-solid fa-rectangle-ad"></i>
+            <h3>No banner ads yet</h3>
+            <p>Create your first ad below and set it live when ready.</p>
+        </div>
+        {% endif %}
+
+        <hr class="section-divider">
+
+        <div class="create-section-header">
+            <div>
+                <h2>Create New Ad</h2>
+                <p style="font-size:0.88rem; color:var(--text-muted); margin-top:4px;">Fill in the fields below. New ads are saved as drafts — set them live from the cards above.</p>
+            </div>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" action="{% url 'ecommerce:admin_banner_ads2' %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="create">
+
+            <div class="sectioned-form-block">
+                <div class="form-explanation-side">
+                    <h3>Identity</h3>
+                    <p>An internal label to help you identify this ad in the list. Not shown on the site.</p>
+                </div>
+                <div class="form-card-side">
+                    <div class="input-wrapper">
+                        <label>Ad Name <span style="color:var(--pink-accent);">*</span></label>
+                        <input type="text" name="name" class="form-input-element" placeholder="e.g. Winter Collection" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sectioned-form-block">
+                <div class="form-explanation-side">
+                    <h3>Banner Image</h3>
+                    <p>Landscape format works best. Recommended size 1670 × 820 px. Will be cropped and optimised automatically.</p>
+                </div>
+                <div class="form-card-side">
+                    <div class="input-wrapper">
+                        <label>Image <span style="color:var(--pink-accent);">*</span></label>
+                        <input type="file" name="image" class="form-input-element" accept="image/*"
+                               id="banner-image-input" onchange="previewBannerImage(event)" required>
+                        <div id="banner-image-preview" style="display:none; margin-top:8px;">
+                            <img id="banner-preview-img" src="" alt="Preview"
+                                 style="width:100%; max-height:200px; object-fit:cover; border-radius:var(--radius-inner); border:1px solid var(--border-soft);">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sectioned-form-block">
+                <div class="form-explanation-side">
+                    <h3>Copy</h3>
+                    <p>The text content displayed on the banner. Teaser and price tag are optional and can be left blank.</p>
+                </div>
+                <div class="form-card-side">
+                    <div class="input-wrapper">
+                        <label>Header <span style="color:var(--pink-accent);">*</span></label>
+                        <input type="text" name="header" class="form-input-element" placeholder="e.g. New Season. New Looks." required>
+                    </div>
+                    <div class="input-wrapper">
+                        <label>Subheading <span style="color:var(--pink-accent);">*</span></label>
+                        <input type="text" name="subheading" class="form-input-element" placeholder="e.g. Winter Collection on Gift Empire" required>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-wrapper">
+                            <label>Teaser <span class="input-hint">(optional)</span></label>
+                            <input type="text" name="teaser" class="form-input-element" placeholder="e.g. Up to 40% off">
+                        </div>
+                        <div class="input-wrapper">
+                            <label>Price Tag <span class="input-hint">(optional)</span></label>
+                            <input type="text" name="price_tag" class="form-input-element" placeholder="e.g. From $49.99">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sectioned-form-block">
+                <div class="form-explanation-side">
+                    <h3>Action</h3>
+                    <p>The button text and the URL users land on when they click the ad or the CTA button.</p>
+                </div>
+                <div class="form-card-side">
+                    <div class="input-wrapper">
+                        <label>CTA Button Text <span style="color:var(--pink-accent);">*</span></label>
+                        <input type="text" name="cta_text" class="form-input-element" placeholder="e.g. SHOP NOW!" value="Shop Now" required>
+                    </div>
+                    <div class="input-wrapper">
+                        <label>Redirect URL <span style="color:var(--pink-accent);">*</span></label>
+                        <input type="url" name="redirect_url" class="form-input-element" placeholder="https://yoursite.com/collection" required>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; margin-top:8px; gap:12px;">
+                <button type="reset" class="action-btn action-btn-secondary">Clear</button>
+                <button type="submit" class="action-btn action-btn-primary" style="padding:14px 32px;">
+                    <i class="fa-solid fa-plus"></i> Save as Draft
+                </button>
+            </div>
+        </form>
+
+    </main>
+</div>
+
+<div class="confirm-overlay" id="modal-delete-confirm">
+    <div class="confirm-card">
+        <h3>Delete Ad?</h3>
+        <p>You're about to delete <strong id="delete-ad-name"></strong>. This cannot be undone.</p>
+        <form method="POST" action="{% url 'ecommerce:admin_banner_ads2' %}" id="delete-ad-form">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="ad_id" id="delete-ad-id" value="">
+            <div class="confirm-actions">
+                <button type="button" class="action-btn action-btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+                <button type="submit" class="action-btn action-btn-danger">
+                    <i class="fa-regular fa-trash-can"></i> Yes, Delete
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function confirmDelete(id, name) {
+        document.getElementById('delete-ad-id').value = id;
+        document.getElementById('delete-ad-name').textContent = name;
+        document.getElementById('modal-delete-confirm').classList.add('open');
+    }
+    function closeDeleteModal() {
+        document.getElementById('modal-delete-confirm').classList.remove('open');
+    }
+    document.getElementById('modal-delete-confirm').addEventListener('click', function(e) {
+        if (e.target === this) closeDeleteModal();
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeDeleteModal();
+    });
+    function previewBannerImage(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const preview = document.getElementById('banner-image-preview');
+        const img     = document.getElementById('banner-preview-img');
+        const reader  = new FileReader();
+        reader.onload = function(e) { img.src = e.target.result; preview.style.display = 'block'; };
+        reader.readAsDataURL(file);
+    }
+    setTimeout(() => {
+        document.querySelectorAll('.msg-alert').forEach(el => {
+            el.style.transition = 'opacity 0.4s';
+            el.style.opacity = '0';
+            setTimeout(() => el.remove(), 400);
+        });
+    }, 6000);
+</script>
+
+</body>
+</html>
