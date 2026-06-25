@@ -9,6 +9,33 @@
 {% block og_title %}{{ product.name }} | Gift Empire{% endblock %}
 {% block og_description %}{{ product.description|default:product.name|truncatechars:100 }}{% endblock %}
 {% block og_image %}{{ product.primary_image|default:'/static/assets/images/logos.png' }}{% endblock %}
+{% block extra_head %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "{{ product.name|escapejs }}",
+    "image": "{{ product.primary_image|default:''|escapejs }}",
+    "description": "{{ product.description|default:product.name|truncatechars:300|escapejs }}",
+    "sku": "{{ product.sku|escapejs }}",
+    "brand": {
+        "@type": "Brand",
+        "name": "Gift Empire"
+    },
+    "offers": {
+        "@type": "Offer",
+        "url": "{{ request.build_absolute_uri }}",
+        "priceCurrency": "NGN",
+        "price": "{{ product.display_price }}",
+        "availability": "{% if product.stock_quantity > 0 %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
+        "seller": {
+            "@type": "Organization",
+            "name": "Gift Empire Worldwide"
+        }
+    }
+}
+</script>
+{% endblock %}
 {% block content %}
         <main class="main">
             <nav aria-label="breadcrumb" class="breadcrumb-nav">
