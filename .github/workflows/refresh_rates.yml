@@ -1,0 +1,23 @@
+name: Refresh Exchange Rates
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  
+  workflow_dispatch:       # manual trigger from GitHub UI
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Hit refresh endpoint
+        run: |
+          curl --fail -s -o response.json -w "%{http_code}" \
+            "https://gift-73je.onrender.com/internal/refresh-rates/?token=${{ secrets.RATE_REFRESH_TOKEN }}" \
+            | tee status_code.txt
+          cat response.json
+          STATUS=$(cat status_code.txt)
+          if [ "$STATUS" != "200" ]; then
+            echo "Unexpected status: $STATUS"
+            exit 1
+          fi
