@@ -172,6 +172,10 @@ STATICFILES_DIRS = (
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# In your MIDDLEWARE, WhiteNoise is already there — just add this:
+WHITENOISE_MAX_AGE = 31536000  # 1 year
 
 
 # default storage cloundinary
