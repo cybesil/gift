@@ -878,13 +878,16 @@ def admin_banner_ads2(request):
 
 def product_search_api(request):
     query = request.GET.get('q', '').strip()
+    category_id = request.GET.get('cat', '').strip()
+
     if len(query) < 2:
         return JsonResponse({'results': []})
 
-    products = Product.objects.filter(
-        is_active=True,
-        name__icontains=query
-    ).values('name', 'slug')[:8]
+    filters = Q(is_active=True, name__icontains=query)
+    if category_id:
+        filters &= Q(category_id=category_id)
+
+    products = Product.objects.filter(filters).values('name', 'slug')[:8]
 
     results = [
         {
