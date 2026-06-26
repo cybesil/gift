@@ -657,8 +657,7 @@
                     <li><a href="{% url 'ecommerce:admin_dashboard' %}">Admin</a></li>
                     {% endif %}
                     <li><a href="{% url 'ecommerce:dashboard' %}">My Account</a></li>
-                    <li><a href="demo9-about.html">About Us</a></li>
-                    <li><a href="blog.html">BLOG</a></li>
+                    <li><a href="#">About Us</a></li>
 <!--                    <li><a href="wishlist.html">My Wishlist</a></li>-->
                     <li><a href="{% url 'cart:cart_summary' %}">Cart</a></li>
                     {% if request.user.is_authenticated %}
@@ -670,10 +669,32 @@
             </nav>
             <!-- End .mobile-nav -->
 
-            <form class="search-wrapper mb-2" action="#">
-                <input type="text" class="form-control mb-0" placeholder="Search..." required />
-                <button class="btn icon-search text-white bg-transparent p-0" type="submit"></button>
-            </form>
+            <div class="search-wrapper mb-2" style="position:relative;">
+                <input
+                    type="text"
+                    id="mobile-search-input"
+                    class="form-control mb-0"
+                    placeholder="Search products..."
+                    autocomplete="off"
+                />
+                <button class="btn icon-search text-white bg-transparent p-0" type="button"></button>
+
+                <!-- Dropdown results -->
+                <div id="mobile-search-results" style="
+                    display:none;
+                    position:absolute;
+                    top:100%;
+                    left:0;
+                    right:0;
+                    background:#fff;
+                    border:1px solid #eee;
+                    border-radius:6px;
+                    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+                    z-index:99999;
+                    max-height:300px;
+                    overflow-y:auto;
+                "></div>
+            </div>
 
             <div class="social-icons">
                 <a target="_blank" rel="noopener noreferrer nofollow" class="social-icon social-facebook" href="https://www.facebook.com/share/1J7HSpg2qg/" title="Facebook">
@@ -693,6 +714,54 @@
         <!-- End .mobile-menu-wrapper -->
     </div>
     <!-- End .mobile-menu-container -->
+    <script>
+    (function() {
+        const input = document.getElementById('mobile-search-input');
+        const dropdown = document.getElementById('mobile-search-results');
+        let debounceTimer;
+
+        input.addEventListener('input', function() {
+            const query = this.value.trim();
+            clearTimeout(debounceTimer);
+
+            if (query.length < 2) {
+                dropdown.style.display = 'none';
+                dropdown.innerHTML = '';
+                return;
+            }
+
+            debounceTimer = setTimeout(() => {
+                fetch(`{% url 'ecommerce:product_search_api' %}?q=${encodeURIComponent(query)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.results.length === 0) {
+                            dropdown.innerHTML = '<div style="padding:12px 16px;color:#999;font-size:0.85rem;">No products found</div>';
+                        } else {
+                            dropdown.innerHTML = data.results.map(p => `
+                                <a href="${p.url}" style="
+                                    display:block;
+                                    padding:10px 16px;
+                                    color:#222;
+                                    font-size:0.875rem;
+                                    border-bottom:1px solid #f5f5f5;
+                                    text-decoration:none;
+                                " onmouseover="this.style.background='#f9f9f9'" onmouseout="this.style.background='#fff'">
+                                    ${p.name}
+                                </a>
+                            `).join('');
+                        }
+                        dropdown.style.display = 'block';
+                    });
+            }, 300);
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+    })();
+    </script>
 
     <div class="sticky-navbar">
         <div class="sticky-info">
@@ -701,8 +770,8 @@
             </a>
         </div>
         <div class="sticky-info">
-            <a href="demo9-shop.html" class="">
-                <i class="icon-bars"></i>Categories
+            <a href="{% url 'ecommerce:dashboard' %}" class="">
+                <i class="icon-bars"></i>Orders
             </a>
         </div>
         <div class="sticky-info">

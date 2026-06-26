@@ -18,4 +18,5 @@ urlpatterns = [
     path('privacy/', privacy_policy, name='privacy_policy'),
     path('about-us/', about, name='about'),
     path('terms-and-conditions/', terms, name='terms'),
+    path('search/api/', product_search_api, name='product_search_api'),
 ]

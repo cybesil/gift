@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect, reverse
 from django.core.paginator import Paginator
 from .forms import AccountDetailsForm, ShippingAddressForm
 from django.contrib.auth.decorators import login_required
@@ -874,6 +874,26 @@ def admin_banner_ads2(request):
 
     ads = BannerAd2.objects.all()
     return render(request, 'Admin/admin_banner_ads2.html', {'ads': ads})
+
+
+def product_search_api(request):
+    query = request.GET.get('q', '').strip()
+    if len(query) < 2:
+        return JsonResponse({'results': []})
+
+    products = Product.objects.filter(
+        is_active=True,
+        name__icontains=query
+    ).values('name', 'slug')[:8]
+
+    results = [
+        {
+            'name': p['name'],
+            'url': reverse('ecommerce:product_detail', args=[p['slug']])
+        }
+        for p in products
+    ]
+    return JsonResponse({'results': results})
 
 
 
