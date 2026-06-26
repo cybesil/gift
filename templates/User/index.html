@@ -20,9 +20,9 @@
                                         <img class="slide-bg" src="{{ active_banner.image_url }}" fetchpriority="high" style="background-color: #ccc;" alt="{{ active_banner.header }}" width="835" height="410" />
                                     </a>
                                     <div class="banner-layer slide-1 text-xl-right banner-layer-middle">
-                                        <h4 class="text-xl-right slide-title appear-animate" data-animation-delay="100" data-animation-name="fadeInUpShorter">{{ active_banner.header }}</h4>
-                                        <h4 class="text-xl-right text-uppercase sub-title appear-animate" data-animation-delay="300" data-animation-name="fadeInUpShorter"
-                                        style="max-width: 300px; word-wrap: break-word; white-space: normal;">{{ active_banner.subheading }}</h4>
+                                        <h4 class="text-xl-left slide-title appear-animate" data-animation-delay="100" data-animation-name="fadeInUpShorter">{{ active_banner.header }}</h4>
+                                        <h4 class="text-xl-left text-uppercase sub-title appear-animate" data-animation-delay="300" data-animation-name="fadeInUpShorter"
+                                        style="max-width: 300px; word-wrap: normal; white-space: normal;">{{ active_banner.subheading }}</h4>
                                         <div class="row">
 <!--                                            <div class="col-auto col-md-6 appear-animate" data-animation-delay="500" data-animation-name="fadeInRightShorter"></div>-->
                                             <div class="col-auto col-md-6 content-right appear-animate" data-animation-delay="700" data-animation-name="fadeInRightShorter">
@@ -43,8 +43,9 @@
                                         <img class="slide-bg" src="{% static 'assets/images/demoes/demo9/slider/slide-1.jpg' %}" fetchpriority="high" style="background-color: #ccc;" alt="banner" width="835" height="410" />
                                     </a>
                                     <div class="banner-layer slide-1 text-xl-right banner-layer-middle">
-                                        <h4 class="text-xl-right slide-title appear-animate" data-animation-delay="100" data-animation-name="fadeInUpShorter">Find the Boundaries. Push Through!</h4>
-                                        <h2 class="text-xl-right text-uppercase sub-title appear-animate" data-animation-delay="300" data-animation-name="fadeInUpShorter">Gift Empire</h2>
+                                        <h4 class="text-xl-left slide-title appear-animate" data-animation-delay="100" data-animation-name="fadeInUpShorter">Find the Boundaries. Push Through!</h4>
+                                        <h4 class="text-xl-left text-uppercase sub-title appear-animate" data-animation-delay="300" data-animation-name="fadeInUpShorter"
+                                        style="max-width: 300px; word-wrap: normal; white-space: normal;">Gift Empire</h4>
                                         <div class="row">
 <!--                                            <div class="col-auto col-md-6 appear-animate" data-animation-delay="500" data-animation-name="fadeInRightShorter"></div>-->
                                             <div class="col-auto col-md-6 content-right appear-animate" data-animation-delay="700" data-animation-name="fadeInRightShorter">
@@ -65,8 +66,9 @@
                                         <img class="slide-bg" src="{{ active_banner2.image_url }}" fetchpriority="high" style="background-color: #ccc;" alt="{{ active_banner2.header }}" width="835" height="410" />
                                     </a>
                                     <div class="banner-layer slide-1 text-xl-right banner-layer-middle">
-                                        <h4 class="text-xl-right slide-title appear-animate" data-animation-delay="100" data-animation-name="fadeInUpShorter">{{ active_banner2.header }}</h4>
-                                        <h2 class="text-xl-right text-uppercase sub-title appear-animate" data-animation-delay="300" data-animation-name="fadeInUpShorter">{{ active_banner2.subheading }}</h2>
+                                        <h4 class="text-xl-left slide-title appear-animate" data-animation-delay="100" data-animation-name="fadeInUpShorter">{{ active_banner2.header }}</h4>
+                                        <h4 class="text-xl-left text-uppercase sub-title appear-animate" data-animation-delay="300" data-animation-name="fadeInUpShorter"
+                                        style="max-width: 300px; word-wrap: normal; white-space: normal;">{{ active_banner2.subheading }}</h4>
                                         <div class="row">
 <!--                                            <div class="col-auto col-md-6 appear-animate" data-animation-delay="500" data-animation-name="fadeInRightShorter"></div>-->
                                             <div class="col-auto col-md-6 content-right appear-animate" data-animation-delay="700" data-animation-name="fadeInRightShorter">
@@ -87,8 +89,9 @@
                                         <img class="slide-bg" src="{% static 'assets/images/demoes/demo9/slider/slide-1.jpg' %}" fetchpriority="high" style="background-color: #ccc;" alt="banner" width="835" height="410" />
                                     </a>
                                     <div class="banner-layer slide-1 text-xl-right banner-layer-middle">
-                                        <h4 class="text-xl-right slide-title appear-animate" data-animation-delay="100" data-animation-name="fadeInUpShorter">Find the Boundaries. Push Through!</h4>
-                                        <h2 class="text-xl-right text-uppercase sub-title appear-animate" data-animation-delay="300" data-animation-name="fadeInUpShorter">Gift Empire</h2>
+                                        <h4 class="text-xl-left slide-title appear-animate" data-animation-delay="100" data-animation-name="fadeInUpShorter">Find the Boundaries. Push Through!</h4>
+                                        <h4 class="text-xl-left text-uppercase sub-title appear-animate" data-animation-delay="300" data-animation-name="fadeInUpShorter"
+                                        style="max-width: 300px; word-wrap: normal; white-space: normal;">Gift Empire</h4>
                                         <div class="row">
 <!--                                            <div class="col-auto col-md-6 appear-animate" data-animation-delay="500" data-animation-name="fadeInRightShorter"></div>-->
                                             <div class="col-auto col-md-6 content-right appear-animate" data-animation-delay="700" data-animation-name="fadeInRightShorter">
@@ -249,6 +252,84 @@
                 {% endif %}
                 <div class="m-b-1"></div>
                 <!-- margin -->
+                {% for section in category_sections %}
+                <section class="category-products-section pb-2 appear-animate"
+                         data-animation-delay="100"
+                         data-animation-duration="1500">
+
+<!--                    <div class="d-flex align-items-center justify-content-between mb-2">-->
+                        <a href="{{ section.category.get_absolute_url }}">
+                        <h2 class="section-title title-decorate d-flex align-items-center">
+                            {{ section.category.name }}
+                        </h2>
+                        </a>
+<!--                        <a href="{{ section.category.get_absolute_url }}"-->
+<!--                           class="font-weight-bold text-uppercase"-->
+<!--                           style="font-size:.85rem; letter-spacing:.05em;">-->
+<!--                            View All <i class="icon-long-arrow-right"></i>-->
+<!--                        </a>-->
+<!--                    </div>-->
+
+                    <div class="owl-carousel owl-theme nav-image-center" data-owl-options="{
+                        'margin': 20,
+                        'dots': false,
+                        'nav': true,
+                        'loop': false,
+                        'autoplay': false,
+                        'responsive': {
+                            '0':    { 'items': 2 },
+                            '768':  { 'items': 3 },
+                            '1200': { 'items': 4 }
+                        }
+                    }">
+                        {% for x in section.products %}
+                        <div class="product-default left-details">
+                            <figure>
+                                <a href="{{ x.get_absolute_url }}">
+                                    {% if x.primary_image %}
+                                        <img src="{{ x.primary_image }}" alt="{{ x.name }}" width="300" height="300">
+                                    {% else %}
+                                        <img src="{% static 'assets/images/placeholder.jpg' %}" alt="{{ x.name }}" width="300" height="300">
+                                    {% endif %}
+                                </a>
+                                <div class="label-group">
+                                    {% if x.discount_percent %}
+                                        <span class="product-label label-sale">-{{ x.discount_percent }}%</span>
+                                    {% endif %}
+                                </div>
+                            </figure>
+                            <div class="product-details">
+                                <div class="category-list">
+                                    <a href="{{ section.category.get_absolute_url }}" class="product-category">
+                                        {{ section.category.name }}
+                                    </a>
+                                </div>
+                                <h3 class="product-title">
+                                    <a href="{{ x.get_absolute_url }}">{{ x.name }}</a>
+                                </h3>
+                                <div class="price-box">
+                                    {% if x.is_on_sale %}
+                                        <span class="old-price">{% to_currency x.price %}</span>
+                                        <span class="product-price">{% to_currency x.discount_price %}</span>
+                                    {% else %}
+                                        <span class="product-price">{% to_currency x.display_price %}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="product-action">
+                                    <a href="{{ x.get_absolute_url }}" class="btn-icon btn-add-cart">
+                                        <i class="icon-shopping-cart"></i><span>MORE DETAILS</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                </section>
+
+                <div class="m-b-1"></div>
+                <!-- margin -->
+                {% endfor %}
             </div>
             <!-- End .container -->
         </main>

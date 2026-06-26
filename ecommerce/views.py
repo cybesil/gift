@@ -12,7 +12,7 @@ from django.http import JsonResponse
 from django.utils import timezone
 from django.conf import settings
 from datetime import timedelta
-# Create your views here.
+from django.db.models import Prefetch
 
 def home(request):
     active_banner = cache.get('active_banner')
@@ -24,14 +24,38 @@ def home(request):
     if active_banner2 is None:
         active_banner2 = BannerAd2.objects.filter(is_active=True).first()
         cache.set('active_banner2', active_banner2, 60 * 10)
+
     products = Product.objects.filter(is_active=True)[:8]
     ft_products = Product.objects.filter(is_featured=True, is_active=True)[:8]
+
+    # Fetch active categories that have at least one active product,
+    # prefetching their active products ordered newest-first.
+    # Slicing to 8 per category happens in Python after the prefetch (2 queries total).
+    categories_with_products = (
+        Category.objects
+        .filter(is_active=True, products__is_active=True)
+        .prefetch_related(
+            Prefetch(
+                'products',
+                queryset=Product.objects.filter(is_active=True).order_by('-created_at'),
+                to_attr='recent_products',
+            )
+        )
+        .distinct()
+    )
+
+    category_sections = [
+        {'category': cat, 'products': cat.recent_products[:8]}
+        for cat in categories_with_products
+        if cat.recent_products  # guard: skip any that slipped through empty
+    ]
 
     context = {
         "products": products,
         "ft_products": ft_products,
         "active_banner": active_banner,
         "active_banner2": active_banner2,
+        "category_sections": category_sections,
     }
     return render(request, 'User/index.html', context)
 
