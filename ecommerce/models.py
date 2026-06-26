@@ -64,6 +64,14 @@ class Category(models.Model):
     class Meta:
         ordering = ['sort_order', 'name']
 
+    @property
+    def image_url(self):
+        if self.image:
+            return CloudinaryImage(str(self.image)).build_url(
+                width=64, height=64, crop='fill', format='webp', quality='auto'
+            )
+        return None
+
     def save(self, *args, **kwargs):
         if not self.slug:
             base = slugify(self.name)
@@ -97,7 +105,7 @@ class Category(models.Model):
         img = img.resize(size, Image.LANCZOS)
 
         output = BytesIO()
-        img.save(output, format='JPEG', quality=quality, optimize=True)
+        img.save(output, format='webp', quality=quality, optimize=True)
         output.seek(0)
 
         # Generate clean filename

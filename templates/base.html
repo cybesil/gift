@@ -446,7 +446,7 @@
                                             <a href="{{ category.get_absolute_url }}">
                                                 {% if category.image %}
                                                     <img
-                                                        src="{{ category.image.url }}"
+                                                        src="{{ category.image_url }}"
                                                         alt="{{ category.name }}"
                                                         width="32"
                                                         height="32"
@@ -634,7 +634,7 @@
                         <a href="{{ category.get_absolute_url }}">
                             {% if category.image %}
                                 <img
-                                    src="{{ category.image.url }}"
+                                    src="{{ category.image_url }}"
                                     alt="{{ category.name }}"
                                     width="32"
                                     height="32"
