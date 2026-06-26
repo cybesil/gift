@@ -76,6 +76,7 @@ class ShippingAddressForm(forms.ModelForm):
         ('Burundi', 'Burundi'),
         ('Cabo Verde', 'Cabo Verde'),
         ('Cameroon', 'Cameroon'),
+        ('Canada', 'Canada'),
         ('Central African Republic', 'Central African Republic'),
         ('Chad', 'Chad'),
         ('Comoros', 'Comoros'),
@@ -94,6 +95,7 @@ class ShippingAddressForm(forms.ModelForm):
         ('Guinea-Bissau', 'Guinea-Bissau'),
         ('Ivory Coast', 'Ivory Coast'),
         ('Kenya', 'Kenya'),
+        ('Lebanon', 'Lebanon'),
         ('Lesotho', 'Lesotho'),
         ('Liberia', 'Liberia'),
         ('Libya', 'Libya'),
@@ -120,12 +122,11 @@ class ShippingAddressForm(forms.ModelForm):
         ('Togo', 'Togo'),
         ('Tunisia', 'Tunisia'),
         ('Uganda', 'Uganda'),
+        ('United Kingdom', 'United Kingdom'),
+        ('United States', 'United States'),
         ('Zambia', 'Zambia'),
         ('Zimbabwe', 'Zimbabwe'),
         # ─── Other ───
-        ('Canada', 'Canada'),
-        ('United Kingdom', 'United Kingdom'),
-        ('United States', 'United States'),
     ]
 
     def __init__(self, *args, **kwargs):
