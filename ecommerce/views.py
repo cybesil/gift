@@ -69,7 +69,7 @@ def products(request, slug):
     product_list = product_list.order_by(sort_options.get(sort, '-created_at'))
 
     # Pagination
-    paginator = Paginator(product_list, 1)
+    paginator = Paginator(product_list, 12)
     page_obj = paginator.get_page(request.GET.get('page'))
 
     context = {

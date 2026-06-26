@@ -214,7 +214,7 @@ class ProductImage(models.Model):
     def image_url(self):
         if self.image:
             return CloudinaryImage(str(self.image)).build_url(
-                width=800, height=800, crop='fill', format='jpg', quality='auto'
+                width=400, height=400, crop='fill', format='webp', quality='auto'
             )
         return None
 
@@ -222,7 +222,7 @@ class ProductImage(models.Model):
     def thumbnail_url(self):
         if self.image:
             return CloudinaryImage(str(self.image)).build_url(
-                width=300, height=300, crop='fill', format='jpg', quality='auto'
+                width=300, height=300, crop='fill', format='webp', quality='auto'
             )
         return None
 
@@ -465,7 +465,7 @@ class BannerAd(models.Model):
     def image_url(self):
         if self.image:
             return CloudinaryImage(str(self.image)).build_url(
-                width=1670, height=820, crop='fill', format='jpg', quality='auto'
+                width=1670, height=820, crop='fill', format='webp', quality='auto'
             )
         return None
 
@@ -504,7 +504,7 @@ class BannerAd2(models.Model):
     def image_url(self):
         if self.image:
             return CloudinaryImage(str(self.image)).build_url(
-                width=1670, height=820, crop='fill', format='jpg', quality='auto'
+                width=1670, height=820, crop='fill', format='webp', quality='auto'
             )
         return None
 
