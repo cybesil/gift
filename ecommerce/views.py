@@ -127,12 +127,18 @@ def dashboard(request):
     shipping_form = ShippingAddressForm(instance=shipping_address)
 
     # Get user's orders
-    orders_list = Order.objects.filter(user=request.user).order_by('-created_at')
+    orders_list = Order.objects.filter(
+        user=request.user
+    ).prefetch_related(
+        'items__product__images'
+    ).order_by('-created_at')
 
     # Paginate orders
     paginator = Paginator(orders_list, 10)  # 10 orders per page
     page_number = request.GET.get('orders_page', 1)
     orders = paginator.get_page(page_number)
+
+
 
     if request.method == 'POST':
         form_type = request.POST.get('form_type')

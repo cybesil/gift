@@ -166,7 +166,9 @@
 												<td>{% to_currency order.total %}</td>
 												<td>
 													<a href="#"
-													   class="btn btn-sm btn-outline-dark">
+													   class="btn btn-sm btn-outline-dark"
+													   data-toggle="modal"
+													   data-target="#order-modal-{{ order.id }}">
 														View Details
 													</a>
 												</td>
@@ -229,6 +231,131 @@
 									{% endif %}
 								</div>
 							</div>
+							{% for order in orders %}
+							<div class="modal fade" id="order-modal-{{ order.id }}" tabindex="-1" role="dialog" aria-labelledby="order-modal-label-{{ order.id }}" aria-hidden="true">
+								<div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+									<div class="modal-content">
+
+										<div class="modal-header" style="border-bottom: 1px solid #ECECED;">
+											<div>
+												<h5 class="modal-title mb-0" id="order-modal-label-{{ order.id }}">
+													Order <strong>#{{ order.tx_ref }}</strong>
+												</h5>
+												<small class="text-muted">{{ order.created_at|date:"F j, Y" }} at {{ order.created_at|time:"g:i A" }}</small>
+											</div>
+											<button type="button" class="close ml-auto" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">&times;</span>
+											</button>
+										</div>
+
+										<div class="modal-body p-4">
+
+											<!-- Status badge -->
+											<div class="mb-4">
+												<span style="padding: 4px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+													{% if order.status == 'pending' %}background: #FFFBEB; color: #92400E;
+													{% elif order.status == 'paid' %}background: #F0FDF4; color: #15803D;
+													{% elif order.status == 'shipped' %}background: #EFF6FF; color: #1D4ED8;
+													{% elif order.status == 'delivered' %}background: #F0FDF4; color: #166534;
+													{% elif order.status == 'cancelled' %}background: #FEF2F2; color: #991B1B;
+													{% elif order.status == 'refunded' %}background: #F4F4F5; color: #18181B;
+													{% endif %}">
+													{{ order.get_status_display }}
+												</span>
+											</div>
+
+											<!-- Shipping Address -->
+											<div class="mb-4">
+												<h6 class="font-weight-bold text-uppercase mb-2" style="font-size:.8rem; letter-spacing:.06em; color:#52525B;">
+													Shipping Address
+												</h6>
+												{% if order.shipping_address %}
+													<p class="mb-0">{{ order.shipping_address.full_name }}</p>
+													<p class="mb-0 text-muted">{{ order.shipping_address.street_address }}</p>
+													<p class="mb-0 text-muted">
+														{{ order.shipping_address.city }}{% if order.shipping_address.state %}, {{ order.shipping_address.state }}{% endif %}
+														{% if order.shipping_address.postal_code %} {{ order.shipping_address.postal_code }}{% endif %}
+													</p>
+													<p class="mb-0 text-muted">{{ order.shipping_address.country }}</p>
+													{% if order.shipping_address.phone %}
+														<p class="mb-0 text-muted">{{ order.shipping_address.phone }}</p>
+													{% endif %}
+													{% if order.shipping_address.email %}
+														<p class="mb-0 text-muted">{{ order.shipping_address.email }}</p>
+													{% endif %}
+												{% elif order.shipping_address_snapshot %}
+													<p class="mb-0 text-muted">{{ order.shipping_address_snapshot }}</p>
+												{% else %}
+													<p class="mb-0 text-muted">No address on record.</p>
+												{% endif %}
+											</div>
+
+											<!-- Order Items -->
+											<h6 class="font-weight-bold text-uppercase mb-3" style="font-size:.8rem; letter-spacing:.06em; color:#52525B;">
+												Items Ordered
+											</h6>
+
+											{% for item in order.items.all %}
+											<div class="d-flex align-items-center mb-3 pb-3" style="{% if not forloop.last %}border-bottom: 1px solid #F4F4F5;{% endif %}">
+
+												<!-- Product image -->
+												<div class="mr-3 flex-shrink-0">
+													{% if item.product and item.product.primary_image %}
+														<img src="{{ item.product.primary_image }}"
+															 alt="{{ item.product_name }}"
+															 width="72" height="72"
+															 style="object-fit:cover; border-radius:6px; border:1px solid #ECECED;">
+													{% else %}
+														<div style="width:72px; height:72px; background:#F4F4F5; border-radius:6px; display:flex; align-items:center; justify-content:center;">
+															<i class="icon-shopping-cart text-muted"></i>
+														</div>
+													{% endif %}
+												</div>
+
+												<!-- Item details -->
+												<div class="flex-grow-1">
+													<p class="mb-0 font-weight-bold" style="font-size:.9rem;">
+														{{ item.product_name|default:item.product.name }}
+													</p>
+													{% if item.size_display %}
+														<p class="mb-0 text-muted" style="font-size:.82rem;">
+															Variant: <strong>{{ item.size_display }}</strong>
+														</p>
+													{% endif %}
+													<p class="mb-0 text-muted" style="font-size:.82rem;">
+														Qty: {{ item.quantity }}
+													</p>
+												</div>
+
+												<!-- Item price -->
+												<div class="ml-3 text-right flex-shrink-0">
+													<p class="mb-0 font-weight-bold" style="font-size:.9rem;">
+														{% to_currency item.subtotal %}
+													</p>
+													{% if item.quantity > 1 %}
+														<small class="text-muted">{% to_currency item.price %} each</small>
+													{% endif %}
+												</div>
+											</div>
+											{% endfor %}
+
+										</div>
+
+										<!-- Total footer -->
+										<div class="modal-footer d-flex justify-content-between align-items-center" style="border-top: 1px solid #ECECED;">
+											<span class="text-muted" style="font-size:.85rem;">
+												{{ order.items.count }} item{{ order.items.count|pluralize }}
+											</span>
+											<div class="text-right">
+												<span class="text-muted mr-2" style="font-size:.85rem;">Order Total:</span>
+												<strong style="font-size:1.05rem;">{% to_currency order.total %}</strong>
+											</div>
+										</div>
+
+									</div>
+								</div>
+							</div>
+							{% endfor %}
 						</div>
 						<!-- End .tab-pane -->
 

@@ -399,11 +399,20 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (qtyInput) {
-        qtyInput.setAttribute('max', productStock);
-        qtyInput.addEventListener('input', enforceQuantityLimit);
-        qtyInput.addEventListener('change', enforceQuantityLimit);
-        qtyInput.addEventListener('blur', enforceQuantityLimit);
+    qtyInput.setAttribute('max', productStock);
+    qtyInput.addEventListener('input', enforceQuantityLimit);
+    qtyInput.addEventListener('change', enforceQuantityLimit);
+    qtyInput.addEventListener('blur', enforceQuantityLimit);
+
+    // Theme stepper (+/-) buttons set .value directly without firing events.
+    // Re-enforce after their handler runs by deferring one tick.
+    const qtyWrapper = qtyInput.closest('.product-single-qty');
+    if (qtyWrapper) {
+        qtyWrapper.addEventListener('click', function () {
+            setTimeout(enforceQuantityLimit, 0);
+        });
     }
+}
 
     sizeOptions.forEach(function (option) {
         option.addEventListener('click', function () {
