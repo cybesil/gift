@@ -6,14 +6,17 @@ from django.http import JsonResponse
 import json
 import uuid
 import json
-import requests
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models import F
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+import requests
+import logging
+from django.conf import settings
+
+logger = logging.getLogger(__name__)
 
 
 def cart_summary(request):
@@ -237,6 +240,7 @@ def verify_payment(request):
 
     if verified_ok:
         _confirm_paid_order(order, transaction_id)
+        notify_discord_order(order)
         request.session['session_key'] = {}
         request.session.modified = True
         request.session.pop('pending_order_id', None)
@@ -281,3 +285,44 @@ def flutterwave_webhook(request):
                 _confirm_paid_order(order, transaction_id)
 
     return HttpResponse(status=200)
+
+
+
+
+def notify_discord_order(order):
+    if not settings.ORDERHOOK:
+        return
+
+    items = order.items.select_related('product', 'product_size').all()
+
+    item_lines = []
+    for item in items:
+        size = f" ({item.size_display})" if item.size_display else ""
+        item_lines.append(
+            f"• {item.quantity}x {item.product_name}{size} — ₦{item.subtotal:,.2f}"
+        )
+
+    items_text = "\n".join(item_lines) if item_lines else "No items found"
+
+    shipping = order.shipping_address_snapshot or "N/A"
+
+    embed = {
+        "title": f"🛍️ New Order #{order.id}",
+        "color": 5763719,  # green
+        "fields": [
+            {"name": "Customer", "value": order.user.get_username(), "inline": True},
+            {"name": "Total", "value": f"₦{order.total:,.2f}", "inline": True},
+            {"name": "Status", "value": order.status, "inline": True},
+            {"name": "Items", "value": items_text, "inline": False},
+            {"name": "Shipping Address", "value": shipping[:1000], "inline": False},
+        ],
+        "timestamp": order.created_at.isoformat(),
+    }
+
+    payload = {"embeds": [embed]}
+
+    try:
+        resp = requests.post(settings.ORDERHOOK, json=payload, timeout=10)
+        resp.raise_for_status()
+    except requests.RequestException:
+        logger.exception("Failed to send Discord order notification for order %s", order.id)
