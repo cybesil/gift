@@ -37,6 +37,14 @@
 </script>
 {% endblock %}
 {% block content %}
+<script>
+  fbq('track', 'ViewContent', {
+    content_ids: ['{{ product.id }}'],
+    content_type: 'product',
+    value: {{ product.display_price }},
+    currency: 'NGN'
+  });
+</script>
         <main class="main">
             <nav aria-label="breadcrumb" class="breadcrumb-nav">
                 <div class="container">
@@ -116,7 +124,7 @@
                                     <span class="old-price">{% to_currency product.price %}</span>
                                     <span class="product-price">{% to_currency product.discount_price %}</span>
                                 {% else %}
-                                    <span class="product-price">{% to_currency product.display_price %}</span>
+                                    <span class="product-price">{% to_currency product.cc %}</span>
                                 {% endif %}
                             </div>
 
