@@ -251,7 +251,7 @@ src="https://www.facebook.com/tr?id=28017205407865594&ev=PageView&noscript=1"
                             </li>
                             {% endif %}
                             <li class="item-menu narrow"><a href="{% url 'ecommerce:dashboard' %}">My Account</a></li>
-                            <li class="item-menu narrow"><a href="demo9-about.html">About Us</a></li>
+                            <li class="item-menu narrow"><a href="{% url 'ecommerce:about' %}">About Us</a></li>
 <!--                            <li class="item-menu narrow"><a href="#">My Wishlist</a></li>-->
                             <li class="item-menu narrow"><a href="{% url 'cart:cart_summary' %}">Cart</a></li>
                             {% if request.user.is_authenticated %}
@@ -594,9 +594,9 @@ src="https://www.facebook.com/tr?id=28017205407865594&ev=PageView&noscript=1"
                                         <li><a href="{% url 'ecommerce:dashboard' %}">Orders History</a></li>
 <!--                                        <li><a href="#">Advanced search</a></li>-->
                                         <li><a href="{% url 'ecommerce:dashboard' %}">My Account</a></li>
-                                        <li><a href="#">Privacy Policy</a></li>
-                                        <li><a href="#">About Us</a></li>
-                                        <li><a href="#">Terms and Conditions</a></li>
+                                        <li><a href="{% url 'ecommerce:privacy_policy' %}">Privacy Policy</a></li>
+                                        <li><a href="{% url 'ecommerce:about' %}">About Us</a></li>
+                                        <li><a href="{% url 'ecommerce:terms' %}">Terms and Conditions</a></li>
                                         <li><a href="https://wa.link/1aj0wu">Contact Us</a></li>
 <!--                                        <li><a href="#">Corporate Sales</a></li>-->
                                     </ul>
@@ -689,7 +689,7 @@ src="https://www.facebook.com/tr?id=28017205407865594&ev=PageView&noscript=1"
                     <li><a href="{% url 'ecommerce:admin_dashboard' %}">Admin</a></li>
                     {% endif %}
                     <li><a href="{% url 'ecommerce:dashboard' %}">My Account</a></li>
-                    <li><a href="#">About Us</a></li>
+                    <li><a href="{% url 'ecommerce:about' %}">About Us</a></li>
 <!--                    <li><a href="wishlist.html">My Wishlist</a></li>-->
                     <li><a href="{% url 'cart:cart_summary' %}">Cart</a></li>
                     {% if request.user.is_authenticated %}
