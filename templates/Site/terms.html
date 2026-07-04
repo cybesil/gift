@@ -1,10 +1,152 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% load static %}
+{% load currency_filters %}
 
-</body>
-</html>
+{% block title %}
+<title>Terms & Conditions | Gift Empire</title>
+{% endblock %}
+
+{% block content %}
+<section class="policy-page">
+  <div class="policy-page__inner">
+    <h1>Terms & Conditions</h1>
+    <p class="policy-updated">Last updated: July 2026</p>
+
+    <p>
+      Welcome to Gift Empire (giftempire.com.ng). By accessing or using our
+      website, you agree to be bound by the following Terms & Conditions.
+      Please read them carefully before placing an order.
+    </p>
+
+    <h2>1. Use of Our Site</h2>
+    <p>
+      You must be at least 18 years old, or have the consent of a parent or
+      guardian, to make a purchase on our site. By using our site, you agree
+      to provide accurate and current information when creating an account
+      or placing an order.
+    </p>
+
+    <h2>2. Products & Availability</h2>
+    <p>
+      We make every effort to display our products and their descriptions
+      accurately. However, colors, textures, and finishes may vary slightly
+      due to photography and screen settings. All products are subject to
+      availability, and we reserve the right to limit quantities or
+      discontinue any item without prior notice.
+    </p>
+
+    <h2>3. Pricing & Payment</h2>
+    <p>
+      All prices are listed in the currency shown at checkout and are
+      subject to change without notice. Payment must be completed in full
+      before an order is processed. We use secure third-party payment
+      processors, and we do not store your card details on our servers.
+    </p>
+
+    <h2>4. Order Confirmation</h2>
+    <p>
+      Once your order is placed, you will receive a confirmation via email
+      or on-screen notification. This confirms that we've received your
+      order, not that it has been shipped. We reserve the right to cancel or
+      refuse any order due to stock issues, pricing errors, or suspected
+      fraudulent activity.
+    </p>
+
+    <h2>5. Shipping & Delivery</h2>
+    <p>
+      Delivery timelines provided at checkout are estimates and not
+      guaranteed. Gift Empire is not responsible for delays caused by
+      third-party logistics providers, incorrect delivery information, or
+      circumstances beyond our control.
+    </p>
+
+    <h2>6. Returns & Refunds</h2>
+    <p>
+      If you receive a damaged, defective, or incorrect item, please contact
+      us within the timeframe stated on our Returns Policy with proof of
+      purchase. Refunds or replacements are issued at our discretion once
+      the issue has been verified. Items must be unused and in their
+      original condition to qualify for return.
+    </p>
+
+    <h2>7. Account Responsibility</h2>
+    <p>
+      If you create an account with us, you are responsible for maintaining
+      the confidentiality of your login details and for all activity carried
+      out under your account.
+    </p>
+
+    <h2>8. Intellectual Property</h2>
+    <p>
+      All content on this site, including images, logos, text, and design,
+      is the property of Gift Empire and may not be copied, reproduced, or
+      used without our written permission.
+    </p>
+
+    <h2>9. Prohibited Use</h2>
+    <p>
+      You agree not to use this site for any unlawful purpose, to attempt
+      unauthorized access to our systems, or to engage in any activity that
+      could damage, disable, or impair the site's functionality.
+    </p>
+
+    <h2>10. Limitation of Liability</h2>
+    <p>
+      Gift Empire is not liable for any indirect, incidental, or
+      consequential damages arising from the use of our site or products, to
+      the fullest extent permitted by law.
+    </p>
+
+    <h2>11. Changes to These Terms</h2>
+    <p>
+      We may update these Terms & Conditions from time to time. Continued
+      use of our site after changes are posted constitutes acceptance of the
+      revised terms.
+    </p>
+
+    <h2>12. Governing Law</h2>
+    <p>
+      These Terms & Conditions are governed by the laws of the Federal
+      Republic of Nigeria.
+    </p>
+
+    <h2>13. Contact Us</h2>
+    <p>
+      If you have any questions about these Terms & Conditions, please
+      reach out to us through our contact page or customer support
+      channels.
+    </p>
+  </div>
+</section>
+
+<style>
+  .policy-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 60px 20px;
+  }
+  .policy-page h1 {
+    font-size: 2rem;
+    margin-bottom: 6px;
+  }
+  .policy-updated {
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 30px;
+  }
+  .policy-page h2 {
+    margin-top: 32px;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+  }
+  .policy-page p,
+  .policy-page li {
+    color: #444;
+    line-height: 1.7;
+    font-size: 0.98rem;
+  }
+  .policy-page ul {
+    margin: 10px 0 10px 20px;
+  }
+</style>
+{% endblock %}

@@ -1,10 +1,116 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% load static %}
+{% load currency_filters %}
 
-</body>
-</html>
+{% block title %}
+<title>Privacy Policy | Gift Empire</title>
+{% endblock %}
+
+{% block content %}
+<section class="policy-page">
+  <div class="policy-page__inner">
+    <h1>Privacy Policy</h1>
+    <p class="policy-updated">Last updated: July 2026</p>
+
+    <p>
+      Gift Empire ("we", "us", "our") operates giftempire.com.ng. This
+      Privacy Policy explains how we collect, use, and protect your
+      information when you visit our site or make a purchase.
+    </p>
+
+    <h2>1. Information We Collect</h2>
+    <p>When you use our site, we may collect:</p>
+    <ul>
+      <li>Your name, email address, and phone number</li>
+      <li>Delivery address and billing details</li>
+      <li>Order history and payment confirmation details</li>
+      <li>Basic device and browsing information (such as IP address and browser type)</li>
+    </ul>
+
+    <h2>2. How We Use Your Information</h2>
+    <p>We use the information we collect to:</p>
+    <ul>
+      <li>Process and deliver your orders</li>
+      <li>Communicate with you about your order or account</li>
+      <li>Improve our website and customer experience</li>
+      <li>Send updates or promotions, if you've opted in</li>
+    </ul>
+
+    <h2>3. Payment Information</h2>
+    <p>
+      All payments are processed securely through our third-party payment
+      provider. We do not store your card details on our servers.
+    </p>
+
+    <h2>4. Sharing of Information</h2>
+    <p>
+      We do not sell your personal information. We only share data with
+      trusted third parties where necessary, such as payment processors and
+      delivery/logistics partners, solely to fulfill your order.
+    </p>
+
+    <h2>5. Cookies</h2>
+    <p>
+      Our site may use cookies to keep your cart active and improve your
+      browsing experience. You can disable cookies in your browser settings,
+      though some features may not work as intended.
+    </p>
+
+    <h2>6. Data Security</h2>
+    <p>
+      We take reasonable steps to protect your information from unauthorized
+      access, loss, or misuse. However, no method of transmission over the
+      internet is completely secure.
+    </p>
+
+    <h2>7. Your Rights</h2>
+    <p>
+      You can request access to, correction of, or deletion of your personal
+      information at any time by contacting us.
+    </p>
+
+    <h2>8. Changes to This Policy</h2>
+    <p>
+      We may update this Privacy Policy from time to time. Any changes will
+      be posted on this page with an updated revision date.
+    </p>
+
+    <h2>9. Contact Us</h2>
+    <p>
+      If you have any questions about this Privacy Policy, please reach out
+      to us through our contact page or customer support channels.
+    </p>
+  </div>
+</section>
+
+<style>
+  .policy-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 60px 20px;
+  }
+  .policy-page h1 {
+    font-size: 2rem;
+    margin-bottom: 6px;
+  }
+  .policy-updated {
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 30px;
+  }
+  .policy-page h2 {
+    margin-top: 32px;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+  }
+  .policy-page p,
+  .policy-page li {
+    color: #444;
+    line-height: 1.7;
+    font-size: 0.98rem;
+  }
+  .policy-page ul {
+    margin: 10px 0 10px 20px;
+  }
+</style>
+{% endblock %}

@@ -1,10 +1,184 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% load static %}
+{% load currency_filters %}
 
-</body>
-</html>
+{% block title %}
+<title>About Us | Gift Empire</title>
+{% endblock %}
+
+{% block content %}
+<section class="about-hero">
+  <div class="about-hero__inner">
+    <h1>Every Strand Tells a Story</h1>
+    <p class="about-hero__tagline">
+      Gift Empire is a Nigerian-born hair and beauty house dedicated to helping
+      you show up as your most confident self — one flawless look at a time.
+    </p>
+  </div>
+</section>
+
+<section class="about-story">
+  <div class="about-story__content">
+    <h2>Our Story</h2>
+    <p>
+      Gift Empire started with a simple belief: your hair is your crown, and
+      you deserve access to quality that matches your standards. What began
+      as a small, hands-on operation has grown into a trusted destination for
+      customers across Nigeria who want texture, length, and styles that hold
+      up in real life — not just in the mirror.
+    </p>
+    <p>
+      Every piece in our collection is chosen with care, tested for
+      durability, and curated to fit the different moods, occasions, and
+      personalities of the people who wear it.
+    </p>
+  </div>
+  <div class="about-story__image">
+    <img src="{% static 'assets/images/banners/banner-fashion-1.jpg' %}" alt="Gift Empire hair collection" loading="lazy">
+  </div>
+</section>
+
+<section class="about-values">
+  <h2>What We Stand For</h2>
+  <div class="about-values__grid">
+    <div class="value-card">
+      <h3>Quality First</h3>
+      <p>
+        We source and inspect every item ourselves, so what you see online is
+        exactly what arrives at your door — same texture, same finish, same
+        shine.
+      </p>
+    </div>
+    <div class="value-card">
+      <h3>Authenticity</h3>
+      <p>
+        No shortcuts, no misleading listings. We describe our products
+        honestly so you always know what you're investing in.
+      </p>
+    </div>
+    <div class="value-card">
+      <h3>Craftsmanship</h3>
+      <p>
+        From how a piece is styled to how it's packaged, every detail is
+        handled with the kind of attention that shows the moment you open the
+        box.
+      </p>
+    </div>
+    <div class="value-card">
+      <h3>Customer Care</h3>
+      <p>
+        Real humans, real support. Whether it's a sizing question or a
+        delivery update, we're here to make sure your experience is as
+        smooth as the finish on your favorite piece.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="about-promise">
+  <div class="about-promise__inner">
+    <h2>Our Promise to You</h2>
+    <p>
+      We know that looking good is personal — and sometimes urgent. That's
+      why we prioritize fast, reliable delivery across Nigeria, secure
+      payment options, and a collection that's refreshed regularly so there's
+      always something new to fall in love with.
+    </p>
+    <a href="{% url 'ecommerce:home' %}" class="about-promise__cta">Explore the Collection</a>
+  </div>
+</section>
+
+<section class="about-cta">
+  <h2>Ready to Find Your Look?</h2>
+  <p>Browse our latest arrivals and discover pieces made to turn heads.</p>
+  <a href="{% url 'ecommerce:home' %}" class="btn btn--primary">Shop Now</a>
+</section>
+
+<style>
+  .about-hero {
+    background: #f8f5f2;
+    padding: 80px 20px;
+    text-align: center;
+  }
+  .about-hero__inner { max-width: 700px; margin: 0 auto; }
+  .about-hero h1 { font-size: 2.4rem; margin-bottom: 16px; }
+  .about-hero__tagline { font-size: 1.1rem; color: #555; line-height: 1.6; }
+
+  .about-story {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 40px;
+    padding: 60px 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .about-story__content { flex: 1 1 400px; }
+  .about-story__content h2 { margin-bottom: 16px; }
+  .about-story__content p { line-height: 1.7; margin-bottom: 14px; color: #444; }
+  .about-story__image { flex: 1 1 400px; }
+  .about-story__image img { width: 100%; border-radius: 12px; object-fit: cover; }
+
+  .about-values {
+    background: #fafafa;
+    padding: 60px 20px;
+    text-align: center;
+  }
+  .about-values h2 { margin-bottom: 36px; }
+  .about-values__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .value-card {
+    background: #fff;
+    padding: 28px 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    text-align: left;
+  }
+  .value-card h3 { margin-bottom: 10px; font-size: 1.1rem; }
+  .value-card p { color: #555; line-height: 1.6; font-size: 0.95rem; }
+
+  .about-promise {
+    padding: 60px 20px;
+    text-align: center;
+  }
+  .about-promise__inner { max-width: 650px; margin: 0 auto; }
+  .about-promise p { color: #555; line-height: 1.7; margin-bottom: 22px; }
+  .about-promise__cta {
+    display: inline-block;
+    padding: 12px 28px;
+    border: 1px solid #222;
+    border-radius: 30px;
+    text-decoration: none;
+    color: #222;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .about-promise__cta:hover { background: #222; color: #fff; }
+
+  .about-cta {
+    background: #222;
+    color: #fff;
+    text-align: center;
+    padding: 60px 20px;
+  }
+  .about-cta h2 { margin-bottom: 12px; }
+  .about-cta p { color: #ccc; margin-bottom: 24px; }
+  .about-cta .btn--primary {
+    display: inline-block;
+    background: #fff;
+    color: #222;
+    padding: 12px 30px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  @media (max-width: 600px) {
+    .about-hero h1 { font-size: 1.8rem; }
+  }
+</style>
+{% endblock %}
