@@ -111,6 +111,79 @@
                     <!-- End .col-lg-9 -->
                 </div>
                 <!-- End .row -->
+                {% if all_products %}
+                <section class="featured-products-section">
+                    <div class="owl-carousel owl-theme nav-image-center" data-owl-options="{
+                            'margin': 20,
+                            'dots': false,
+                            'nav': true,
+                            'loop': true,
+                            'autoplay': false,
+                            'responsive': {
+                                '0': {
+                                    'items': 4
+                                },
+                                '768': {
+                                    'items': 3
+                                },
+                                '1200': {
+                                    'items': 4
+                                }
+                            }
+                        }">
+
+                        {% for x in all_products %}
+                        <div class="product-default left-details">
+                            <figure>
+                                <a href="{{ x.get_absolute_url }}">
+                                    {% if x.primary_image %}
+                                        <img src="{{ x.primary_image }}" alt="{{ x.name }}" width="300" height="300">
+                                    {% else %}
+                                        <img src="{% static 'assets/images/placeholder.jpg' %}" alt="{{ x.name }}" width="300" height="300">
+                                    {% endif %}
+                                </a>
+                                <div class="label-group">
+                                    {% if x.is_featured %}
+                                    <span class="product-label label-hot">HOT</span>
+                                    {% endif %}
+                                    {% if x.discount_percent %}
+                                        <span class="product-label label-sale">-{{ x.discount_percent }}%</span>
+                                    {% endif %}
+                                </div>
+                            </figure>
+                            <div class="product-details">
+                                <div class="category-list">
+                                    <a href="#" class="product-category">{{ x.category.name }}</a>
+                                </div>
+                                <h3 class="product-title"><a href="{{ x.get_absolute_url }}">{{ x.name }}</a></h3>
+                                <div class="price-box">
+                                    {% if x.is_on_sale %}
+                                        <span class="old-price">{%to_currency x.price %}</span>
+                                        <span class="product-price">{% to_currency x.discount_price %}</span>
+                                    {% else %}
+
+                                        <span class="product-price">{% to_currency x.display_price %}</span>
+                                    {% endif %}
+                                </div>
+                                <!-- End .price-box -->
+                                <div class="product-action">
+                                    <a href="{{x.get_absolute_url}}" class="btn-icon btn-add-cart"><i
+                                            class="icon-shopping-cart"></i><span>MORE DETAILS</span></a>
+<!--                                    <a href="wishlist.html" class="btn-icon-wish" title="wishlist"><i-->
+<!--                                            class="icon-heart"></i></a>-->
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+                </section>
+
+                <div class="mb-3"></div>
+                <!-- margin -->
+                {% endif %}
+
+
                 {% if products %}
                 <section class="featured-products-section">
                     <h2 class="section-title title-decorate text-center d-flex align-items-center appear-animate" data-animation-delay="100" data-animation-duration="1500">Latest Additions</h2>

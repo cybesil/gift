@@ -25,6 +25,7 @@ def home(request):
         active_banner2 = BannerAd2.objects.filter(is_active=True).first()
         cache.set('active_banner2', active_banner2, 60 * 10)
 
+    all_products = Product.objects.filter(is_active=True).order_by('?')[:30]
     products = Product.objects.filter(is_active=True)[:8]
     ft_products = Product.objects.filter(is_featured=True, is_active=True)[:8]
 
@@ -56,6 +57,7 @@ def home(request):
         "active_banner": active_banner,
         "active_banner2": active_banner2,
         "category_sections": category_sections,
+        "all_products": all_products
     }
     return render(request, 'User/index.html', context)
 
