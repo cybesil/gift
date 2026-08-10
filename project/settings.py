@@ -92,26 +92,26 @@ CSRF_TRUSTED_ORIGINS = [
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
+
+# database_url = os.getenv("DATABASE_URL")
+#
 # DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
+#     "default": dj_database_url.parse(database_url)
 # }
 
-
-database_url = os.getenv("DATABASE_URL")
-
-DATABASES = {
-    "default": dj_database_url.parse(database_url)
-}
-
-if not DATABASES["default"]["PORT"]:
-    DATABASES["default"]["PORT"] = "5432"
-
-DATABASES["default"]["OPTIONS"] = {
-    "sslmode": "require",
-}
+# if not DATABASES["default"]["PORT"]:
+#     DATABASES["default"]["PORT"] = "5432"
+#
+# DATABASES["default"]["OPTIONS"] = {
+#     "sslmode": "require",
+# }
 
 CACHES = {
     "default": {
