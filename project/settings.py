@@ -185,7 +185,7 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': 'D6zHHlGm_zoXClwU8Xa-Dzua5bE',
     'auto_create_folders': True,
     'auto_optimize': True,  # Enable automatic image optimization
-    'auto_responsive': True,  # Enable automatic image resizing
+    'auto_responsive': False,  # Enable automatic image resizing
 }
 
 
