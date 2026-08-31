@@ -185,7 +185,8 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': 'D6zHHlGm_zoXClwU8Xa-Dzua5bE',
     'auto_create_folders': True,
     'auto_optimize': True,  # Enable automatic image optimization
-    'auto_responsive': False,  # Enable automatic image resizing
+    'auto_responsive': True,
+    'SECURE': True,  # Enable automatic image resizing
 }
 
 
@@ -193,6 +194,7 @@ cloudinary.config(
     cloud_name='dtgepccth',
     api_key='363466449134293',
     api_secret='biHImhWRz0fsh_sOgrlJqS1I5mg',
+    secure=True,
 )
 
 
