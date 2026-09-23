@@ -22,6 +22,7 @@ admin.site.register(ShippingAddress)
 admin.site.register(User)
 admin.site.register(ExchangeRate)
 admin.site.register(OrderItem)
+admin.site.register(Review)
 @admin.register(BannerAd)
 class BannerAdAdmin(admin.ModelAdmin):
     list_display = ['name', 'header', 'cta_text', 'is_active', 'created_at']

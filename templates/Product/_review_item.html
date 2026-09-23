@@ -1,0 +1,32 @@
+<div class="comments">
+    <figure class="img-thumbnail">
+        {% if r.user.profile.profile_pic %}
+            <img src="{{ r.user.profile.profile_pic }}" alt="{{ r.display_name }}" width="80" height="80">
+        {% else %}
+            <span class="review-initial">{{ r.display_name|slice:":1"|upper }}</span>
+        {% endif %}
+    </figure>
+
+    <div class="comment-block">
+        <div class="comment-header">
+            <div class="comment-arrow"></div>
+
+            <div class="ratings-container float-sm-right">
+                <div class="product-ratings">
+                    <span class="ratings" style="width:{{ r.rating_percent }}%"></span>
+                    <span class="tooltiptext tooltip-top"></span>
+                </div>
+            </div>
+
+            <span class="comment-by">
+                <strong>{{ r.display_name }}</strong> – {{ r.created_at|date:"F j, Y" }}
+                {% if r.is_verified_purchase %}<span class="badge badge-success ml-2">Verified purchase</span>{% endif %}
+            </span>
+        </div>
+
+        <div class="comment-content">
+            {% if r.title %}<strong>{{ r.title }}</strong>{% endif %}
+            <p>{{ r.comment|linebreaksbr }}</p>
+        </div>
+    </div>
+</div>

@@ -19,4 +19,6 @@ urlpatterns = [
     path('about-us/', about, name='about'),
     path('terms-and-conditions/', terms, name='terms'),
     path('search/api/', product_search_api, name='product_search_api'),
+    path('product/<slug:slug>/review/', submit_review, name='submit_review'),
+    path('product/<slug:slug>/review/delete/', delete_review, name='delete_review'),
 ]

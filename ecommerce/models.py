@@ -12,6 +12,8 @@ from django.db.models import CheckConstraint, Q
 from django.core.files.uploadedfile import InMemoryUploadedFile
 import sys
 from django.core.cache import cache
+from django.db.models import Avg, Count, UniqueConstraint
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 # ─── USERS ───────────────────────────────────────────
@@ -145,6 +147,8 @@ class Product(models.Model):
     weight = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    avg_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0)
+    review_count = models.PositiveIntegerField(default=0)
 
     class Meta:
         constraints = [
@@ -154,6 +158,11 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         return reverse('ecommerce:product_detail', args=[self.slug])
+
+    @property
+    def rating_percent(self):
+        """0-100 width for Porto's .ratings star bar."""
+        return int(round(float(self.avg_rating) * 20))
 
     @property
     def primary_image(self):
@@ -205,6 +214,41 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Review(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
+    rating = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    title = models.CharField(max_length=120, blank=True)
+    comment = models.TextField(max_length=2000)
+    is_verified_purchase = models.BooleanField(default=False)
+    is_approved = models.BooleanField(default=True, help_text="Untick to hide from the site")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        constraints = [
+            UniqueConstraint(fields=['product', 'user'], name='one_review_per_user_per_product'),
+            CheckConstraint(
+                condition=Q(rating__gte=1) & Q(rating__lte=5),
+                name='review_rating_1_to_5'
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.user.username} → {self.product.name} ({self.rating})"
+
+    @property
+    def rating_percent(self):
+        return self.rating * 20
+
+    @property
+    def display_name(self):
+        return (self.user.first_name or self.user.username).split('@')[0]
 
 
 class ProductImage(models.Model):
@@ -548,3 +592,18 @@ def clear_banner_cache(sender, **kwargs):
 @receiver(post_delete, sender=BannerAd2)
 def clear_banner2_cache(sender, **kwargs):
     cache.delete('active_banner2')
+
+
+def refresh_product_rating(product_id):
+    agg = Review.objects.filter(product_id=product_id, is_approved=True).aggregate(
+        avg=Avg('rating'), n=Count('id')
+    )
+    Product.objects.filter(pk=product_id).update(
+        avg_rating=round(agg['avg'] or 0, 2),
+        review_count=agg['n'],
+    )
+
+@receiver(post_save, sender=Review)
+@receiver(post_delete, sender=Review)
+def update_product_rating(sender, instance, **kwargs):
+    refresh_product_rating(instance.product_id)

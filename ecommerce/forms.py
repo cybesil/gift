@@ -1,5 +1,5 @@
 from django import forms
-
+from .models import Review
 from .models import User, UserProfile, ShippingAddress
 
 
@@ -152,3 +152,22 @@ class ShippingAddressForm(forms.ModelForm):
         self.fields['city'].required = True
         self.fields['state'].required = True
         self.fields['postal_code'].required = True
+
+
+
+
+
+class ReviewForm(forms.ModelForm):
+    rating = forms.TypedChoiceField(
+        choices=[(i, i) for i in range(5, 0, -1)],
+        coerce=int,
+        widget=forms.RadioSelect,
+    )
+
+    class Meta:
+        model = Review
+        fields = ['rating', 'title', 'comment']
+        widgets = {
+            'title': forms.TextInput(attrs={'placeholder': 'Summary (optional)'}),
+            'comment': forms.Textarea(attrs={'rows': 4, 'placeholder': 'What did you think of this product?'}),
+        }

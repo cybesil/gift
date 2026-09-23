@@ -1,11 +1,13 @@
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 from django.core.paginator import Paginator
-from .forms import AccountDetailsForm, ShippingAddressForm
+from collections import Counter
+from .forms import AccountDetailsForm, ShippingAddressForm, ReviewForm
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.contrib import messages
-from django.db.models import Q, Sum, F
+from django.db.models import Q, Sum, F, Count
 from django.http import JsonResponse
-from .models import Category, Product, ProductImage, ProductSize, Size, Order, OrderItem, ShippingAddress, ExchangeRate, BannerAd, BannerAd2
+from .models import Category, Product, ProductImage, ProductSize, Size, Order, OrderItem, ShippingAddress, ExchangeRate, BannerAd, BannerAd2, Review
 import requests
 from django.core.cache import cache
 from django.http import JsonResponse
@@ -66,13 +68,63 @@ def product_detail(request, slug):
     related = Product.objects.filter(category=product.category, is_active=True).exclude(pk=product.pk)[:5]
     ft_related = Product.objects.filter(category=product.category, is_active=True, is_featured=True).exclude(pk=product.pk)[:5]
     sizes = product.sizes.all().order_by('size')
+    # ── Reviews ──
+    reviews = list(
+        product.reviews.filter(is_approved=True).select_related('user__profile')
+    )
+    counts = Counter(r.rating for r in reviews)
+    total = len(reviews)
+    breakdown = [
+        {'star': s, 'count': counts[s], 'pct': round(counts[s] * 100 / total) if total else 0}
+        for s in range(5, 0, -1)
+    ]
+
+    user_review = None
+    if request.user.is_authenticated:
+        user_review = Review.objects.filter(product=product, user=request.user).first()
+
     context = {
         "product": product,
         "related": related,
         "ft_related": ft_related,
-        "sizes": sizes
+        "sizes": sizes,
+        "reviews": reviews,
+        "rating_breakdown": breakdown,
+        "user_review": user_review,
     }
     return render(request, 'Product/details.html', context)
+
+@login_required(login_url="accounts:account")
+@require_POST
+def submit_review(request, slug):
+    product = get_object_or_404(Product, slug=slug, is_active=True)
+    existing = Review.objects.filter(product=product, user=request.user).first()
+    form = ReviewForm(request.POST, instance=existing)
+
+    if form.is_valid():
+        review = form.save(commit=False)
+        review.product = product
+        review.user = request.user
+        review.is_verified_purchase = OrderItem.objects.filter(
+            order__user=request.user,
+            order__status__in=['paid', 'shipped', 'delivered'],
+            product=product,
+        ).exists()
+        review.save()
+        messages.success(request, 'Thanks! Your review has been ' + ('updated.' if existing else 'posted.'))
+    else:
+        messages.error(request, 'Please pick a star rating and write a comment.')
+
+    return redirect(f"{product.get_absolute_url()}#reviews")
+
+
+@login_required(login_url="accounts:account")
+@require_POST
+def delete_review(request, slug):
+    product = get_object_or_404(Product, slug=slug)
+    Review.objects.filter(product=product, user=request.user).delete()
+    messages.success(request, 'Your review has been deleted.')
+    return redirect(f"{product.get_absolute_url()}#reviews")
 
 def products(request, slug):
     category = get_object_or_404(Category, slug=slug, is_active=True)

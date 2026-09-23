@@ -22,6 +22,13 @@
         "@type": "Brand",
         "name": "Gift Empire"
     },
+    {% if product.review_count %}
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "{{ product.avg_rating|stringformat:'s' }}",
+        "reviewCount": "{{ product.review_count }}"
+    },
+    {% endif %}
     "offers": {
         "@type": "Offer",
         "url": "{{ request.build_absolute_uri }}",
@@ -115,6 +122,13 @@
                             <h1 class="product-title">{{ product.name }}</h1>
 
                             <div class="ratings-container">
+                                <div class="product-ratings">
+                                    <span class="ratings" style="width:{{ product.rating_percent }}%"></span>
+                                    <span class="tooltiptext tooltip-top"></span>
+                                </div>
+                                <a href="#reviews" class="rating-link">
+                                    {% if product.review_count %}({{ product.review_count }} review{{ product.review_count|pluralize }}){% else %}(Be the first to review){% endif %}
+                                </a>
                             </div>
 
                             <hr class="short-divider">
@@ -124,7 +138,7 @@
                                     <span class="old-price">{% to_currency product.price %}</span>
                                     <span class="product-price">{% to_currency product.discount_price %}</span>
                                 {% else %}
-                                    <span class="product-price">{% to_currency product.cc %}</span>
+                                    <span class="product-price">{% to_currency product.price %}</span>
                                 {% endif %}
                             </div>
 
@@ -232,13 +246,16 @@
                     </div>
                 </div>
 
-                <div class="product-single-tabs">
+                <div class="product-single-tabs" id="reviews">
                     <ul class="nav nav-tabs" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link active" id="product-tab-desc" data-toggle="tab" href="#product-desc-content" role="tab" aria-controls="product-desc-content" aria-selected="true">Description</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="product-tab-tags" data-toggle="tab" href="#product-tags-content" role="tab" aria-controls="product-tags-content" aria-selected="false">Additional Information</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="product-tab-reviews" data-toggle="tab" href="#product-reviews-content" role="tab" aria-controls="product-reviews-content" aria-selected="false">Reviews ({{ product.review_count }})</a>
                         </li>
                     </ul>
 
@@ -285,6 +302,105 @@
                                 </tbody>
                             </table>
                         </div>
+
+                        <div class="tab-pane fade" id="product-reviews-content" role="tabpanel" aria-labelledby="product-tab-reviews">
+                            <div class="product-reviews-content">
+
+                                {% if reviews %}
+                                    <h3 class="reviews-title">{{ product.review_count }} review{{ product.review_count|pluralize }} for {{ product.name }}</h3>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-4 text-center">
+                                            <h2 class="mb-0">{{ product.avg_rating|floatformat:1 }}<small class="text-muted"> / 5</small></h2>
+                                            <div class="ratings-container d-inline-block">
+                                                <div class="product-ratings">
+                                                    <span class="ratings" style="width:{{ product.rating_percent }}%"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8">
+                                            {% for row in rating_breakdown %}
+                                            <div class="d-flex align-items-center mb-1">
+                                                <small style="width:32px">{{ row.star }}★</small>
+                                                <div class="progress flex-grow-1 mx-2" style="height:8px">
+                                                    <div class="progress-bar bg-warning" style="width:{{ row.pct }}%"></div>
+                                                </div>
+                                                <small class="text-right" style="width:28px">{{ row.count }}</small>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+
+                                    <div class="comment-list">
+                                        {% for r in reviews|slice:":3" %}
+                                            {% include 'Product/_review_item.html' %}
+                                        {% endfor %}
+                                    </div>
+
+                                    <button type="button" class="btn btn-dark btn-sm" data-toggle="modal" data-target="#allReviewsModal">
+                                        See all reviews ({{ product.review_count }})
+                                    </button>
+                                {% else %}
+                                    <h3 class="reviews-title">No reviews yet</h3>
+                                    <p>Be the first to review “{{ product.name }}”.</p>
+                                {% endif %}
+
+                                <div class="divider"></div>
+
+                                <div class="add-product-review">
+                                    {% if user.is_authenticated %}
+                                        <h3 class="review-title">{% if user_review %}Edit your review{% else %}Add a review{% endif %}</h3>
+
+                                        <form id="review-form" method="post" action="{% url 'ecommerce:submit_review' product.slug %}" class="comment-form m-0">
+                                            {% csrf_token %}
+                                            <div class="rating-form">
+                                                <label for="rating">Your rating <span class="required">*</span></label>
+                                                <span class="rating-stars">
+                                                    <a class="star-1" href="#">1</a>
+                                                    <a class="star-2" href="#">2</a>
+                                                    <a class="star-3" href="#">3</a>
+                                                    <a class="star-4" href="#">4</a>
+                                                    <a class="star-5" href="#">5</a>
+                                                </span>
+
+                                                <select name="rating" id="rating" style="display: none;">
+                                                    <option value="">Rate…</option>
+                                                    <option value="5">Perfect</option>
+                                                    <option value="4">Good</option>
+                                                    <option value="3">Average</option>
+                                                    <option value="2">Not that bad</option>
+                                                    <option value="1">Very poor</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Title (optional)</label>
+                                                <input type="text" name="title" maxlength="120" class="form-control form-control-sm" value="{{ user_review.title }}">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Your review <span class="required">*</span></label>
+                                                <textarea name="comment" rows="6" maxlength="2000" required class="form-control form-control-sm">{{ user_review.comment }}</textarea>
+                                            </div>
+
+                                            <input type="submit" class="btn btn-primary" value="{% if user_review %}Update review{% else %}Submit{% endif %}">
+                                        </form>
+
+                                        {% if user_review %}
+                                        <form method="post" action="{% url 'ecommerce:delete_review' product.slug %}" class="mt-2"
+                                              onsubmit="return confirm('Delete your review?')">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-link text-danger p-0">Delete my review</button>
+                                        </form>
+                                        {% endif %}
+                                    {% else %}
+                                        <p>Please <a href="{% url 'accounts:account' %}?next={{ request.path }}">log in</a> to write a review.</p>
+                                    {% endif %}
+                                </div>
+                                <!-- End .add-product-review -->
+                            </div>
+                            <!-- End .product-reviews-content -->
+                        </div>
                     </div>
                 </div>
 
@@ -310,7 +426,7 @@
                                 </h3>
                                 <div class="ratings-container">
                                     <div class="product-ratings">
-                                        <span class="ratings" style="width:0%"></span>
+                                        <span class="ratings" style="width:{{ p.rating_percent }}%"></span>
                                         <span class="tooltiptext tooltip-top"></span>
                                     </div>
                                 </div>
@@ -354,6 +470,10 @@
                                     <a href="{{ p.get_absolute_url }}">{{ p.name }}</a>
                                 </h3>
                                 <div class="ratings-container">
+                                    <div class="product-ratings">
+                                        <span class="ratings" style="width:{{ p.rating_percent }}%"></span>
+                                        <span class="tooltiptext tooltip-top"></span>
+                                    </div>
                                 </div>
                                 <div class="price-box">
                                     {% if p.is_on_sale %}
@@ -373,6 +493,102 @@
                 {% endif %}
             </div>
         </main>
+
+<!-- All reviews modal -->
+<div class="modal fade" id="allReviewsModal" tabindex="-1" role="dialog" aria-labelledby="allReviewsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="allReviewsModalLabel">
+                    {{ product.review_count }} review{{ product.review_count|pluralize }} · {{ product.avg_rating|floatformat:1 }}/5
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="comment-list">
+                    {% for r in reviews %}
+                        {% include 'Product/_review_item.html' %}
+                    {% empty %}
+                        <p>No reviews yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #allReviewsModal .modal-body { max-height: 70vh; overflow-y: auto; }
+    #allReviewsModal .comments { margin-bottom: 2rem; }
+    .review-initial {
+        display: block; width: 80px; height: 80px; line-height: 80px;
+        text-align: center; font-size: 2.4rem; color: #999; background: #f4f4f4;
+    }
+    /* Selected stars in the review form */
+    .rating-stars a.is-picked::before,
+    .rating-stars.selected a.active::before {
+        color: #f5a623 !important;   /* gold */
+    }
+
+    /* Preview gold while hovering, before they click */
+    .rating-stars:hover a:hover::before {
+        color: #f5a623 !important;
+    }
+
+    .product-ratings .ratings::before {
+    color: #f5a623;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var $ = window.jQuery;
+
+    // Open the Reviews tab from the "(N reviews)" link or from #reviews after posting
+    function openReviewsTab() {
+        if ($) { $('#product-tab-reviews').tab('show'); }
+        var wrap = document.getElementById('reviews');
+        if (wrap) { wrap.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    }
+    document.querySelectorAll('.rating-link').forEach(function (a) {
+        a.addEventListener('click', function (e) { e.preventDefault(); openReviewsTab(); });
+    });
+    if (window.location.hash === '#reviews') { openReviewsTab(); }
+
+    // Star picker -> hidden <select name="rating">
+    var select = document.getElementById('rating');
+    if (select) {
+        var starLinks = document.querySelectorAll('.rating-stars a');
+        starLinks.forEach(function (a) {
+            a.addEventListener('click', function (e) {
+                e.preventDefault();
+                select.value = this.textContent.trim();
+                starLinks.forEach(function (s) { s.classList.remove('is-picked'); });
+                this.classList.add('is-picked');
+            });
+        });
+
+        // Pre-select the stars when editing an existing review
+        var initial = {{ user_review.rating|default:0 }};
+        if (initial) {
+            var star = document.querySelector('.rating-stars .star-' + initial);
+            if (star) { star.click(); }
+        }
+
+        var form = document.getElementById('review-form');
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                if (!select.value) {
+                    e.preventDefault();
+                    alert('Please select a star rating.');
+                }
+            });
+        }
+    }
+});
+</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
